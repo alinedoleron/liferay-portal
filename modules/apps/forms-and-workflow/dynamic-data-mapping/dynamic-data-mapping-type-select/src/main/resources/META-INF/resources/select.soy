@@ -28,6 +28,7 @@
 	{@param? required: bool}
 	{@param? selectCaretDoubleIcon: html}
 	{@param? selectSearchIcon: html}
+	{@param? showPlaceholderOption: bool}
 	{@param? showLabel: bool}
 	{@param? tip: string}
 	{let $displayValues: length($value) > 0 ? $value : length($predefinedValue) > 0 ? $predefinedValue : null /}
@@ -241,6 +242,35 @@
 	<option {if $dir}dir="{$dir}"{/if} {$selected} value="{$option.value}">{$option.label}</option>
 {/template}
 
+{template .select_option_placeholder}
+	{@param options: list<[label: string, value: string]>}
+	{@param strings: [chooseAnOption: string, chooseOptions: string, search: string, emptyList: string]}
+	{@param value: list<string>}
+	{@param? fixedOptions: list<[label: string, value: string]>}
+
+	<li class="select-option-item">
+		{let $itemAttributes kind="attributes"}
+			class="
+			{if length($value) == 0}
+				active{sp}
+			{/if}
+			
+			dropdown-item{sp}
+
+			placeholder-dropdown-item
+			"
+
+			title="{$strings.chooseAnOption}"
+		{/let}
+		<a {$itemAttributes}>
+			{$strings.chooseAnOption}
+		</a>
+	</li>
+	{if $fixedOptions and length($fixedOptions) > 0 and length($options) > 0}
+		<div class="dropdown-divider"></div>
+	{/if}
+{/template}
+
 /**
  * Prints the DDM form select field UI itens.
  */
@@ -250,8 +280,13 @@
 	{@param value: list<string>}
 	{@param? fixedOptions: list<[label: string, value: string]>}
 	{@param? multiple: bool}
+	{@param? showPlaceholderOption: bool}
 
 	<ul class="dropdown-visible list-unstyled results-chosen">
+		{if $showPlaceholderOption}
+			{call .select_option_placeholder data="all" /}
+		{/if}
+
 		{if length($options) > 0}
 			<div class="inline-scroller">
 				{call .plot_dropdown_rows}
