@@ -175,6 +175,7 @@ AUI.add(
 								selectCaretDoubleIcon: soyIncDom(Liferay.Util.getLexiconIconTpl('caret-double')),
 								selectSearchIcon: soyIncDom(Liferay.Util.getLexiconIconTpl('search')),
 								showPlaceholderOption: instance._showPlaceholderOption(),
+								showSearch: instance._showSearch(),
 								strings: instance.get('strings'),
 								value: instance.getValue()
 							}
@@ -516,6 +517,19 @@ AUI.add(
 
 						return showPlaceholderOption;
 					},
+
+					_showSearch: function() {
+						var instance = this;
+
+						var showSearch = false;
+
+						var options = instance.get('options');
+
+						if (options.length > 7) {
+							showSearch = true;
+						}
+
+						return showSearch;
 					}
 				}
 			}
