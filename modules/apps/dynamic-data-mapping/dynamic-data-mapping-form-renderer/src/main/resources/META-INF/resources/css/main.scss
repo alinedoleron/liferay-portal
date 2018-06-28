@@ -472,26 +472,26 @@ body .ddm-user-view-content {
 	}
 }
 
-.form-check-inline .custom-control-label {
-	line-height: 24px;
+.form-group .form-check-inline {
+	margin-right: 11px;
+
+.liferay-ddm-form-field-radio {
+	.custom-control-inline {
+		&.custom-control {
+			padding-bottom: 0;
+		}
+
+	+ .custom-control-inline {
+		margin-left: 11px;
+	}
 }
 
-.form-group {
+.liferay-ddm-form-field-checkbox-multiple {
 	.custom-control {
 		padding-bottom: 9px;
 	}
 
 	.form-check-inline {
 		margin-right: 11px;
-	}
-
-	.custom-control-inline {
-		&.custom-control {
-			padding-bottom: 0;
-		}
-
-		+ .custom-control-inline {
-			margin-left: 11px;
-		}
 	}
 }
