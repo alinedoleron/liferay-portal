@@ -126,6 +126,7 @@ class Builder extends Component {
                     events={sidebarEvents}
                     fieldFocus={fieldFocus}
                     fieldLists={listFields}
+                    fieldContext={fieldContext}
                     mode={mode}
                     ref="sidebar"
                     spritemap={spritemap}

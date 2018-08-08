@@ -199,11 +199,10 @@ class Sidebar extends Component {
      * @protected
      * @returns {bool}
      */
-    _isEditMode(mode = this.state.mode) {
+    _isEditMode() {
         const { fieldFocus, fieldLists, fieldContext } = this.props;
 
-        return !!(mode === 'edit'
-            && !(
+        return !!(!(
                 Object.keys(fieldFocus).length === 0 
                 && fieldFocus.constructor === Object
             )
@@ -217,7 +216,7 @@ class Sidebar extends Component {
      * @protected
      */
     _setMode(mode) {
-        if (this._isEditMode(mode)) {
+        if (this._isEditMode()) {
             this.state.mode = mode;
         }
     }
@@ -295,7 +294,7 @@ class Sidebar extends Component {
         if (
             typeof nextProps.mode !== 'undefined' &&
             nextProps.mode.newVal &&
-            this._isEditMode(nextProps.mode.newVal)
+            this._isEditMode()
         ) {
             this.show();
         }
@@ -422,6 +421,7 @@ class Sidebar extends Component {
                                         modeRenderer="list"
                                         pages={fieldContext}
                                         ref="layoutRenderer"
+                                        editable={true}
                                         spritemap={spritemap}
                                     />
                                 </div>
