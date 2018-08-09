@@ -557,18 +557,6 @@ public class FormUtil {
 		Consumer<List<Date>> consumer) {
 
 		String message = _getWrongDateMessage(key);
-
-		_getListField(
-			body, key, required, consumer,
-			(Stream<String> stream) -> stream.map(
-				Try::success
-			).map(
-				(Try<String> stringTry) -> stringTry.flatMap(
-					DateTransformer::asDate
-				).orElseThrow(
-					() -> new BadRequestException(message)
-				)
-			));
 	}
 
 	private static void _getDouble(
