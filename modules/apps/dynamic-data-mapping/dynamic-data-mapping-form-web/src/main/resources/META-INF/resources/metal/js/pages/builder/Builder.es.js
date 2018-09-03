@@ -1,6 +1,9 @@
+import {Config} from 'metal-state';
 import Component from 'metal-jsx';
 import FormRenderer from '../../components/Form/index.es';
 import Sidebar from '../../components/Sidebar/index.es';
+import ClayModal from 'clay-modal';
+import autobind from 'autobind-decorator';
 
 /**
  * Builder.
@@ -8,6 +11,16 @@ import Sidebar from '../../components/Sidebar/index.es';
  */
 
 class Builder extends Component {
+	static STATE = {
+		/**
+		 * @default []
+		 * @instance
+		 * @memberof FormRenderer
+		 * @type {?array<object>}
+		 */
+
+		indexes: Config.object(),
+	}
 
 	/**
 	 * Continues the propagation of event.
@@ -69,8 +82,22 @@ class Builder extends Component {
 	 * @private
 	 */
 
-	_handleDeleteButtonClicked(indexes) {
-		this.emit('deleteField', indexes);
+	_handleDeleteFieldClicked(indexes) {
+		this.setState({
+			indexes
+		});
+		this._handleModal();
+	}
+
+	/**
+	 * @param {!Event} event
+	 * @private
+	 */
+
+	_handleModal() {
+		const {modal} = this.refs;
+
+		modal.show();
 	}
 
 	/**
@@ -109,6 +136,23 @@ class Builder extends Component {
 			this._handleSidebarOpened({mode});
 		}
 	}
+	
+	@autobind
+	_handleModalButtonClicked(event) {
+		event.stopPropagation();
+
+		const {modal} = this.refs;
+		const {indexes} = this.state;
+
+		modal.emit('hide');
+
+		if (!event.target.classList.contains('close-modal')) {
+			this.emit(
+				'deleteField',
+				{...indexes}
+			);
+		}
+	}
 
 	/**
 	 * Continues the propagation of event.
@@ -136,6 +180,7 @@ class Builder extends Component {
 	 */
 
 	render() {
+		const {_handleModalButtonClicked, props} = this;
 		const {
 			fieldContext,
 			fieldsList,
@@ -143,11 +188,11 @@ class Builder extends Component {
 			mode,
 			pages,
 			spritemap
-		} = this.props;
-
+		} = props;
+		
 		const FormRendererEvents = {
 			activePageUpdated: this._handleActivePageUpdated.bind(this),
-			deleteButtonClicked: this._handleDeleteButtonClicked.bind(this),
+			deleteFieldClicked: this._handleDeleteFieldClicked.bind(this),
 			duplicateButtonClicked: this._handleDuplicateButtonClicked.bind(this),
 			fieldClicked: this._handleFieldClicked.bind(this),
 			fieldMoved: this._handleFieldMoved.bind(this),
@@ -171,6 +216,31 @@ class Builder extends Component {
 							pages={pages}
 							ref="FormRenderer"
 							spritemap={spritemap}
+						/>
+
+						<ClayModal
+							body={Liferay.Language.get('are-you-sure-you-want-to-delete-this-field')}
+							events={{
+								clickButton: _handleModalButtonClicked
+							}}
+							footerButtons={[
+								{
+									alignment: 'right',
+									label: Liferay.Language.get('dismiss'),
+									style: 'primary',
+									type: 'close'
+								},
+								{
+									alignment: 'right',
+									label: Liferay.Language.get('delete'),
+									style: 'primary',
+									type: 'button'
+								}
+							]}
+							ref="modal"
+							spritemap={spritemap}
+							size="sm"
+							title={Liferay.Language.get('delete-field-dialog-title')}
 						/>
 					</div>
 				</div>

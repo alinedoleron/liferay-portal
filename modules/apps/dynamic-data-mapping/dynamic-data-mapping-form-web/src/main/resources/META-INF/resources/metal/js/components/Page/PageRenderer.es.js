@@ -1,5 +1,4 @@
 import 'clay-button';
-import 'clay-modal';
 import {Config} from 'metal-state';
 import {dom} from 'metal-dom';
 import {pageStructure} from '../../util/config.es';
@@ -56,22 +55,6 @@ class PageRenderer extends Component {
 		 */
 
 		spritemap: Config.string().required(),
-
-		/**
-		 * @default []
-		 * @instance
-		 * @memberof FormRenderer
-		 * @type {?array<object>}
-		 */
-
-		strings: Config.object().value(
-			{
-				delete: Liferay.Language.get('delete'),
-				deleteFieldDialogQuestion: Liferay.Language.get('are-you-sure-you-want-to-delete-this-field'),
-				deleteFieldDialogTitle: Liferay.Language.get('delete-field-dialog-title'),
-				dismiss: Liferay.Language.get('dismiss')
-			}
-		),
 
 		/**
 		 * @default 1
@@ -208,37 +191,6 @@ class PageRenderer extends Component {
 	}
 
 	/**
-	 * @param {!Event} event
-	 * @private
-	 */
-
-	_handleDeleteButtonClicked(event) {
-		const {modal} = this.refs;
-		const index = FormSupport.getIndexes(
-			dom.closest(event.target, '.col-ddm')
-		);
-
-		event.stopPropagation();
-
-		modal.show();
-
-		modal.on(
-			'clickButton',
-			event => {
-				event.stopPropagation();
-				modal.emit('hide');
-
-				if (!event.target.classList.contains('close-modal')) {
-					this.emit(
-						'deleteButtonClicked',
-						{...index}
-					);
-				}
-			}
-		);
-	}
-
-	/**
      * @param {!Event} event
      * @private
      */
@@ -262,6 +214,22 @@ class PageRenderer extends Component {
 	 */
 
 	_handleOnClickResize() {}
+
+
+	/**
+	 * @param {!Event} event
+	 * @private
+	 */
+
+	_handleModal(event) {
+		event.stopPropagation();
+
+		const index = FormSupport.getIndexes(
+			dom.closest(event.target, '.col-ddm')
+		);
+
+		this.emit('deleteFieldClicked', index);
+	}
 
 	/**
 	 * @param {!Event} event

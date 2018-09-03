@@ -298,8 +298,8 @@ class FormRenderer extends Component {
 	 * @private
 	 */
 
-	_handleDeleteButtonClicked(data) {
-		this.emit('deleteButtonClicked', data);
+	_handleDeleteFieldClicked(data) {
+		this.emit('deleteFieldClicked', data);
 	}
 
 	/**

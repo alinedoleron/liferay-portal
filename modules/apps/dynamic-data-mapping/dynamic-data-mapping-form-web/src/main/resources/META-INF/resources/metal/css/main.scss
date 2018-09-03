@@ -349,6 +349,10 @@ textarea[class^="form-builder-page-header"] {
 	.modal {
 		display: none;
 		margin: inherit;
+	} 
+	
+	.modal-sm {
+		max-width: 300px;
 	}
 
 	.modal-dialog {

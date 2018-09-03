@@ -4,7 +4,7 @@
 	{@param spritemap: string}
 	{@param? _handleChangePage: any}
 	{@param? _handleSettingsPageClicked: any}
-	{@param? _handleDeleteButtonClicked: any}
+	{@param? _handleDeleteFieldClicked: any}
 	{@param? _handleDuplicateButtonClicked: any}
 	{@param? _handleUpdatePage: any}
 	{@param? activePage: number}
@@ -20,7 +20,7 @@
 	{delcall FormRenderer.pages variant="$contentRenderer"}
 		{param _handleChangePage: $_handleChangePage /}
 		{param _handleSettingsPageClicked: $_handleSettingsPageClicked /}
-		{param _handleDeleteButtonClicked: $_handleDeleteButtonClicked /}
+		{param _handleDeleteFieldClicked: $_handleDeleteFieldClicked /}
 		{param _handleDuplicateButtonClicked: $_handleDuplicateButtonClicked /}
 		{param _handleUpdatePage: $_handleUpdatePage /}
 		{param activePage: $activePage /}
@@ -38,7 +38,7 @@
 	{@param spritemap: string}
 	{@param? _handleChangePage: any}
 	{@param? _handleSettingsPageClicked: any}
-	{@param? _handleDeleteButtonClicked: any}
+	{@param? _handleDeleteFieldClicked: any}
 	{@param? _handleDuplicateButtonClicked: any}
 	{@param? _handleUpdatePage: any}
 	{@param? activePage: number}
@@ -68,7 +68,7 @@
 				{param contentRenderer: $contentRenderer /}
 				{param editable: $editable /}
 				{param events: [
-					'deleteButtonClicked': $_handleDeleteButtonClicked,
+					'deleteFieldClicked': $_handleDeleteFieldClicked,
 					'duplicateButtonClicked': $_handleDuplicateButtonClicked,
 					'updatePage': $_handleUpdatePage
 				] /}
@@ -164,7 +164,7 @@
 {deltemplate FormRenderer.pages variant="'list'"}
 	{@param spritemap: string}
 	{@param? _handleUpdatePage: any}
-	{@param? _handleDeleteButtonClicked: any}
+	{@param? _handleDeleteFieldClicked: any}
 	{@param? _handleDuplicateButtonClicked: any}
 	{@param? activePage: number}
 	{@param? contentRenderer: string}
@@ -178,7 +178,7 @@
 			{param contentRenderer: $contentRenderer /}
 			{param editable: $editable /}
 			{param events: [
-				'deleteButtonClicked': $_handleDeleteButtonClicked,
+				'deleteFieldClicked': $_handleDeleteFieldClicked,
 				'duplicateButtonClicked': $_handleDuplicateButtonClicked,
 				'updatePage': $_handleUpdatePage
 			] /}
