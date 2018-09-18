@@ -12,6 +12,41 @@ import RuleEditor from '../../components/RuleEditor/index.es';
 
 class RuleBuilder extends Component {
 	static PROPS = {
+		functionsMetadata: Config.object(
+			{
+				number: Config.arrayOf(
+					Config.shapeOf(
+						{
+							label: Config.string(),
+							name: Config.string(),
+							parameterTypes: Config.array(),
+							returnType: Config.string()
+						}
+					)
+				),
+				text: Config.arrayOf(
+					Config.shapeOf(
+						{
+							label: Config.string(),
+							name: Config.string(),
+							parameterTypes: Config.array(),
+							returnType: Config.string()
+						}
+					)
+				),
+				user: Config.arrayOf(
+					Config.shapeOf(
+						{
+							label: Config.string(),
+							name: Config.string(),
+							parameterTypes: Config.array(),
+							returnType: Config.string()
+						}
+					)
+				)
+			}
+		),
+
 		pages: Config.array().required(),
 
 		rules: Config.arrayOf(
@@ -68,7 +103,7 @@ class RuleBuilder extends Component {
 		 *
 		 */
 
-		mode: Config.oneOf(['view', 'edit']).value('view')
+		mode: Config.oneOf(['view', 'edit', 'create']).value('view')
 	};
 
 	/**
@@ -95,6 +130,14 @@ class RuleBuilder extends Component {
 		);
 	}
 
+	_showRuleCreation() {
+		this.setState(
+			{
+				mode: 'create'
+			}
+		);
+	}
+
 	/**
 	 * Show the rule screen to edit an existing rule. For now, this method does not receive the rule data for edition.
 	 * @param {!Event} event
@@ -112,7 +155,7 @@ class RuleBuilder extends Component {
 	 */
 
 	_handleAddRuleClick(event) {
-		this._showRuleEdition();
+		this._showRuleCreation();
 
 		this._hideAddRuleButton(event.delegateTarget);
 	}
@@ -162,7 +205,10 @@ class RuleBuilder extends Component {
 		let ruleScreen;
 
 		if (this.state.mode === 'edit') {
-			ruleScreen = <RuleEditor />;
+			ruleScreen = <RuleEditor pages={this.props.pages} rules={this.props.rules} spritemap={spritemap} />;
+		}
+		else if (this.state.mode === 'create') {
+			ruleScreen = <RuleEditor functionsMetadata={this.props.functionsMetadata} pages={this.props.pages} spritemap={spritemap} />;
 		}
 		else {
 			ruleScreen = <RuleList pages={this.props.pages} rules={this.props.rules} spritemap={spritemap} />;
