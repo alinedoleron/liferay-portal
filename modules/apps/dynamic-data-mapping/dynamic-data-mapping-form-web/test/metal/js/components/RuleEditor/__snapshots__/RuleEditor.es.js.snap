@@ -9,24 +9,14 @@ exports[`Regression LPS-85642 Should hide second operand and value when operator
       <div class="panel panel-default">
         <div class="flex-container panel-body">
           <div class="h4 panel-title">condition</div>
-          <div class="btn-group dropdown" style="">
-            <button class="btn btn-default dropdown-toggle dropdown-toggle-operator text-uppercase" data-toggle="dropdown" type="button" disabled="">
-              <span class="dropdown-toggle-selected-value">or</span>
-              <span class="caret"></span>
-            </button>
+          <div class="btn-group dropdown" style=""><button class="btn btn-default dropdown-toggle dropdown-toggle-operator text-uppercase" data-toggle="dropdown" type="button" disabled=""><span class="dropdown-toggle-selected-value">or</span> <span class="caret"></span></button>
             <ul class="dropdown-menu">
-              <li class="logic-operator text-uppercase" data-logical-operator-value="or">
-                <a href="#">or</a>
-              </li>
+              <li class="logic-operator text-uppercase" data-logical-operator-value="or"><a href="#">or</a></li>
               <li class="divider"></li>
-              <li class="logic-operator text-uppercase" data-logical-operator-value="and">
-                <a href="#">and</a>
-              </li>
+              <li class="logic-operator text-uppercase" data-logical-operator-value="and"><a href="#">and</a></li>
             </ul>
           </div>
-          <div class="timeline-increment">
-            <span class="timeline-icon"></span>
-          </div>
+          <div class="timeline-increment"><span class="timeline-icon"></span></div>
         </div>
       </div>
     </li>
@@ -35,11 +25,7 @@ exports[`Regression LPS-85642 Should hide second operand and value when operator
         <div class="flex-container panel-body">
           <div class="form-group-autofit">
             <div class="form-group-item form-group-item-label form-group-item-shrink">
-              <h4>
-                <span class="text-truncate-inline">
-                  <span class="text-truncate">if</span>
-                </span>
-              </h4>
+              <h4><span class="text-truncate-inline"><span class="text-truncate">if</span></span></h4>
             </div>
             <div class="condition-if form-group-item" condition-if-index="0">
               <div id="fields-rule">
@@ -67,9 +53,7 @@ exports[`Regression LPS-85642 Should hide second operand and value when operator
               </div>
             </div>
           </div>
-          <div class="timeline-increment">
-            <span class="timeline-icon"></span>
-          </div>
+          <div class="timeline-increment"><span class="timeline-icon"></span></div>
         </div>
       </div>
     </li>
@@ -86,24 +70,14 @@ exports[`Regression LPS-85644 Should clear first operand when field is removed f
       <div class="panel panel-default">
         <div class="flex-container panel-body">
           <div class="h4 panel-title">condition</div>
-          <div class="btn-group dropdown" style="">
-            <button class="btn btn-default dropdown-toggle dropdown-toggle-operator text-uppercase" data-toggle="dropdown" type="button" disabled="">
-              <span class="dropdown-toggle-selected-value">or</span>
-              <span class="caret"></span>
-            </button>
+          <div class="btn-group dropdown" style=""><button class="btn btn-default dropdown-toggle dropdown-toggle-operator text-uppercase" data-toggle="dropdown" type="button" disabled=""><span class="dropdown-toggle-selected-value">or</span> <span class="caret"></span></button>
             <ul class="dropdown-menu">
-              <li class="logic-operator text-uppercase" data-logical-operator-value="or">
-                <a href="#">or</a>
-              </li>
+              <li class="logic-operator text-uppercase" data-logical-operator-value="or"><a href="#">or</a></li>
               <li class="divider"></li>
-              <li class="logic-operator text-uppercase" data-logical-operator-value="and">
-                <a href="#">and</a>
-              </li>
+              <li class="logic-operator text-uppercase" data-logical-operator-value="and"><a href="#">and</a></li>
             </ul>
           </div>
-          <div class="timeline-increment">
-            <span class="timeline-icon"></span>
-          </div>
+          <div class="timeline-increment"><span class="timeline-icon"></span></div>
         </div>
       </div>
     </li>
@@ -112,11 +86,7 @@ exports[`Regression LPS-85644 Should clear first operand when field is removed f
         <div class="flex-container panel-body">
           <div class="form-group-autofit">
             <div class="form-group-item form-group-item-label form-group-item-shrink">
-              <h4>
-                <span class="text-truncate-inline">
-                  <span class="text-truncate">if</span>
-                </span>
-              </h4>
+              <h4><span class="text-truncate-inline"><span class="text-truncate">if</span></span></h4>
             </div>
             <div class="condition-if form-group-item" condition-if-index="0">
               <div id="fields-rule">
@@ -144,9 +114,7 @@ exports[`Regression LPS-85644 Should clear first operand when field is removed f
               </div>
             </div>
           </div>
-          <div class="timeline-increment">
-            <span class="timeline-icon"></span>
-          </div>
+          <div class="timeline-increment"><span class="timeline-icon"></span></div>
         </div>
       </div>
     </li>
@@ -163,24 +131,14 @@ exports[`RuleEditor should show all fields when fourth field is a select field 1
       <div class="panel panel-default">
         <div class="flex-container panel-body">
           <div class="h4 panel-title">condition</div>
-          <div class="btn-group dropdown" style="">
-            <button class="btn btn-default dropdown-toggle dropdown-toggle-operator text-uppercase" data-toggle="dropdown" type="button" disabled="">
-              <span class="dropdown-toggle-selected-value">or</span>
-              <span class="caret"></span>
-            </button>
+          <div class="btn-group dropdown" style=""><button class="btn btn-default dropdown-toggle dropdown-toggle-operator text-uppercase" data-toggle="dropdown" type="button" disabled=""><span class="dropdown-toggle-selected-value">or</span> <span class="caret"></span></button>
             <ul class="dropdown-menu">
-              <li class="logic-operator text-uppercase" data-logical-operator-value="or">
-                <a href="#">or</a>
-              </li>
+              <li class="logic-operator text-uppercase" data-logical-operator-value="or"><a href="#">or</a></li>
               <li class="divider"></li>
-              <li class="logic-operator text-uppercase" data-logical-operator-value="and">
-                <a href="#">and</a>
-              </li>
+              <li class="logic-operator text-uppercase" data-logical-operator-value="and"><a href="#">and</a></li>
             </ul>
           </div>
-          <div class="timeline-increment">
-            <span class="timeline-icon"></span>
-          </div>
+          <div class="timeline-increment"><span class="timeline-icon"></span></div>
         </div>
       </div>
     </li>
@@ -189,11 +147,7 @@ exports[`RuleEditor should show all fields when fourth field is a select field 1
         <div class="flex-container panel-body">
           <div class="form-group-autofit">
             <div class="form-group-item form-group-item-label form-group-item-shrink">
-              <h4>
-                <span class="text-truncate-inline">
-                  <span class="text-truncate">if</span>
-                </span>
-              </h4>
+              <h4><span class="text-truncate-inline"><span class="text-truncate">if</span></span></h4>
             </div>
             <div class="condition-if form-group-item" condition-if-index="0">
               <div id="fields-rule">
@@ -226,9 +180,7 @@ exports[`RuleEditor should show all fields when fourth field is a select field 1
               </div>
             </div>
           </div>
-          <div class="timeline-increment">
-            <span class="timeline-icon"></span>
-          </div>
+          <div class="timeline-increment"><span class="timeline-icon"></span></div>
         </div>
       </div>
     </li>
@@ -245,24 +197,14 @@ exports[`RuleEditor should show all fields when fourth field is a text input 1`]
       <div class="panel panel-default">
         <div class="flex-container panel-body">
           <div class="h4 panel-title">condition</div>
-          <div class="btn-group dropdown" style="">
-            <button class="btn btn-default dropdown-toggle dropdown-toggle-operator text-uppercase" data-toggle="dropdown" type="button" disabled="">
-              <span class="dropdown-toggle-selected-value">or</span>
-              <span class="caret"></span>
-            </button>
+          <div class="btn-group dropdown" style=""><button class="btn btn-default dropdown-toggle dropdown-toggle-operator text-uppercase" data-toggle="dropdown" type="button" disabled=""><span class="dropdown-toggle-selected-value">or</span> <span class="caret"></span></button>
             <ul class="dropdown-menu">
-              <li class="logic-operator text-uppercase" data-logical-operator-value="or">
-                <a href="#">or</a>
-              </li>
+              <li class="logic-operator text-uppercase" data-logical-operator-value="or"><a href="#">or</a></li>
               <li class="divider"></li>
-              <li class="logic-operator text-uppercase" data-logical-operator-value="and">
-                <a href="#">and</a>
-              </li>
+              <li class="logic-operator text-uppercase" data-logical-operator-value="and"><a href="#">and</a></li>
             </ul>
           </div>
-          <div class="timeline-increment">
-            <span class="timeline-icon"></span>
-          </div>
+          <div class="timeline-increment"><span class="timeline-icon"></span></div>
         </div>
       </div>
     </li>
@@ -271,11 +213,7 @@ exports[`RuleEditor should show all fields when fourth field is a text input 1`]
         <div class="flex-container panel-body">
           <div class="form-group-autofit">
             <div class="form-group-item form-group-item-label form-group-item-shrink">
-              <h4>
-                <span class="text-truncate-inline">
-                  <span class="text-truncate">if</span>
-                </span>
-              </h4>
+              <h4><span class="text-truncate-inline"><span class="text-truncate">if</span></span></h4>
             </div>
             <div class="condition-if form-group-item" condition-if-index="0">
               <div id="fields-rule">
@@ -308,9 +246,7 @@ exports[`RuleEditor should show all fields when fourth field is a text input 1`]
               </div>
             </div>
           </div>
-          <div class="timeline-increment">
-            <span class="timeline-icon"></span>
-          </div>
+          <div class="timeline-increment"><span class="timeline-icon"></span></div>
         </div>
       </div>
     </li>

@@ -68,12 +68,12 @@ exports[`Options should render items 1`] = `
   <label></label>
   <div class="field-options">
     <div class="form-group">
-      <label></label>
+      <label class="ddm-empty"></label>
       <input class="form-control" name="name" type="text" disabled="disabled" value="label">
       <span class="form-text"></span>
     </div>
     <div class="form-group">
-      <label></label>
+      <label class="ddm-empty"></label>
       <input class="form-control" name="name" type="text" disabled="disabled" value="">
       <span class="form-text"></span>
     </div>

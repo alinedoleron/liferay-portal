@@ -2,7 +2,7 @@
 
 exports[`FieldBase should not render the label if showLabel is false 1`] = `
 <div class="form-group">
-  <label></label>
+  <label class="ddm-empty"></label>
   <span class="form-text"></span>
 </div>
 `;

@@ -8,7 +8,35 @@ export default [
 							{
 								label: 'Radio',
 								settingsContext: {
-									pages: []
+									pages: [{
+										rows: [{
+											columns: [{
+												fields: [
+													{
+														fieldName: 'label',
+														localizable: true,
+														settingsContext: {
+															pages: [{
+																rows: [{
+																	columns: []
+																}]
+															}]
+														}
+													},
+													{
+														fieldName: 'name'
+													},
+													{
+														fieldName: 'required'
+													},
+													{
+														fieldName: 'type'
+													}
+												],
+												size: 12
+											}]
+										}]
+									}]
 								},
 								type: 'radio'
 							}
