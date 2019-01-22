@@ -42,13 +42,9 @@ class Options extends Component {
 		items: Config.arrayOf(
 			Config.shapeOf(
 				{
-					checked: Config.bool().value(false),
 					disabled: Config.bool().value(false),
-					id: Config.string(),
-					inline: Config.bool().value(false),
 					label: Config.string(),
 					name: Config.string(),
-					showLabel: Config.bool().value(true),
 					value: Config.string()
 				}
 			)
@@ -119,8 +115,14 @@ class Options extends Component {
 		 * @type {?(string|undefined)}
 		 */
 
-		type: Config.string().value('options')
+		type: Config.string().value('options'),
+
+		visible: Config.bool().setter('_setVisible')
 	};
+
+	_setVisible() {
+		return true;
+	}
 
 	_getFieldIndex(element) {
 		return Array.prototype.indexOf.call(
@@ -157,6 +159,18 @@ class Options extends Component {
 				value: this.items
 			}
 		);
+	}
+
+	prepareStateForRender(state){
+		const items = state.value['en_US'].map(item => ({
+			...item,
+			name: 'option' + Date.now()
+		}));
+
+		return {
+			...state,
+			items
+		}
 	}
 }
 
