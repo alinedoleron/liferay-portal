@@ -231,11 +231,17 @@ class Sidebar extends Component {
 			...settingsContext,
 			pages: visitor.mapFields(
 				field => {
+					const newField = field;
+					const numericHasPredefinedValue = field.fieldName == 'dataType' && field.predefinedValue == 'integer';
+					const searchableHasPredefinedValue = field.fieldName == 'indexType' && field.predefinedValue == 'keyword';
+					newField.defaultLanguageId = defaultLanguageId;
+					newField.editingLanguageId = editingLanguageId;
+					newField.readOnly = this.isFieldReadOnly(field);
+					if (numericHasPredefinedValue || searchableHasPredefinedValue) {
+						newField.predefinedValue = '';
+					}
 					return {
-						...field,
-						defaultLanguageId,
-						editingLanguageId,
-						readOnly: this.isFieldReadOnly(field)
+						field: newField
 					};
 				}
 			)
