@@ -6,7 +6,9 @@ import Component from 'metal-component';
 import Soy from 'metal-soy';
 import templates from './KeyValue.soy.js';
 import {Config} from 'metal-state';
-import {normalizeFieldName} from 'dynamic-data-mapping-form-builder/js/components/LayoutProvider/util/fields.es';
+import {
+	normalizeFieldName
+} from 'dynamic-data-mapping-form-renderer/js/metal/util/fields.es';
 
 /**
  * KeyValue.

@@ -8,7 +8,9 @@ import Soy from 'metal-soy';
 import templates from './Options.soy.js';
 import {Config} from 'metal-state';
 import {Drag, DragDrop} from 'metal-drag-drop';
-import {normalizeFieldName} from 'dynamic-data-mapping-form-builder/js/components/LayoutProvider/util/fields.es';
+import {
+	normalizeFieldName
+} from 'dynamic-data-mapping-form-renderer/js/metal/util/fields.es';
 
 /**
  * Options.
