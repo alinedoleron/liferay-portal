@@ -444,7 +444,7 @@ class LayoutProvider extends Component {
 	}
 
 	_handlePaginationNextClicked() {
-		const {activePage, pages} = this;
+		const {activePage, pages} = this.state;
 
 		handlePaginationNextClicked(
 			{
@@ -456,7 +456,7 @@ class LayoutProvider extends Component {
 	}
 
 	_handlePaginationPreviousClicked() {
-		const {activePage} = this;
+		const {activePage} = this.state;
 
 		handlePaginationPreviousClicked({activePage}, this.dispatch.bind(this));
 	}
