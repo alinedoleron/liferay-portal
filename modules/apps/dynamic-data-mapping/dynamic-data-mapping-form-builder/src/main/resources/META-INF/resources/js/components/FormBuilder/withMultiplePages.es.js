@@ -14,7 +14,7 @@ import {setValue} from '../../util/i18n.es';
 const withMultiplePages = ChildComponent => {
 	class MultiplePages extends Component {
 		getPages() {
-			let {pages} = this.props;
+			let {pages, paginationMode} = this.props;
 			const {successPageSettings} = this.props;
 
 			if (successPageSettings.enabled) {
@@ -22,7 +22,7 @@ const withMultiplePages = ChildComponent => {
 					...pages,
 					{
 						contentRenderer: 'success',
-						paginationItemRenderer: 'success',
+						paginationItemRenderer: `${paginationMode}_success`,
 						rows: [],
 						successPageSettings
 					}
