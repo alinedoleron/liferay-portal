@@ -37,7 +37,6 @@ class RuleList extends Component {
 	}
 
 	prepareStateForRender(states) {
-		const {pages} = this;
 		const rules = this._setDataProviderNames(states);
 
 		return {
@@ -177,6 +176,26 @@ class RuleList extends Component {
 		const pages = this.pages;
 
 		return getFieldProperty(pages, fieldName, 'type');
+	}
+
+	_getJumpToPageLabel(rule, action) {
+		const {pages} = this;
+		let pageLabel = '';
+
+		const fieldTarget = (parseInt(action.target, 10) + 1).toString();
+		const maxPageIndexRes = maxPageIndex(rule.conditions, pages);
+		const pageOptionsList = pageOptions(pages, maxPageIndexRes);
+		const selectedPage = pageOptionsList.find(
+			option => {
+				return option.value == fieldTarget;
+			}
+		);
+
+		if (selectedPage) {
+			pageLabel = selectedPage.label;
+		}
+
+		return pageLabel;
 	}
 
 	_getOperandLabel(operands, index) {
