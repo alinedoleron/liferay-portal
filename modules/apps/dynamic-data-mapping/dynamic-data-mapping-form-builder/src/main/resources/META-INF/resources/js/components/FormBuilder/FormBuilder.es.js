@@ -100,9 +100,7 @@ class FormBuilderBase extends Component {
 					...field,
 					options: [
 						{
-							label: Liferay.Language.get(
-								'dynamically-loaded-data'
-							),
+							label: Liferay.Language.get('dynamically-loaded-data'),
 							value: 'dynamic'
 						}
 					],
@@ -110,7 +108,10 @@ class FormBuilderBase extends Component {
 				};
 			}
 
-			return field;
+			return {
+				...field,
+				readOnly: true
+			};
 		});
 	}
 
