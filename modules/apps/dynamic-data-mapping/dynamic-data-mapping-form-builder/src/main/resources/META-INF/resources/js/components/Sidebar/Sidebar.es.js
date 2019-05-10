@@ -25,7 +25,6 @@ const FormWithEvaluator = WithEvaluator(FormRenderer);
  */
 
 class Sidebar extends Component {
-
 	attached() {
 		this._bindDragAndDrop();
 

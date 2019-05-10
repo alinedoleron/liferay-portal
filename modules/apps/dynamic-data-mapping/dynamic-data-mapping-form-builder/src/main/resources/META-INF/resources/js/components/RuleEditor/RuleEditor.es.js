@@ -37,7 +37,6 @@ const fieldOptionStructure = Config.shapeOf(
  */
 
 class RuleEditor extends Component {
-
 	convertAutoFillDataToArray(action, type) {
 		const data = action[type];
 		const originalData = action[`${type}Data`];
