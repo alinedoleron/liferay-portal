@@ -245,30 +245,10 @@ class Form extends Component {
 		return (
 			<div class={'ddm-form-builder'}>
 				<LayoutProviderTag {...layoutProviderProps}>
-<<<<<<< HEAD
 					{this.isFormBuilderView() && (
 						<RuleBuilder
 							dataProviderInstanceParameterSettingsURL={this.props.dataProviderInstanceParameterSettingsURL}
 							dataProviderInstancesURL={this.props.dataProviderInstancesURL}
-=======
-					<RuleBuilder
-						dataProviderInstanceParameterSettingsURL={this.props.dataProviderInstanceParameterSettingsURL}
-						dataProviderInstancesURL={this.props.dataProviderInstancesURL}
-						fieldTypes={fieldTypes}
-						functionsMetadata={this.props.functionsMetadata}
-						functionsURL={this.props.functionsURL}
-						pages={context.pages}
-						rolesURL={this.props.rolesURL}
-						rules={this.props.rules}
-						spritemap={spritemap}
-						visible={this.isShowRuleBuilder()}
-					/>
-
-					{!this.isShowRuleBuilder() && (
-						<FormBuilder
-							fieldSetDefinitionURL={fieldSetDefinitionURL}
-							fieldSets={fieldSets}
->>>>>>> LPS-92739 Adds class assignment to fix compilation issue with incremental dom plugin
 							fieldTypes={fieldTypes}
 							functionsMetadata={this.props.functionsMetadata}
 							functionsURL={this.props.functionsURL}
@@ -279,7 +259,6 @@ class Form extends Component {
 							visible={this.isShowRuleBuilder()}
 						/>
 					)}
-<<<<<<< HEAD
 
 					<ComposedFormBuilder
 						fieldSetDefinitionURL={fieldSetDefinitionURL}
@@ -293,8 +272,6 @@ class Form extends Component {
 						view={view}
 						visible={!this.isShowRuleBuilder()}
 					/>
-=======
->>>>>>> LPS-92739 Adds class assignment to fix compilation issue with incremental dom plugin
 				</LayoutProviderTag>
 
 				<div class="container-fluid-1280">
