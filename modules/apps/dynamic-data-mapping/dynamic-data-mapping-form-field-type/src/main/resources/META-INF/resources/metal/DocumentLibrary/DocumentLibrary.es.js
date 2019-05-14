@@ -18,6 +18,15 @@ DocumentLibrary.STATE = {
 	dataType: Config.string().value('date'),
 
 	/**
+	 * @default false
+	 * @instance
+	 * @memberof DocumentLibrary
+	 * @type {?bool}
+	 */
+
+	evaluable: Config.bool().value(false),
+
+	/**
 	 * @default undefined
 	 * @instance
 	 * @memberof DocumentLibrary

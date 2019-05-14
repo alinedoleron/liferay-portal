@@ -419,12 +419,21 @@ DatePicker.STATE = {
 	elementClasses: Config.string(),
 
 	/**
-	 * Flag to indicate if date is expanded.
 	 * @default false
 	 * @instance
 	 * @memberof DatePicker
 	 * @type {?bool}
 	 */
+
+	evaluable: Config.bool().value(false),
+
+	/**
+	* Flag to indicate if date is expanded.
+	* @default false
+	* @instance
+	* @memberof DatePicker
+	* @type {?bool}
+	*/
 
 	expanded: Config.bool()
 		.internal()

@@ -201,7 +201,7 @@ class Options extends Component {
 		return {
 			...state,
 			items: this.getItems(value[editingLanguageId])
-		}
+		};
 	}
 
 	shouldGenerateOptionValue(option) {
