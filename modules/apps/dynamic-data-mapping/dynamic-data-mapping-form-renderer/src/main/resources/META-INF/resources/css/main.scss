@@ -1,7 +1,8 @@
 @import 'bourbon';
 @import 'utilities';
 
-@import 'field-type-checkbox-switch';
+@import "date-picker";
+@import "field-type-checkbox-switch";
 
 %flex-space-between {
 	align-items: center;
