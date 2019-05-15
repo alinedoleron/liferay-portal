@@ -295,10 +295,8 @@ class Form extends Component {
 			this._createEditor('descriptionEditor')
 		];
 
-		if (this.isFormBuilderView()) {
-			dependencies.push(this._getSettingsDDMForm());
-			dependencies.push(this._getTranslationManager());
-		}
+		dependencies.push(this._getSettingsDDMForm());
+		dependencies.push(this._getTranslationManager());
 
 		Promise.all(dependencies).then(
 			results => {
