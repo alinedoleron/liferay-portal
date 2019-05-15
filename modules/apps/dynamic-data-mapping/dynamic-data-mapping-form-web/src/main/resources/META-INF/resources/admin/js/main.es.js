@@ -477,6 +477,19 @@ class Form extends Component {
 		};
 		const {saveButtonLabel} = this.state;
 
+		const composeList = [
+			withActionableFields,
+			withMoveableFields,
+			withMultiplePages,
+			withResizeableColumns
+		];
+
+		if (this.isFormBuilderView()) {
+			composeList.push(withEditablePageHeader);
+		}
+
+		const FormBuilder = compose(...composeList)(FormBuilderBase);
+
 		return (
 			<div class={'ddm-form-builder'}>
 				<LayoutProvider {...layoutProviderProps}>
