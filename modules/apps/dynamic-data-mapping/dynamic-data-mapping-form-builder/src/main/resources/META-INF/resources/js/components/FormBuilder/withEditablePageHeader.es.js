@@ -1,5 +1,5 @@
 import './EditablePageHeader.soy.js';
-import Component, {Fragment} from 'metal-jsx';
+import Component from 'metal-jsx';
 import {Config} from 'metal-state';
 import {EventHandler} from 'metal-events';
 import {focusedFieldStructure, pageStructure, ruleStructure} from '../../util/config.es';
