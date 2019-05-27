@@ -283,6 +283,7 @@ class Sidebar extends Component {
 	_bindDragAndDrop() {
 		this._dragAndDrop = new DragDrop(
 			{
+				container: document.body,
 				dragPlaceholder: Drag.Placeholder.CLONE,
 				sources: '.ddm-drag-item',
 				targets: '.ddm-target',
