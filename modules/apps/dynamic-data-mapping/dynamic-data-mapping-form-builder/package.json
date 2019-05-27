@@ -69,10 +69,6 @@
 			"metal-jest-serializer"
 		],
 		"testPathIgnorePatterns": [
-			"fieldEditedHandler",
-			"fieldSetAddedHandler",
-			"focusedField",
-			"Calculator",
 			"Evaluator",
 			"FormBuilder",
 			"FormRenderer",
@@ -80,9 +76,7 @@
 			"PageRenderer",
 			"RuleBuilder",
 			"RuleEditor",
-			"RuleList",
-			"Sidebar",
-			"SuccessPage"
+			"Sidebar"
 		]
 	},
 	"name": "dynamic-data-mapping-form-builder",
@@ -90,7 +84,7 @@
 		"build": "liferay-npm-scripts build",
 		"checkFormat": "liferay-npm-scripts lint",
 		"format": "liferay-npm-scripts format",
-		"test": "liferay-npm-scripts test"
+		"test": "NODE_ENV=test metalsoy -s \"test/**/*.soy\" -d \"test\" && cross-env NODE_ENV=test liferay-npm-scripts test"
 	},
 	"version": "3.0.0"
 }
