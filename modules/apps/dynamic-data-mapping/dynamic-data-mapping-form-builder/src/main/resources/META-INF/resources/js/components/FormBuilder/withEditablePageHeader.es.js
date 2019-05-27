@@ -41,9 +41,9 @@ const withEditablePageHeader = ChildComponent => {
 
 		render() {
 			return (
-				<Fragment>
+				<div>
 					<ChildComponent {...this.props} pages={this.getPages()} />
-				</Fragment>
+				</div>
 			);
 		}
 
