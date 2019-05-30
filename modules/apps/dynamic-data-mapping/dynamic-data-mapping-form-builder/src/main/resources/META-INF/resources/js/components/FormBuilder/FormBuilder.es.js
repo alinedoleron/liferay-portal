@@ -39,20 +39,20 @@ class FormBuilderBase extends Component {
 			this.openSidebar();
 		}
 
-		this._eventHandler.add(
+		this._eventHandlers.add(
 			store.on('fieldDuplicated', () => this.openSidebar())
 		);
 	}
 
 	created() {
-		this._eventHandler = new EventHandler();
+		this._eventHandlers = new EventHandler();
 		this._handleCancelChangesModalButtonClicked = this._handleCancelChangesModalButtonClicked.bind(this);
 	}
 
 	disposeInternal() {
 		super.disposeInternal();
 
-		this._eventHandler.removeAllListeners();
+		this._eventHandlers.removeAllListeners();
 	}
 
 	getFormRendererEvents() {
@@ -208,12 +208,12 @@ class FormBuilderBase extends Component {
 			addButton.classList.remove('hide');
 			translationManager.classList.remove('hide');
 
-			this._eventHandler.add(
+			this._eventHandlers.add(
 				dom.on('#addFieldButton', 'click', this._handleAddFieldButtonClicked.bind(this))
 			);
 		}
 		else {
-			this._eventHandler.removeAllListeners();
+			this._eventHandlers.removeAllListeners();
 		}
 	}
 

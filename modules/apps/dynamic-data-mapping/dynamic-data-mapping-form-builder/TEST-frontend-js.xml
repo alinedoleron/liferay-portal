@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite hostname="" id="0" errors="0" failures="1" name="Jest" package="dynamic-data-mapping.dynamic-data-mapping-form-builder" skipped="0" tests="47" time="0" timestamp="1559234086181">
+  <testcase classname="dynamic-data-mapping.dynamic-data-mapping-form-builder.test.metal.js.components.Form" name="FormSupport add a new row to the pages and reorder" time="0.013">
+  </testcase>
+  <testcase classname="dynamic-data-mapping.dynamic-data-mapping-form-builder.test.metal.js.components.Form" name="FormSupport should return an implementation of a row for the pages" time="0.003">
+  </testcase>
+  <testcase classname="dynamic-data-mapping.dynamic-data-mapping-form-builder.test.metal.js.components.Form" name="FormSupport should get a specific field through the pages" time="0.001">
+  </testcase>
+  <testcase classname="dynamic-data-mapping.dynamic-data-mapping-form-builder.test.metal.js.components.Form" name="FormSupport add a new field to column to the pages" time="0.003">
+  </testcase>
+  <testcase classname="dynamic-data-mapping.dynamic-data-mapping-form-builder.test.metal.js.components.Form" name="FormSupport should add a new fields to column void" time="0.002">
+  </testcase>
+  <testcase classname="dynamic-data-mapping.dynamic-data-mapping-form-builder.test.metal.js.components.Form" name="FormSupport should remove a column from pages and reorder" time="0.002">
+  </testcase>
+  <testcase classname="dynamic-data-mapping.dynamic-data-mapping-form-builder.test.metal.js.components.Form" name="FormSupport should remove a fields to column from pages" time="0.003">
+  </testcase>
+  <testcase classname="dynamic-data-mapping.dynamic-data-mapping-form-builder.test.metal.js.components.Form" name="FormSupport should remove a row from pages and reorder" time="0.002">
+  </testcase>
+  <testcase classname="dynamic-data-mapping.dynamic-data-mapping-form-builder.test.metal.js.components.Form" name="FormSupport should get a column from pages" time="0.001">
+  </testcase>
+  <testcase classname="dynamic-data-mapping.dynamic-data-mapping-form-builder.test.metal.js.components.Form" name="FormSupport should get a row from pages" time="0.002">
+  </testcase>
+  <testcase classname="dynamic-data-mapping.dynamic-data-mapping-form-builder.test.metal.js.components.Form" name="FormSupport should return true if there are fields in a row" time="0.001">
+  </testcase>
+  <testcase classname="dynamic-data-mapping.dynamic-data-mapping-form-builder.test.metal.js.components.Form" name="FormSupport should return false if there are fields in a row" time="0.001">
+  </testcase>
+  <testcase classname="dynamic-data-mapping.dynamic-data-mapping-form-builder.test.metal.js.components.Form" name="FormSupport should extract the location of the field through the element" time="0.004">
+  </testcase>
+  <testcase classname="dynamic-data-mapping.dynamic-data-mapping-form-builder.test.metal.js.components.Form" name="FormSupport should extract the location of the row through the element" time="0.001">
+  </testcase>
+  <testcase classname="dynamic-data-mapping.dynamic-data-mapping-form-builder.test.metal.js.components.Form" name="FormSupport should update a field" time="0.015">
+  </testcase>
+  <testcase classname="dynamic-data-mapping.dynamic-data-mapping-form-builder.test.metal.js.util" name="PagesVisitor should not multate the fields of the original array" time="0.002">
+  </testcase>
+  <testcase classname="dynamic-data-mapping.dynamic-data-mapping-form-builder.test.metal.js.util" name="PagesVisitor should be able to change pages" time="0.004">
+  </testcase>
+  <testcase classname="dynamic-data-mapping.dynamic-data-mapping-form-builder.test.metal.js.util" name="PagesVisitor should be able to change rows" time="0.001">
+  </testcase>
+  <testcase classname="dynamic-data-mapping.dynamic-data-mapping-form-builder.test.metal.js.util" name="PagesVisitor should be able to change columns" time="0.003">
+  </testcase>
+  <testcase classname="dynamic-data-mapping.dynamic-data-mapping-form-builder.test.metal.js.util" name="PagesVisitor should be able to change fields" time="0.002">
+  </testcase>
+  <testcase classname="dynamic-data-mapping.dynamic-data-mapping-form-builder.test.metal.js.util" name="Internationlization should create a localized property for a specific object string value" time="0.003">
+  </testcase>
+  <testcase classname="dynamic-data-mapping.dynamic-data-mapping-form-builder.test.metal.js.util" name="Internationlization should replace a localized value for a specific object string" time="0">
+  </testcase>
+  <testcase classname="dynamic-data-mapping.dynamic-data-mapping-form-builder.test.metal.js.expressions" name="Tokenizer should tokenize single digit expressions" time="0.003">
+  </testcase>
+  <testcase classname="dynamic-data-mapping.dynamic-data-mapping-form-builder.test.metal.js.expressions" name="Tokenizer should tokenize multiple digit expressions" time="0.001">
+  </testcase>
+  <testcase classname="dynamic-data-mapping.dynamic-data-mapping-form-builder.test.metal.js.expressions" name="Tokenizer should tokenize floating point expressions" time="0.001">
+  </testcase>
+  <testcase classname="dynamic-data-mapping.dynamic-data-mapping-form-builder.test.metal.js.expressions" name="Tokenizer should tokenize multiple letter variables" time="0.001">
+  </testcase>
+  <testcase classname="dynamic-data-mapping.dynamic-data-mapping-form-builder.test.metal.js.expressions" name="Tokenizer should tokenize expressions with functions" time="0.001">
+  </testcase>
+  <testcase classname="dynamic-data-mapping.dynamic-data-mapping-form-builder.test.metal.js.util" name="DOM Utilities isModifyingKey identity modifying keys" time="0.002">
+  </testcase>
+  <testcase classname="dynamic-data-mapping.dynamic-data-mapping-form-builder.test.metal.js.components.FormBuilderWithMoveableFields" name="FormBuilderWithMoveableFields should render moveable fields" time="0.258">
+  </testcase>
+  <testcase classname="dynamic-data-mapping.dynamic-data-mapping-form-builder.test.metal.js.components.FormBuilderWithMoveableFields" name="FormBuilderWithMoveableFields should move fields from source to target" time="0.077">
+    <failure message="TypeError: component.refs.moveable._dragAndDrop._handleDragAndDropEnd is not a function">TypeError: component.refs.moveable._dragAndDrop._handleDragAndDropEnd is not a function
+    at Object._handleDragAndDropEnd (dynamic-data-mapping/dynamic-data-mapping-form-builder/test/metal/js/components/FormBuilderWithMoveableFields/FormBuilderWithMoveableFields.es.js:163:54)
+    at Object.asyncJestTest (/Users/aline/workspace/liferay-portal/modules/node_modules/jest-jasmine2/build/jasmineAsyncInstall.js:102:37)
+    at resolve (/Users/aline/workspace/liferay-portal/modules/node_modules/jest-jasmine2/build/queueRunner.js:43:12)
+    at new Promise (&lt;anonymous&gt;)
+    at mapper (/Users/aline/workspace/liferay-portal/modules/node_modules/jest-jasmine2/build/queueRunner.js:26:19)
+    at promise.then (/Users/aline/workspace/liferay-portal/modules/node_modules/jest-jasmine2/build/queueRunner.js:73:41)
+    at process._tickCallback (internal/process/next_tick.js:68:7)</failure>
+  </testcase>
+  <testcase classname="dynamic-data-mapping.dynamic-data-mapping-form-builder.test.metal.js.components.FormBuilderWithEditablePageHeader" name="FormBuilderWithEditablePageHeader should render the page header" time="0.193">
+  </testcase>
+  <testcase classname="dynamic-data-mapping.dynamic-data-mapping-form-builder.test.metal.js.components.FormBuilderWithEditablePageHeader" name="FormBuilderWithEditablePageHeader should change the page description" time="0.079">
+  </testcase>
+  <testcase classname="dynamic-data-mapping.dynamic-data-mapping-form-builder.test.metal.js.components.FormBuilderWithEditablePageHeader" name="FormBuilderWithEditablePageHeader should change the page title" time="0.056">
+  </testcase>
+  <testcase classname="dynamic-data-mapping.dynamic-data-mapping-form-builder.test.metal.js.components.FormBuilderWithResizeableColumns" name="FormBuilderWithResizeableColumns should render the pages with resizeble fields" time="0.212">
+  </testcase>
+  <testcase classname="dynamic-data-mapping.dynamic-data-mapping-form-builder.test.metal.js.components.FormBuilderWithResizeableColumns" name="FormBuilderWithResizeableColumns should handle resize drag" time="0.077">
+  </testcase>
+  <testcase classname="dynamic-data-mapping.dynamic-data-mapping-form-builder.test.metal.js.components.FormBuilderWithActionableFields" name="FormBuilderWithActionableFields should render actions" time="0.24">
+  </testcase>
+  <testcase classname="dynamic-data-mapping.dynamic-data-mapping-form-builder.test.metal.js.components.FormBuilderWithActionableFields" name="FormBuilderWithActionableFields should duplicate a field when duplicate button is clicked" time="0.113">
+  </testcase>
+  <testcase classname="dynamic-data-mapping.dynamic-data-mapping-form-builder.test.metal.js.components.FormBuilderWithActionableFields" name="FormBuilderWithActionableFields should show delete modal when delete button is clicked" time="0.13">
+  </testcase>
+  <testcase classname="dynamic-data-mapping.dynamic-data-mapping-form-builder.test.metal.js.components.FormBuilder" name="Builder should render the default markup" time="0.178">
+  </testcase>
+  <testcase classname="dynamic-data-mapping.dynamic-data-mapping-form-builder.test.metal.js.components.FormBuilder" name="Builder should open the sidebar when attached and there are no fields on the active page" time="0.099">
+  </testcase>
+  <testcase classname="dynamic-data-mapping.dynamic-data-mapping-form-builder.test.metal.js.components.FormBuilder" name="Builder should open the sidebar when a field is clicked" time="0.101">
+  </testcase>
+  <testcase classname="dynamic-data-mapping.dynamic-data-mapping-form-builder.test.metal.js.components.FormBuilderWithMultiplePages" name="FormBuilderWithMultiplePages should render the page header" time="0.2">
+  </testcase>
+  <testcase classname="dynamic-data-mapping.dynamic-data-mapping-form-builder.test.metal.js.components.FormBuilderWithMultiplePages" name="FormBuilderWithMultiplePages should add success page" time="0.079">
+  </testcase>
+  <testcase classname="dynamic-data-mapping.dynamic-data-mapping-form-builder.test.metal.js.components.FormBuilderWithMultiplePages" name="FormBuilderWithMultiplePages should delete success page" time="0.072">
+  </testcase>
+  <testcase classname="dynamic-data-mapping.dynamic-data-mapping-form-builder.test.metal.js.components.FormBuilderWithMultiplePages" name="FormBuilderWithMultiplePages should delete page" time="0.06">
+  </testcase>
+  <testcase classname="dynamic-data-mapping.dynamic-data-mapping-form-builder.test.metal.js.components.FormBuilderWithMultiplePages" name="FormBuilderWithMultiplePages should reset page" time="0.053">
+  </testcase>
+  <testcase classname="dynamic-data-mapping.dynamic-data-mapping-form-builder.test.metal.js.components.FormBuilderWithMultiplePages" name="FormBuilderWithMultiplePages should switch the pagination mode" time="0.047">
+  </testcase>
+</testsuite>

@@ -3,6 +3,7 @@
 exports[`FormSupport add a new field to column to the pages 1`] = `
 Array [
   Object {
+    "description": "Add a short description to this page",
     "rows": Array [
       Object {
         "columns": Array [
@@ -178,6 +179,7 @@ Array [
 exports[`FormSupport add a new row to the pages and reorder 1`] = `
 Array [
   Object {
+    "description": "Add a short description to this page",
     "rows": Array [
       Object {
         "columns": Array [
@@ -360,6 +362,7 @@ Array [
 exports[`FormSupport should add a new fields to column void 1`] = `
 Array [
   Object {
+    "description": "Add a short description to this page",
     "rows": Array [
       Object {
         "columns": Array [
@@ -679,6 +682,7 @@ Object {
 exports[`FormSupport should remove a column from pages and reorder 1`] = `
 Array [
   Object {
+    "description": "Add a short description to this page",
     "rows": Array [
       Object {
         "columns": Array [
@@ -825,6 +829,7 @@ Array [
 exports[`FormSupport should remove a fields to column from pages 1`] = `
 Array [
   Object {
+    "description": "Add a short description to this page",
     "rows": Array [
       Object {
         "columns": Array [
@@ -975,6 +980,7 @@ Array [
 exports[`FormSupport should remove a row from pages and reorder 1`] = `
 Array [
   Object {
+    "description": "Add a short description to this page",
     "rows": Array [
       Object {
         "columns": Array [
@@ -1090,6 +1096,7 @@ Array [
 exports[`FormSupport should update a field 1`] = `
 Array [
   Object {
+    "description": "Add a short description to this page",
     "rows": Array [
       Object {
         "columns": Array [

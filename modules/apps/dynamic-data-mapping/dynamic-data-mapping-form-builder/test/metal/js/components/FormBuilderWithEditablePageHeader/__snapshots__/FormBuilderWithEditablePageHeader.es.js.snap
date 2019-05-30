@@ -1,15 +1,13 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Builder should render the default markup 1`] = `
+exports[`FormBuilderWithEditablePageHeader should render the page header 1`] = `
 <div>
   <div class="container ddm-form-builder">
     <div class="sheet">
       <div class="position-relative">
         <div class="ddm-form-pagination position-absolute"></div>
         <div class="ddm-layout-builder ddm-page-container-layout">
-          <div class="ddm-form-page pl-4 pr-4">
-            <h3 class="lfr-ddm-form-page-title">Untitled name</h3>
-            <h4 class="lfr-ddm-form-page-description">Add a short description to this page</h4>
+          <div class="ddm-form-page pl-4 pr-4"><textarea class="form-builder-page-header-title form-control p-0" maxlength="120" placeholder="untitled-page-x-of-x" value="Untitled name">Untitled name</textarea><textarea class="form-builder-page-header-description form-control p-0" maxlength="120" placeholder="add-a-short-description-for-this-page" value="Add a short description to this page">Add a short description to this page</textarea>
             <div class="form-builder-layout">
               <div class="layout-page">
                 <div class="row">

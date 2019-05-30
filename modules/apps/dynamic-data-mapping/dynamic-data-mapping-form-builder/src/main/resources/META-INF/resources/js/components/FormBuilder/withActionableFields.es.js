@@ -21,6 +21,7 @@ class Actions extends Component {
 					icon="paste"
 					monospaced={true}
 					size="sm"
+					ref="duplicate"
 					spritemap={spritemap}
 					style="secondary"
 				/>
@@ -31,6 +32,7 @@ class Actions extends Component {
 						click: this._handleDeleteButtonClicked.bind(this)
 					}}
 					icon="trash"
+					ref="delete"
 					monospaced={true}
 					size="sm"
 					spritemap={spritemap}
@@ -126,7 +128,6 @@ const withActionableFields = ChildComponent => {
 					{this.isActionsEnabled() && (
 						<Actions
 							events={this.getEvents()}
-							portalElement={this.element}
 							ref="actions"
 							spritemap={spritemap}
 						/>
@@ -146,6 +147,8 @@ const withActionableFields = ChildComponent => {
 			const {target} = event;
 			const {deleteModal} = this.refs;
 			const {indexes} = this.state;
+
+			console.log('**** entrou **** ');
 
 			event.stopPropagation();
 

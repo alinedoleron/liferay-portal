@@ -68,7 +68,6 @@ const withEditablePageHeader = ChildComponent => {
 								}
 							};
 						}
-
 						return page;
 					}
 				)

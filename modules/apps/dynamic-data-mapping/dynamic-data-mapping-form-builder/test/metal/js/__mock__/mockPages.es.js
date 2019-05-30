@@ -1,5 +1,6 @@
 export default [
 	{
+		description: 'Add a short description to this page',
 		rows: [
 			{
 				columns: [

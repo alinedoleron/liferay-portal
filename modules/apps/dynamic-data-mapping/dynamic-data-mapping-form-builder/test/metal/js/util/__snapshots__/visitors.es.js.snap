@@ -3,6 +3,7 @@
 exports[`PagesVisitor should be able to change columns 1`] = `
 Array [
   Object {
+    "description": "Add a short description to this page",
     "rows": Array [
       Object {
         "columns": Array [
@@ -173,6 +174,7 @@ Array [
 exports[`PagesVisitor should be able to change fields 1`] = `
 Array [
   Object {
+    "description": "Add a short description to this page",
     "rows": Array [
       Object {
         "columns": Array [
@@ -343,6 +345,7 @@ Array [
 exports[`PagesVisitor should be able to change pages 1`] = `
 Array [
   Object {
+    "description": "Add a short description to this page",
     "rows": Array [
       Object {
         "columns": Array [
@@ -513,6 +516,7 @@ Array [
 exports[`PagesVisitor should be able to change rows 1`] = `
 Array [
   Object {
+    "description": "Add a short description to this page",
     "rows": Array [
       Object {
         "columns": Array [],
