@@ -100,7 +100,9 @@ class FormBuilderBase extends Component {
 					...field,
 					options: [
 						{
-							label: Liferay.Language.get('dynamically-loaded-data'),
+							label: Liferay.Language.get(
+								'dynamically-loaded-data'
+							),
 							value: 'dynamic'
 						}
 					],
@@ -144,7 +146,7 @@ class FormBuilderBase extends Component {
 							pages={this.preparePagesForRender(pages)}
 							paginationMode={paginationMode}
 							portletNamespace={portletNamespace}
-							ref="FormRenderer"
+							ref='FormRenderer'
 							spritemap={spritemap}
 						/>
 
@@ -188,7 +190,7 @@ class FormBuilderBase extends Component {
 					fieldTypes={fieldTypes}
 					focusedField={focusedField}
 					portletNamespace={portletNamespace}
-					ref="sidebar"
+					ref='sidebar'
 					rules={rules}
 					spritemap={spritemap}
 					visible={visible}
@@ -262,6 +264,10 @@ class FormBuilderBase extends Component {
 			}
 		}
 
+		if (pages[activePage].successPageSettings) {
+			openSidebar = false;
+		}
+
 		if (openSidebar) {
 			this.openSidebar();
 		}
@@ -275,15 +281,12 @@ class FormBuilderBase extends Component {
 			portletNamespace
 		} = this.props;
 
-		return makeFetch(
-			{
-				method: 'GET',
-				url: `${fieldSetDefinitionURL}?ddmStructureId=${fieldSetId}&languageId=${editingLanguageId}&portletNamespace=${portletNamespace}&scopeGroupId=${groupId}`
-			}
-		).then(
-			({pages}) => pages
-		).catch(
-			error => {
+		return makeFetch({
+			method: 'GET',
+			url: `${fieldSetDefinitionURL}?ddmStructureId=${fieldSetId}&languageId=${editingLanguageId}&portletNamespace=${portletNamespace}&scopeGroupId=${groupId}`
+		})
+			.then(({pages}) => pages)
+			.catch(error => {
 				throw new Error(error);
 			});
 	}
@@ -506,6 +509,14 @@ FormBuilderBase.PROPS = {
 	 */
 
 	paginationMode: Config.string().required(),
+
+	/**
+	 * @instance
+	 * @memberof FormBuilder
+	 * @type {string}
+	 */
+
+	portletNamespace: Config.string().required(),
 
 	/**
 	 * @instance

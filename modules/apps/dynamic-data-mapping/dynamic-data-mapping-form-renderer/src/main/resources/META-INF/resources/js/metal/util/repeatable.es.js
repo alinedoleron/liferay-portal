@@ -4,12 +4,7 @@ const NESTED_FIELD_NAME_REGEX = /(_\w+_)ddm\$\$(.+)\$(\w+)\$(\d+)#(.+)\$(\w+)\$(
 
 export const generateName = (name, repeatedIndex) => {
 	const parsedName = parseName(name);
-	const {
-		fieldName,
-		instanceId,
-		locale,
-		portletNamespace
-	} = parsedName;
+	const {fieldName, instanceId, locale, portletNamespace} = parsedName;
 
 	return `${portletNamespace}ddm$$${fieldName}$${instanceId}$${repeatedIndex}$$${locale}`;
 };
@@ -50,8 +45,7 @@ export const getRepeatedIndex = name => {
 
 	if (NESTED_FIELD_NAME_REGEX.test(name)) {
 		parsedName = parseNestedFieldName(name);
-	}
-	else {
+	} else {
 		parsedName = parseName(name);
 	}
 

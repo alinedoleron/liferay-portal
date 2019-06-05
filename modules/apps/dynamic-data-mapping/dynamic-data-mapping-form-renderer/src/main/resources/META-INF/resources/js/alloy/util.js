@@ -128,8 +128,7 @@ AUI.add(
 
 				if (nestedFieldName.length > 1) {
 					fieldName = nestedFieldName[1].split('$')[0];
-				}
-				else {
+				} else {
 					var name = qualifiedName.split('$$')[1];
 
 					fieldName = name.split('$')[0];
@@ -144,8 +143,7 @@ AUI.add(
 
 				if (nestedFieldName.length > 1) {
 					instanceId = nestedFieldName[1].split('$')[1];
-				}
-				else {
+				} else {
 					var name = qualifiedName.split('$$')[1];
 
 					instanceId = name.split('$')[1];

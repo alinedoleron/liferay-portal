@@ -3,11 +3,13 @@
 {template .render}
 	{@param pages: ?}
 	{@param paginationMode: string}
+	{@param showSubmitButton: bool}
 	{@param spritemap: string}
 	{@param total: number}
 	{@param? _handleFieldBlurred: any}
 	{@param? _handleFieldClicked: any}
 	{@param? _handleFieldEdited: any}
+	{@param? _handleFieldFocused: any}
 	{@param? activePage: number}
 	{@param? editable: bool}
 	{@param? empty: bool}
@@ -21,8 +23,9 @@
 
 	{delcall PageRenderer.container variant="$contentRenderer"}
 		{param _handleFieldBlurred: $_handleFieldBlurred /}
-		{param _handleFieldEdited: $_handleFieldEdited /}
 		{param _handleFieldClicked: $_handleFieldClicked /}
+		{param _handleFieldEdited: $_handleFieldEdited /}
+		{param _handleFieldFocused: $_handleFieldFocused /}
 		{param activePage: $activePage ?: 0 /}
 		{param contentRenderer: $contentRenderer /}
 		{param editable: $editable /}
@@ -32,6 +35,7 @@
 		{param pages: $pages /}
 		{param paginationMode: $paginationMode /}
 		{param readOnly: $readOnly /}
+		{param showSubmitButton: $showSubmitButton /}
 		{param spritemap: $spritemap /}
 		{param total: $total /}
 	{/delcall}
@@ -46,6 +50,7 @@
 	{@param? _handleFieldBlurred: any}
 	{@param? _handleFieldClicked: any}
 	{@param? _handleFieldEdited: any}
+	{@param? _handleFieldFocused: any}
 	{@param? editable: bool}
 	{@param? empty: bool}
 	{@param? page: ?}
@@ -62,7 +67,7 @@
 			{/delcall}
 		{/if}
 
-		{if $empty and $editable}
+		{if $empty and $editable and $activePage == $pageIndex}
 			{let $attributes kind="attributes"}
 				class="col col-empty col-md-12 last-col lfr-initial-col mt-5 mb-4"
 				data-ddm-field-column="0"
@@ -77,7 +82,7 @@
 			</div>
 		{else}
 			{foreach $row in $page.rows}
-				{if isFirst($row) and $editable}
+				{if isFirst($row) and $editable and $activePage == $pageIndex}
 					{call .fieldEmpty}
 						{param isRow: true /}
 						{param pageIndex: $pageIndex /}
@@ -90,6 +95,8 @@
 					{param _handleFieldBlurred: $_handleFieldBlurred /}
 					{param _handleFieldClicked: $_handleFieldClicked /}
 					{param _handleFieldEdited: $_handleFieldEdited /}
+					{param _handleFieldFocused: $_handleFieldFocused /}
+					{param activePage: $activePage /}
 					{param editable: $editable /}
 					{param pageIndex: $pageIndex /}
 					{param paginationMode: $paginationMode /}
@@ -98,7 +105,7 @@
 					{param spritemap: $spritemap /}
 				{/call}
 
-				{if $editable}
+				{if $editable and $activePage == $pageIndex}
 					{call .fieldEmpty}
 						{param isRow: true /}
 						{param pageIndex: $pageIndex /}
@@ -112,10 +119,12 @@
 {/template}
 
 {template .row}
+	{@param activePage: number}
 	{@param spritemap: string}
 	{@param? _handleFieldBlurred: any}
 	{@param? _handleFieldClicked: any}
 	{@param? _handleFieldEdited: any}
+	{@param? _handleFieldFocused: any}
 	{@param? editable: bool}
 	{@param? pageIndex: number}
 	{@param? row: ?}
@@ -127,6 +136,8 @@
 				{param _handleFieldBlurred: $_handleFieldBlurred /}
 				{param _handleFieldClicked: $_handleFieldClicked /}
 				{param _handleFieldEdited: $_handleFieldEdited /}
+				{param _handleFieldFocused: $_handleFieldFocused /}
+				{param activePage: $activePage /}
 				{param column: $column /}
 				{param columnIndex: index($column) /}
 				{param editable: $editable /}
@@ -139,10 +150,12 @@
 {/template}
 
 {template .column}
+	{@param activePage: number}
 	{@param spritemap: string}
 	{@param? _handleFieldBlurred: any}
 	{@param? _handleFieldClicked: any}
 	{@param? _handleFieldEdited: any}
+	{@param? _handleFieldFocused: any}
 	{@param? column: ?}
 	{@param? columnIndex: number}
 	{@param? editable: bool}
@@ -170,7 +183,8 @@
 					{delcall PageRenderer.RegisterFieldType variant="$fieldType" data="$field" allowemptydefault="true"}
 						{param events: [
 							'fieldBlurred': $_handleFieldBlurred,
-							'fieldEdited': $_handleFieldEdited
+							'fieldEdited': $_handleFieldEdited,
+							'fieldFocused': $_handleFieldFocused
 						] /}
 						{param ref: $field.type + $field.fieldName + $field.name + $field.label + $rowIndex + $columnIndex + $pageIndex /}
 						{param spritemap: $spritemap /}
@@ -198,7 +212,7 @@
 				{$content}
 			{/if}
 		</div>
-	{elseif $editable}
+	{elseif $editable and $activePage == $pageIndex}
 		{call .fieldEmpty}
 			{param columnIndex: $columnIndex /}
 			{param pageIndex: $pageIndex /}

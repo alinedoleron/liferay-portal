@@ -49,6 +49,7 @@ class PageRenderer extends Component {
 				return hasFields;
 			});
 		}
+
 		return empty;
 	}
 
@@ -76,6 +77,10 @@ class PageRenderer extends Component {
 	_handleFieldEdited(event) {
 		this.emit('fieldEdited', event);
 	}
+
+	_handleFieldFocused(event) {
+		this.emit('fieldFocused', event);
+	}
 }
 
 PageRenderer.STATE = {
@@ -101,7 +106,7 @@ PageRenderer.STATE = {
 	 * @type {?array<object>}
 	 */
 
-	page: pageStructure,
+	page: Config.object(),
 
 	/**
 	 * @default 1

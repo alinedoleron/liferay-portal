@@ -12,7 +12,6 @@ class Fieldset extends Component {
 }
 
 Fieldset.STATE = {
-
 	/**
 	 * @default undefined
 	 * @instance

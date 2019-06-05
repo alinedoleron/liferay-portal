@@ -14,7 +14,8 @@ import {EventHandler} from 'metal-events';
 import {focusedFieldStructure} from '../../util/config.es';
 import {
 	getFieldProperties,
-	normalizeSettingsContextPages} from '../../util/fieldSupport.es';
+	normalizeSettingsContextPages
+} from '../../util/fieldSupport.es';
 import {
 	PagesVisitor,
 	RulesVisitor
@@ -110,6 +111,9 @@ class Sidebar extends Component {
 			this
 		);
 		this._handleSettingsFieldEdited = this._handleSettingsFieldEdited.bind(
+			this
+		);
+		this._handleSettingsFormAttached = this._handleSettingsFormAttached.bind(
 			this
 		);
 		this._handleTabItemClicked = this._handleTabItemClicked.bind(this);
@@ -252,9 +256,9 @@ class Sidebar extends Component {
 							this._renderElementSets()}
 
 						{editMode && (
-							<div class="sidebar-body ddm-field-settings">
-								<div class="tab-content">
-									{this._renderSettingsForm()}
+							<div class='sidebar-body ddm-field-settings'>
+								<div class='tab-content'>
+									<form>{this._renderSettingsForm()}</form>
 								</div>
 							</div>
 						)}
@@ -483,6 +487,10 @@ class Sidebar extends Component {
 
 	_handleSettingsFieldEdited(event) {
 		this.emit('settingsFieldEdited', event);
+	}
+
+	_handleSettingsFormAttached() {
+		this.refs.evaluableForm.evaluate();
 	}
 
 	_handleTabItemClicked(event) {
@@ -831,6 +839,7 @@ class Sidebar extends Component {
 		const {pages, rules} = this.getSettingsFormContext();
 
 		const formEvents = {
+			attached: this._handleSettingsFormAttached,
 			evaluated: this._handleEvaluatorChanged,
 			fieldBlurred: this._handleSettingsFieldBlurred,
 			fieldEdited: this._handleSettingsFieldEdited
@@ -844,9 +853,9 @@ class Sidebar extends Component {
 				editingLanguageId={editingLanguageId}
 				events={formEvents}
 				pages={pages}
-				paginationMode="tabbed"
+				paginationMode='tabbed'
 				portletNamespace={portletNamespace}
-				ref="evaluableForm"
+				ref='evaluableForm'
 				rules={rules}
 				spritemap={spritemap}
 			/>
@@ -1059,6 +1068,15 @@ Sidebar.PROPS = {
 	 */
 
 	focusedField: focusedFieldStructure.value({}),
+
+	/**
+	 * @default undefined
+	 * @instance
+	 * @memberof Sidebar
+	 * @type {?string}
+	 */
+
+	portletNamespace: Config.string(),
 
 	/**
 	 * @default undefined

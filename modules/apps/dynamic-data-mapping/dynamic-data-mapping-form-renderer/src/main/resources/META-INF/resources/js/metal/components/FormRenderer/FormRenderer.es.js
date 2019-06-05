@@ -15,6 +15,16 @@ import {Config} from 'metal-state';
  */
 
 class FormRenderer extends Component {
+	_defaultLanguageIdValueFn() {
+		return themeDisplay.getLanguageId();
+	}
+
+	_editingLanguageIdValueFn() {
+		const {defaultLanguageId} = this;
+
+		return defaultLanguageId;
+	}
+
 	_handleFieldBlurred(event) {
 		this.emit('fieldBlurred', event);
 	}
@@ -26,10 +36,13 @@ class FormRenderer extends Component {
 	_handleFieldEdited(event) {
 		this.emit('fieldEdited', event);
 	}
+
+	_handleFieldFocused(event) {
+		this.emit('fieldFocused', event);
+	}
 }
 
 FormRenderer.STATE = {
-
 	/**
 	 * @default
 	 * @instance
@@ -46,7 +59,7 @@ FormRenderer.STATE = {
 	 * @required
 	 */
 
-	defaultLanguageId: Config.string(),
+	defaultLanguageId: Config.string().valueFn('_defaultLanguageIdValueFn'),
 
 	/**
 	 * @default false
@@ -64,7 +77,7 @@ FormRenderer.STATE = {
 	 * @required
 	 */
 
-	editingLanguageId: Config.string(),
+	editingLanguageId: Config.string().valueFn('_editingLanguageIdValueFn'),
 
 	/**
 	 * @default []
@@ -91,44 +104,6 @@ FormRenderer.STATE = {
 	 */
 
 	rules: Config.array().value([]),
-
-	/**
-	 * @default undefined
-	 * @instance
-	 * @memberof FormRenderer
-	 * @type {!string}
-	 */
-
-	spritemap: Config.string().required()
-};
-
-FormRenderer.STATE = {
-	/**
-	 * @default
-	 * @instance
-	 * @memberof FormRenderer
-	 * @type {?number}
-	 */
-
-	activePage: Config.number().value(0),
-
-	/**
-	 * @default false
-	 * @instance
-	 * @memberof FormRenderer
-	 * @type {?bool}
-	 */
-
-	editable: Config.bool().value(false),
-
-	/**
-	 * @default []
-	 * @instance
-	 * @memberof FormRenderer
-	 * @type {?array<object>}
-	 */
-
-	pages: Config.arrayOf(pageStructure).value([]),
 
 	/**
 	 * @default undefined

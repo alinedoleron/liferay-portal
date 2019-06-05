@@ -18,18 +18,6 @@ import {EventHandler} from 'metal-events';
  */
 
 class DatePicker extends Component {
-	attached() {
-		const {base} = this.refs;
-		const {inputElement} = base.refs;
-
-		this._vanillaTextMask = vanillaTextMask({
-			inputElement,
-			mask: this.getInputMask(),
-			placeholderChar: '_',
-			showMask: true
-		});
-	}
-
 	created() {
 		this._eventHandler = new EventHandler();
 
@@ -129,8 +117,12 @@ class DatePicker extends Component {
 	}
 
 	prepareStateForRender(state) {
+		const value = Helpers.formatDate(this._daySelected);
+
 		return {
 			...state,
+			formattedValue: state.value,
+			value: moment(value).format('YYYY-MM-DD'),
 			years: this.getYears()
 		};
 	}
@@ -144,7 +136,7 @@ class DatePicker extends Component {
 	}
 
 	syncCurrentMonth(value) {
-		if (value) {
+		if (moment(value).isValid()) {
 			this._weeks = Helpers.getWeekArray(value, this.firstDayOfWeek);
 			this._month = value.getMonth();
 			this._year = value.getFullYear();
@@ -156,8 +148,34 @@ class DatePicker extends Component {
 			this._eventHandler.add(
 				dom.on(document, 'click', this._handleDocClick.bind(this), true)
 			);
+
+			this.emit('fieldFocused', {
+				fieldInstance: this,
+				originalEvent: event
+			});
 		} else {
 			this._eventHandler.removeAllListeners();
+
+			this.emit('fieldBlurred', {
+				fieldInstance: this,
+				originalEvent: event
+			});
+		}
+	}
+
+	syncVisible() {
+		if (this.visible) {
+			const {base} = this.refs;
+			const {inputElement} = base.refs;
+
+			this._vanillaTextMask = vanillaTextMask({
+				inputElement,
+				mask: this.getInputMask(),
+				placeholderChar: '_',
+				showMask: true
+			});
+		} else if (this._vanillaTextMask) {
+			this._vanillaTextMask.destroy();
 		}
 	}
 
@@ -236,6 +254,26 @@ class DatePicker extends Component {
 		});
 	}
 
+	_handleInput(event) {
+		const {value} = event.target;
+		const format = `${this.dateFormat}`;
+
+		const date = moment(value, format);
+
+		if (date.isValid() && date._i.length === 10) {
+			this.currentMonth = date.toDate();
+			this._daySelected = Helpers.setDateSelected(this.currentMonth);
+		}
+
+		this.value = value;
+
+		if (!value) {
+			this._daySelected = '';
+		}
+
+		this._handleFieldEdited();
+	}
+
 	_handleInputBlurred({target}) {
 		if (!this.isEmptyValue(target.value)) {
 			this.value = Helpers.formatDate(this._daySelected);
@@ -257,26 +295,6 @@ class DatePicker extends Component {
 			.clone()
 			.add(1, 'M')
 			.toDate();
-	}
-
-	_handleOnInput(event) {
-		const {value} = event.target;
-		const format = `${this.dateFormat}`;
-
-		const date = moment(value, format);
-
-		if (date.isValid() && date._i.length === 10) {
-			this.currentMonth = date.toDate();
-			this._daySelected = Helpers.setDateSelected(this.currentMonth);
-		}
-
-		this.value = value;
-
-		if (!value) {
-			this._daySelected = '';
-		}
-
-		this._handleFieldEdited();
 	}
 
 	_handlePreviousMonth() {
@@ -313,6 +331,12 @@ class DatePicker extends Component {
 
 				newValue = date;
 			}
+		} else if (moment(value, 'YYYY-MM-DD').isValid()) {
+			const date = moment(value, 'YYYY-MM-DD')
+				.clone()
+				.format(this.dateFormat);
+
+			newValue = date;
 		} else {
 			newValue = value;
 		}
@@ -428,12 +452,12 @@ DatePicker.STATE = {
 	evaluable: Config.bool().value(false),
 
 	/**
-	* Flag to indicate if date is expanded.
-	* @default false
-	* @instance
-	* @memberof DatePicker
-	* @type {?bool}
-	*/
+	 * Flag to indicate if date is expanded.
+	 * @default false
+	 * @instance
+	 * @memberof DatePicker
+	 * @type {?bool}
+	 */
 
 	expanded: Config.bool()
 		.internal()

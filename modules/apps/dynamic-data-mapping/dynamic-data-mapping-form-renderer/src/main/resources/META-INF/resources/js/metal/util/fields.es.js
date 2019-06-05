@@ -15,8 +15,7 @@ export function normalizeFieldName(fieldName) {
 			nextUpperCase = true;
 
 			continue;
-		}
-		else if (checkInvalidFieldNameCharacter(item)) {
+		} else if (checkInvalidFieldNameCharacter(item)) {
 			continue;
 		}
 

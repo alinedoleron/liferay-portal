@@ -24,7 +24,6 @@ class FieldBase extends Component {
 FieldBase.STATE = {
 	/**
 	 * @default input
-	 * @instance
 	 * @memberof FieldBase
 	 * @type {?html}
 	 */
@@ -32,8 +31,15 @@ FieldBase.STATE = {
 	contentRenderer: Config.any(),
 
 	/**
+	 * @default false
+	 * @memberof FieldBase
+	 * @type {?boolean}
+	 */
+
+	displayErrors: Config.bool().value(false),
+
+	/**
 	 * @default undefined
-	 * @instance
 	 * @memberof FieldBase
 	 * @type {?(string|undefined)}
 	 */
@@ -42,7 +48,6 @@ FieldBase.STATE = {
 
 	/**
 	 * @default undefined
-	 * @instance
 	 * @memberof FieldBase
 	 * @type {?(string|undefined)}
 	 */
@@ -51,7 +56,6 @@ FieldBase.STATE = {
 
 	/**
 	 * @default undefined
-	 * @instance
 	 * @memberof FieldBase
 	 * @type {?(string|undefined)}
 	 */
@@ -60,7 +64,6 @@ FieldBase.STATE = {
 
 	/**
 	 * @default undefined
-	 * @instance
 	 * @memberof FieldBase
 	 * @type {?(bool|undefined)}
 	 */
@@ -69,7 +72,6 @@ FieldBase.STATE = {
 
 	/**
 	 * @default undefined
-	 * @instance
 	 * @memberof FieldBase
 	 * @type {?(bool|undefined)}
 	 */
@@ -78,7 +80,6 @@ FieldBase.STATE = {
 
 	/**
 	 * @default true
-	 * @instance
 	 * @memberof FieldBase
 	 * @type {?(bool|undefined)}
 	 */
@@ -87,7 +88,6 @@ FieldBase.STATE = {
 
 	/**
 	 * @default undefined
-	 * @instance
 	 * @memberof FieldBase
 	 * @type {?(string|undefined)}
 	 */
@@ -96,7 +96,6 @@ FieldBase.STATE = {
 
 	/**
 	 * @default undefined
-	 * @instance
 	 * @memberof FieldBase
 	 * @type {?(string|undefined)}
 	 */
@@ -105,7 +104,6 @@ FieldBase.STATE = {
 
 	/**
 	 * @default undefined
-	 * @instance
 	 * @memberof FieldBase
 	 * @type {?(string|undefined)}
 	 */

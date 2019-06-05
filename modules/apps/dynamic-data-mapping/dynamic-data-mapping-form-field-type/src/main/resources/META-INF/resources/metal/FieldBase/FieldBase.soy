@@ -5,6 +5,7 @@
 	{@param? _handleAddRepeatedFieldButtonClicked: any}
 	{@param? _handleRemoveRepeatedFieldButtonClicked: any}
 	{@param? contentRenderer: any}
+	{@param? displayErrors: bool}
 	{@param? errorMessage: string}
 	{@param? id: string}
 	{@param? tip: string}
@@ -23,8 +24,8 @@
 		{let $fieldCssClassAttribute kind="text"}
 			form-group
 
-			{if $errorMessage and $valid == false}
-				has-error
+			{if $displayErrors and $errorMessage and $valid == false}
+				{sp}has-error
 			{/if}
 		{/let}
 
@@ -94,9 +95,9 @@
 				<span class="form-text">{$tip}</span>
 			{/if}
 
-			{if $errorMessage and not $valid == false}
+			{if $displayErrors and $errorMessage and $valid == false}
 				<div class="form-feedback-group">
-					<div class="form-feedback-item">{$errorMessage}</div>
+					<div class="form-feedback-item help-block">{$errorMessage}</div>
 				</div>
 			{/if}
 		</div>

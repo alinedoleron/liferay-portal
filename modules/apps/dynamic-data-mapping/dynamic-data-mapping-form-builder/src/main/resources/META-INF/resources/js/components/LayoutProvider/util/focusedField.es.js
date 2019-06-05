@@ -1,8 +1,4 @@
-import {
-	generateFieldName,
-	updateFieldValidationProperty
-} from './fields.es';
-import {getField} from '../util/fields.es';
+import {generateFieldName, updateFieldValidationProperty} from './fields.es';
 import {normalizeFieldName} from 'dynamic-data-mapping-form-renderer/js/metal/util/fields.es';
 import {updateSettingsContextProperty} from './settings.es';
 
@@ -159,34 +155,14 @@ export const updateFocusedFieldOptions = (
 ) => {
 	const options = value[editingLanguageId];
 
-	const settingsContext = updateSettingsContextProperty(
-		editingLanguageId,
-		focusedField.settingsContext,
-		'options',
-		value
-	);
-
-	const predefinedValue = getField(settingsContext.pages, 'predefinedValue');
-
-	if (predefinedValue) {
-		const {value} = predefinedValue;
-
-		if (value && Array.isArray(value)) {
-			predefinedValue.value = value.filter(currentValue =>
-				options.some(option => option.value === currentValue)
-			);
-		}
-	}
-
 	return {
 		...focusedField,
 		options,
-		predefinedValue: predefinedValue.value,
 		settingsContext: updateSettingsContextProperty(
 			editingLanguageId,
-			settingsContext,
-			'predefinedValue',
-			predefinedValue.value
+			focusedField.settingsContext,
+			'options',
+			value
 		)
 	};
 };
