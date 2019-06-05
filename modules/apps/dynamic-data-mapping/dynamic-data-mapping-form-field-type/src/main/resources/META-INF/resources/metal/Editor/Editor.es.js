@@ -16,9 +16,20 @@ class Editor extends Component {
 		});
 	}
 
-	willReceiveState({children, value}) {
-		if (value && value.newVal !== value.prevVal && children) {
-			this._alloyEditor.getNativeEditor().setData(value.newVal);
+	shouldUpdate() {
+		return false;
+	}
+
+	syncValue(value) {
+		const {_alloyEditor} = this;
+
+		if (_alloyEditor && _alloyEditor.getHTML() !== value) {
+			const nativeEditor = _alloyEditor.getNativeEditor();
+			const {hasFocus} = nativeEditor.focusManager;
+
+			if (!hasFocus) {
+				nativeEditor.setData(value);
+			}
 		}
 	}
 
@@ -63,43 +74,26 @@ class Editor extends Component {
 			.on('actionPerformed', this._onActionPerformed.bind(this));
 	}
 
-	_onActionPerformed(e) {
+	_onActionPerformed(event) {
 		const {
 			data: {props}
-		} = e;
+		} = event;
 
 		if (!props.command) {
-			this._onChangeEditor(e);
+			this._onChangeEditor(event);
 		}
 	}
 
 	_onChangeEditor(event) {
-		const value = this._alloyEditor.getHTML();
-
-		this.setState(
-			{
-				value
-			},
-			() =>
-				this.emit('fieldEdited', {
-					fieldInstance: this,
-					originalEvent: event,
-					value
-				})
-		);
+		this.emit('fieldEdited', {
+			fieldInstance: this,
+			originalEvent: event,
+			value: this._alloyEditor.getHTML()
+		});
 	}
 }
 
 Editor.STATE = {
-	/**
-	 * @default undefined
-	 * @instance
-	 * @memberof Editor
-	 * @type {?(string|undefined)}
-	 */
-
-	editorValue: Config.string(),
-
 	/**
 	 * @default false
 	 * @instance

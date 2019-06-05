@@ -4,10 +4,12 @@
 	{@param name: string}
 	{@param spritemap: string}
 	{@param value: ?}
-	{@param? _handleClick: any}
+	{@param? _handleExpandedChanged: any}
 	{@param? _handleItemClicked: any}
 	{@param? _handleLabelClosed: any}
 	{@param? dataSourceType: string}
+	{@param? displayErrors: bool}
+	{@param? errorMessage: string}
 	{@param? expanded: bool}
 	{@param? id: string}
 	{@param? label: string}
@@ -19,13 +21,15 @@
 	{@param? required: bool}
 	{@param? showLabel: bool}
 	{@param? tip: string}
+	{@param? valid: bool}
+	{@param? visible: bool}
 
 	{let $displayValues: length($value) > 0 ? $value : $predefinedValue and length($predefinedValue) > 0 ? $predefinedValue : [] /}
 
 	{call FieldBase.render}
 		{param contentRenderer kind="html"}
 			{call .content}
-				{param _handleClick: $_handleClick /}
+				{param _handleExpandedChanged: $_handleExpandedChanged /}
 				{param _handleItemClicked: $_handleItemClicked /}
 				{param _handleLabelClosed: $_handleLabelClosed /}
 				{param dataSourceType: $dataSourceType /}
@@ -40,15 +44,19 @@
 				{param value: $value /}
 			{/call}
 		{/param}
+		{param displayErrors: $displayErrors /}
+		{param errorMessage: $errorMessage /}
 		{param label: $label /}
 		{param name: $name /}
-		{param ref: 'base' /}
 		{param readOnly: $readOnly /}
+		{param ref: 'base' /}
 		{param repeatable: $repeatable /}
 		{param required: $required /}
 		{param showLabel: $showLabel /}
 		{param spritemap: $spritemap /}
 		{param tip: $tip /}
+		{param valid: $valid /}
+		{param visible: $visible /}
 	{/call}
 {/template}
 
@@ -57,7 +65,7 @@
 	{@param name: string}
 	{@param spritemap: string}
 	{@param value: list<string>}
-	{@param? _handleClick: any}
+	{@param? _handleExpandedChanged: any}
 	{@param? _handleItemClicked: any}
 	{@param? _handleLabelClosed: any}
 	{@param? expanded: bool}
@@ -67,20 +75,6 @@
 	{@param? readOnly: bool}
 
 	{if $options}
-		{let $attributes kind="attributes"}
-			class="form-control select-field-trigger"
-
-			{if $id}
-				id="{$id}"
-			{/if}
-
-			{if $readOnly}
-				disabled
-			{else}
-				data-onclick="{$_handleClick}"
-			{/if}
-		{/let}
-
 		{let $trigger kind="html"}
 			{if not $readOnly}
 				{call .hidden_select}
@@ -92,11 +86,27 @@
 			{/if}
 
 			<div class="form-builder-select-field input-group-container">
-				<div {$attributes}>
+				{let $classes kind="text"}
+					form-control results-chosen select-field-trigger
+
 					{if $multiple}
-						<ul class="multiple-label-list">
+						{sp}multiple-label-list
+					{/if}
+				{/let}
+
+				{let $attributes kind="attributes"}
+					class="{$classes}"
+
+					{if $id}
+						id="{$id}"
 					{/if}
 
+					{if $readOnly}
+						disabled
+					{/if}
+				{/let}
+
+				<ul {$attributes}>
 					{foreach $currentValue in $value}
 						{foreach $option in $options}
 							{if $currentValue == $option.value}
@@ -131,10 +141,6 @@
 							</div>
 					{/foreach}
 
-					{if $multiple}
-						</ul>
-					{/if}
-
 					<a class="select-arrow-down-container" href="javascript:;">
 						{if $spritemap}
 							{call ClayIcon.render}
@@ -143,13 +149,14 @@
 							{/call}
 						{/if}
 					</a>
-				</div>
+				</ul>
 			</div>
 		{/let}
 
 		{call ClayDropdownBase.render}
 			{param disabled: $readOnly /}
 			{param events: [
+				'expandedChanged': $_handleExpandedChanged,
 				'itemClicked': $_handleItemClicked
 			]/}
 			{param elementClasses: 'ddm-btn-full ddm-select-dropdown' /}

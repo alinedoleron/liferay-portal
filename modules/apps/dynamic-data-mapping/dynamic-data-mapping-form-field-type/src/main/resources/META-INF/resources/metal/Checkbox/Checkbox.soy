@@ -2,6 +2,8 @@
 
 {template .render}
 	{@param name: string}
+	{@param? displayErrors: bool}
+	{@param? errorMessage: string}
 	{@param? handleInputChangeEvent: any}
 	{@param? id: string}
 	{@param? label: string}
@@ -13,6 +15,8 @@
 	{@param? spritemap: string}
 	{@param? tip: string}
 	{@param? value: ?}
+	{@param? visible: bool}
+	{@param? valid: bool}
 
 	{call FieldBase.render}
 		{param contentRenderer kind="html"}
@@ -25,7 +29,8 @@
 				{param showLabel: $showLabel /}
 			{/call}
 		{/param}
-
+		{param displayErrors: $displayErrors /}
+		{param errorMessage: $errorMessage /}
 		{param id: $id /}
 		{param label: $label /}
 		{param name: $name /}
@@ -34,6 +39,8 @@
 		{param showLabel: not $showAsSwitcher and $showLabel /}
 		{param spritemap: $spritemap /}
 		{param tip: $tip /}
+		{param valid: $valid /}
+		{param visible: $visible /}
 	{/call}
 {/template}
 

@@ -9,6 +9,7 @@
 	{@param? _handleOptionLabelEdited: any}
 	{@param? _handleOptionValueEdited: any}
 	{@param? defaultLanguageId: string}
+	{@param? displayErrors: bool}
 	{@param? editingLanguageId: string}
 	{@param? id: string}
 	{@param? items: list<[
@@ -24,6 +25,7 @@
 	{@param? required: bool}
 	{@param? showLabel: bool}
 	{@param? tip: string}
+	{@param? visible: bool}
 
 	{call FieldBase.render}
 		{param contentRenderer kind="html"}
@@ -81,7 +83,7 @@
 				</div>
 			{/if}
 		{/param}
-
+		{param displayErrors: $displayErrors /}
 		{param id: $id /}
 		{param label: $label /}
 		{param name: $name /}
@@ -89,5 +91,6 @@
 		{param showLabel: $showLabel /}
 		{param spritemap: $spritemap /}
 		{param tip: $tip /}
+		{param visible: $visible /}
 	{/call}
 {/template}

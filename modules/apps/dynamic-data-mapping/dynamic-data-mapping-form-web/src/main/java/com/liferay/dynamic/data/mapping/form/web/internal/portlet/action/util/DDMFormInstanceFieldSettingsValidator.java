@@ -31,6 +31,7 @@ import com.liferay.dynamic.data.mapping.storage.DDMFormFieldValue;
 import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
 import com.liferay.dynamic.data.mapping.util.DDMFormFactory;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONObject;
@@ -235,6 +236,21 @@ public class DDMFormInstanceFieldSettingsValidator {
 		ddmFormContextVisitor.visit();
 
 		return fieldNamePropertiesMap;
+	}
+
+	protected Set<Locale> getAvailableLocales(JSONObject jsonObject) {
+		JSONArray availableLanguageIdsJSONArray = jsonObject.getJSONArray(
+			"availableLanguageIds");
+
+		Set<Locale> availableLocales = new HashSet<>();
+
+		for (int i = 0; i < availableLanguageIdsJSONArray.length(); i++) {
+			availableLocales.add(
+				LocaleUtil.fromLanguageId(
+					availableLanguageIdsJSONArray.getString(i)));
+		}
+
+		return availableLocales;
 	}
 
 	protected String getFieldLabel(DDMFormField ddmFormField, Locale locale) {

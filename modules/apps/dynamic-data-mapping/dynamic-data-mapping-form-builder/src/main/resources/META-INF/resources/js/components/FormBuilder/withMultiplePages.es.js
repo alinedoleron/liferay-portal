@@ -29,14 +29,12 @@ const withMultiplePages = ChildComponent => {
 				];
 			}
 
-			return pages.map(
-				page => {
-					return {
-						...page,
-						enabled: true
-					};
-				}
-			);
+			return pages.map(page => {
+				return {
+					...page,
+					enabled: true
+				};
+			});
 		}
 
 		getPaginationPosition() {
@@ -288,6 +286,14 @@ const withMultiplePages = ChildComponent => {
 		 */
 
 		paginationMode: Config.string().required(),
+
+		/**
+		 * @instance
+		 * @memberof FormBuilder
+		 * @type {string}
+		 */
+
+		portletNamespace: Config.string().required(),
 
 		/**
 		 * @instance

@@ -3,7 +3,10 @@ import Component from 'metal-jsx';
 import {Config} from 'metal-state';
 import {getFieldProperties} from '../../util/fieldSupport.es';
 import {pageStructure, ruleStructure} from '../../util/config.es';
-import {PagesVisitor, RulesVisitor} from 'dynamic-data-mapping-form-renderer/js/metal/util/visitors.es';
+import {
+	PagesVisitor,
+	RulesVisitor
+} from 'dynamic-data-mapping-form-renderer/js/metal/util/visitors.es';
 import {setLocalizedValue} from '../../util/i18n.es';
 
 import handleColumnResized from './handlers/columnResizedHandler.es';
@@ -75,7 +78,9 @@ class LayoutProvider extends Component {
 			paginationItemClicked: this._handlePaginationItemClicked.bind(this),
 			paginationModeUpdated: this._handlePaginationModeUpdated.bind(this),
 			paginationNextClicked: this._handlePaginationNextClicked.bind(this),
-			paginationPreviousClicked: this._handlePaginationPreviousClicked.bind(this),
+			paginationPreviousClicked: this._handlePaginationPreviousClicked.bind(
+				this
+			),
 			ruleAdded: this._handleRuleAdded.bind(this),
 			ruleDeleted: this._handleRuleDeleted.bind(this),
 			ruleSaved: this._handleRuleSaved.bind(this),
@@ -97,6 +102,22 @@ class LayoutProvider extends Component {
 					)
 				}
 			};
+
+			if (focusedField.originalContext) {
+				focusedField = {
+					...focusedField,
+					originalContext: {
+						...focusedField.originalContext,
+						settingsContext: {
+							...focusedField.originalContext.settingsContext,
+							pages: this.getLocalizedPages(
+								focusedField.originalContext.settingsContext
+									.pages
+							)
+						}
+					}
+				};
+			}
 		}
 
 		return focusedField;
@@ -116,7 +137,9 @@ class LayoutProvider extends Component {
 					localizedValue = field.localizedValue[defaultLanguageId];
 				}
 
-				value = localizedValue;
+				if (localizedValue !== undefined) {
+					value = localizedValue;
+				}
 			}
 
 			if (value && value.JSONArray) {
@@ -149,6 +172,8 @@ class LayoutProvider extends Component {
 				options,
 				settingsContext: {
 					...settingsContext,
+					availableLanguageIds: [editingLanguageId],
+					defaultLanguageId,
 					pages: this.getLocalizedPages(settingsContext.pages)
 				}
 			};
@@ -275,11 +300,13 @@ class LayoutProvider extends Component {
 		const {
 			focusedField: {originalContext}
 		} = this.state;
+		const {settingsContext} = originalContext;
+		const visitor = new PagesVisitor(settingsContext.pages);
 
-		Object.keys(originalContext).forEach(propertyName => {
+		visitor.mapFields(field => {
 			this._handleFieldEdited({
-				propertyName,
-				propertyValue: originalContext[propertyName]
+				propertyName: field.fieldName,
+				propertyValue: field.value
 			});
 		});
 	}

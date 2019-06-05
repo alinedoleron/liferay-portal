@@ -146,11 +146,11 @@ class StateSyncronizer extends Component {
 		});
 
 		if (settingsDDMForm) {
-			document.querySelector(`#${namespace}serializedSettingsContext`).value = JSON.stringify(
-				{
-					'pages': settingsDDMForm.pages
-				}
-			);
+			document.querySelector(
+				`#${namespace}serializedSettingsContext`
+			).value = JSON.stringify({
+				pages: settingsDDMForm.pages
+			});
 		}
 
 		document.querySelector(`#${namespace}name`).value = JSON.stringify(
@@ -186,6 +186,8 @@ class StateSyncronizer extends Component {
 					...field,
 					settingsContext: {
 						...field.settingsContext,
+						availableLanguageIds: this.getAvailableLanguageIds(),
+						defaultLanguageId: this.getDefaultLanguageId(),
 						pages: this._getSerializedSettingsContextPages(
 							field.settingsContext.pages
 						)

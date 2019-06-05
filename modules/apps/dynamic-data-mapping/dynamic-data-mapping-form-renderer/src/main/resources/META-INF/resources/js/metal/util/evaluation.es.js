@@ -17,7 +17,7 @@ const doEvaluate = debounce(
 			{
 				body: convertToSearchParams(
 					{
-						languageId: themeDisplay.getLanguageId(),
+						languageId: editingLanguageId,
 						p_auth: Liferay.authToken,
 						portletNamespace,
 						serializedFormContext: JSON.stringify(
@@ -90,8 +90,29 @@ export const mergePages = (defaultLanguageId, editingLanguageId, newPages, sourc
 				...sourceField,
 				...field,
 				defaultLanguageId,
-				editingLanguageId
+				editingLanguageId,
+				valid: field.valid !== false
 			};
+
+			if (sourceField.nestedFields && newField.nestedFields) {
+				newField = {
+					...newField,
+					nestedFields: sourceField.nestedFields.map(
+						nestedField => {
+							return {
+								...nestedField,
+								...(
+									newField.nestedFields.find(
+										({fieldName}) => {
+											return fieldName === nestedField.fieldName;
+										}
+									) || {}
+								)
+							};
+						}
+					)
+				};
+			}
 
 			if (newField.type === 'options') {
 				newField = {
