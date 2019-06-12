@@ -8,12 +8,9 @@ class Wizard extends Component {
 		const {dispatch} = this.context;
 		const {pageIndex} = dataset;
 
-		dispatch(
-			'paginationItemClicked',
-			{
-				pageIndex: Number(pageIndex)
-			}
-		);
+		dispatch('paginationItemClicked', {
+			pageIndex: Number(pageIndex)
+		});
 	}
 }
 

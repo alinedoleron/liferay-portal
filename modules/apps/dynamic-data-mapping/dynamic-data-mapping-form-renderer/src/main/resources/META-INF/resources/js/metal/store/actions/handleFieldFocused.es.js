@@ -5,15 +5,13 @@ export default (pages, properties) => {
 	const pageVisitor = new PagesVisitor(pages);
 
 	return Promise.resolve(
-		pageVisitor.mapFields(
-			field => {
-				const focused = field.name === fieldInstance.name;
+		pageVisitor.mapFields(field => {
+			const focused = field.name === fieldInstance.name;
 
-				return {
-					...field,
-					focused
-				};
-			}
-		)
+			return {
+				...field,
+				focused
+			};
+		})
 	);
 };

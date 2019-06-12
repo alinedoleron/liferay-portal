@@ -5,16 +5,14 @@ export default (pages, properties) => {
 	const pageVisitor = new PagesVisitor(pages);
 
 	return Promise.resolve(
-		pageVisitor.mapFields(
-			field => {
-				const matches = field.name === fieldInstance.name;
+		pageVisitor.mapFields(field => {
+			const matches = field.name === fieldInstance.name;
 
-				return {
-					...field,
-					displayErrors: field.displayErrors || matches,
-					focused: matches ? false : field.focused
-				};
-			}
-		)
+			return {
+				...field,
+				displayErrors: field.displayErrors || matches,
+				focused: matches ? false : field.focused
+			};
+		})
 	);
 };

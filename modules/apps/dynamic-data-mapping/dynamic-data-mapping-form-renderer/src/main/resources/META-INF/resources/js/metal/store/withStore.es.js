@@ -17,51 +17,38 @@ const _handleFieldEdited = function(properties) {
 	const {evaluable} = fieldInstance;
 	const evaluatorContext = this.getEvaluatorContext();
 
-	handleFieldEdited(
-		evaluatorContext,
-		properties
-	).then(
-		evaluatedPages => {
-			this.setState(
-				{
-					pages: evaluatedPages
-				},
-				() => {
-					if (evaluable) {
-						this.emit('evaluated', evaluatedPages);
-					}
+	handleFieldEdited(evaluatorContext, properties).then(evaluatedPages => {
+		this.setState(
+			{
+				pages: evaluatedPages
+			},
+			() => {
+				if (evaluable) {
+					this.emit('evaluated', evaluatedPages);
 				}
-			);
-		}
-	);
+			}
+		);
+	});
 };
 
 const _handleFieldBlurred = function(properties) {
 	const {pages} = this;
 
-	handleFieldBlurred(pages, properties).then(
-		blurredFieldPages => {
-			this.setState(
-				{
-					pages: blurredFieldPages
-				}
-			);
-		}
-	);
+	handleFieldBlurred(pages, properties).then(blurredFieldPages => {
+		this.setState({
+			pages: blurredFieldPages
+		});
+	});
 };
 
 const _handleFieldFocused = function(properties) {
 	const {pages} = this;
 
-	handleFieldFocused(pages, properties).then(
-		focusedFieldPages => {
-			this.setState(
-				{
-					pages: focusedFieldPages
-				}
-			);
-		}
-	);
+	handleFieldFocused(pages, properties).then(focusedFieldPages => {
+		this.setState({
+			pages: focusedFieldPages
+		});
+	});
 };
 
 export default Component => {
@@ -69,16 +56,31 @@ export default Component => {
 		attached() {
 			super.attached();
 
-			this.on('activePageUpdated', this._handleActivePageUpdated.bind(this));
+			this.on(
+				'activePageUpdated',
+				this._handleActivePageUpdated.bind(this)
+			);
 			this.on('fieldBlurred', _handleFieldBlurred.bind(this));
 			this.on('fieldEdited', _handleFieldEdited.bind(this));
 			this.on('fieldFocused', _handleFieldFocused.bind(this));
 			this.on('fieldRemoved', this._handleFieldRemoved.bind(this));
 			this.on('fieldRepeated', this._handleFieldRepeated.bind(this));
-			this.on('paginationItemClicked', this._handlePaginationItemClicked.bind(this));
-			this.on('paginationNextClicked', this._handlePaginationNextClicked.bind(this));
-			this.on('paginationPreviousClicked', this._handlePaginationPreviousClicked.bind(this));
-			this.on('pageValidationFailed', this._handlePageValidationFailed.bind(this));
+			this.on(
+				'paginationItemClicked',
+				this._handlePaginationItemClicked.bind(this)
+			);
+			this.on(
+				'paginationNextClicked',
+				this._handlePaginationNextClicked.bind(this)
+			);
+			this.on(
+				'paginationPreviousClicked',
+				this._handlePaginationPreviousClicked.bind(this)
+			);
+			this.on(
+				'pageValidationFailed',
+				this._handlePageValidationFailed.bind(this)
+			);
 
 			const form = this.getFormNode();
 
@@ -148,43 +150,34 @@ export default Component => {
 		}
 
 		_handleFieldRemoved(name) {
-			this.setState(
-				{
-					pages: handleFieldRemoved(this.pages, name)
-				}
-			);
+			this.setState({
+				pages: handleFieldRemoved(this.pages, name)
+			});
 		}
 
 		_handleFieldRepeated(name) {
-			this.setState(
-				{
-					pages: handleFieldRepeated(this.pages, name)
-				}
-			);
+			this.setState({
+				pages: handleFieldRepeated(this.pages, name)
+			});
 		}
 
 		_handleFormSubmitted(event) {
 			event.preventDefault();
 
-			handleFormSubmitted(this.getEvaluatorContext()).then(
-				validForm => {
-					if (validForm) {
-						const {target} = event;
+			handleFormSubmitted(this.getEvaluatorContext()).then(validForm => {
+				if (validForm) {
+					const {target} = event;
 
-						Liferay.Util.submitForm(
-							{
-								getDOM: () => target,
-								one: selector => target.querySelector(selector)
-							}
-						);
-					}
-					else {
-						const {activePage} = this;
+					Liferay.Util.submitForm({
+						getDOM: () => target,
+						one: selector => target.querySelector(selector)
+					});
+				} else {
+					const {activePage} = this;
 
-						this.dispatch('pageValidationFailed', activePage);
-					}
+					this.dispatch('pageValidationFailed', activePage);
 				}
-			);
+			});
 		}
 
 		_handleLiferayFormSubmitted(event) {
@@ -197,18 +190,22 @@ export default Component => {
 			const {pages} = this;
 			const visitor = new PagesVisitor(pages);
 
-			this.setState(
-				{
-					pages: visitor.mapFields(
-						(field, fieldIndex, columnIndex, rowIndex, currentPageIndex) => {
-							return {
-								...field,
-								displayErrors: currentPageIndex === pageIndex
-							};
-						}
-					)
-				}
-			);
+			this.setState({
+				pages: visitor.mapFields(
+					(
+						field,
+						fieldIndex,
+						columnIndex,
+						rowIndex,
+						currentPageIndex
+					) => {
+						return {
+							...field,
+							displayErrors: currentPageIndex === pageIndex
+						};
+					}
+				)
+			});
 		}
 
 		_handlePaginationItemClicked({pageIndex}) {
