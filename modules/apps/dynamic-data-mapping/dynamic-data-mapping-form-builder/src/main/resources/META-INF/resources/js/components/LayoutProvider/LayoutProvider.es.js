@@ -272,10 +272,25 @@ class LayoutProvider extends Component {
 			focusedField: {originalContext}
 		} = this.state;
 
+		let optionsValue = [];
+
 		Object.keys(originalContext).forEach(propertyName => {
+			if(propertyName == 'options') {
+				let visitor = new PagesVisitor(originalContext.settingsContext.pages);
+
+				visitor.mapFields(
+					field => {
+						if (field.fieldName == 'options') {
+							console.log(field.value);
+							optionsValue = field.value;
+						}
+					}
+				);
+			}
+
 			this._handleFieldEdited({
 				propertyName,
-				propertyValue: originalContext[propertyName]
+				propertyValue: (propertyName == 'options') ? optionsValue : originalContext[propertyName]
 			});
 		});
 	}

@@ -47,6 +47,10 @@ export const handleFieldEdited = (
 	const {propertyName, propertyValue} = event;
 	let newState = {};
 
+	if (propertyName === 'type') {
+		return newState;
+	}
+
 	if (propertyName !== 'name' || propertyValue !== '') {
 		newState = updateField(
 			state,
