@@ -39,6 +39,8 @@ import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.Validator;
 
+import java.math.BigDecimal;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -622,16 +624,20 @@ public class DDMFormFieldTemplateContextFactory {
 		for (Locale availableLocale : value.getAvailableLocales()) {
 			String languageId = LanguageUtil.getLanguageId(availableLocale);
 
-			if (ddmFormFieldValueAccessor == null) {
-				localizedValue.put(
-					languageId, value.getString(availableLocale));
-			}
-			else {
-				localizedValue.put(
-					languageId,
+			Object localeValue = value.getString(availableLocale);
+
+			if (ddmFormFieldValueAccessor != null) {
+				Object valueDDMFormFieldValueAccessor =
 					ddmFormFieldValueAccessor.getValue(
-						ddmFormFieldValue, availableLocale));
+						ddmFormFieldValue, availableLocale);
+
+				if (!(valueDDMFormFieldValueAccessor instanceof BigDecimal)) {
+					localeValue = ddmFormFieldValueAccessor.getValue(
+						ddmFormFieldValue, availableLocale);
+				}
 			}
+
+			localizedValue.put(languageId, localeValue);
 		}
 
 		ddmFormFieldTemplateContext.put("localizedValue", localizedValue);
