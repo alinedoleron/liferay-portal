@@ -24,15 +24,25 @@ import {Config} from 'metal-state';
 class Numeric extends Component {
 	applyMask() {
 		const {dataType, element} = this;
+		let {value} = this;
 		const inputElement = element.querySelector('input');
 		const numberMaskOptions = this.getMaskConfig(dataType);
+		const valueType = Number.isInteger(value) ? 'integer' : 'double';
 
-		const mask = createNumberMask(numberMaskOptions);
+		if (dataType == valueType) {
+			const mask = createNumberMask(numberMaskOptions);
 
-		this.maskInstance = vanillaTextMask({
-			inputElement,
-			mask
-		});
+			this.maskInstance = vanillaTextMask({
+				inputElement,
+				mask
+			});
+		} else if (value && valueType == 'double' && dataType == 'integer')  {
+			value = Math.round(value.replace(",", "."));
+
+			this.setState({
+				value
+			});
+		}
 	}
 
 	disposed() {
@@ -121,7 +131,15 @@ class Numeric extends Component {
 	}
 
 	_internalValueFn() {
-		const {value} = this;
+		let {value} = this;
+
+		value = Number(value);
+
+		this.setState(
+			{
+				value
+			}
+		);
 
 		return value;
 	}
