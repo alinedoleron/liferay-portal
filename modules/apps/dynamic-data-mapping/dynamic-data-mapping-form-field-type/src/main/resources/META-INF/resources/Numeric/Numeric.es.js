@@ -25,7 +25,12 @@ class Numeric extends Component {
 	applyMask() {
 		const {dataType, element} = this;
 		const inputElement = element.querySelector('input');
+		const value = inputElement.value;
 		const numberMaskOptions = this.getMaskConfig(dataType);
+
+		if (value && dataType == 'integer') {
+			inputElement.value = Math.round(value.replace(",", "."));
+		}
 
 		const mask = createNumberMask(numberMaskOptions);
 
@@ -99,17 +104,19 @@ class Numeric extends Component {
 	_handleFieldChanged(event) {
 		const value = event.target.value;
 
-		this.setState(
-			{
-				value
-			},
-			() =>
-				this.emit('fieldEdited', {
-					fieldInstance: this,
-					originalEvent: event,
+		if(value.substr(-1) != this.symbols.decimalSymbol) {
+			this.setState(
+				{
 					value
-				})
-		);
+				},
+				() =>
+					this.emit('fieldEdited', {
+						fieldInstance: this,
+						originalEvent: event,
+						value
+					})
+			);
+		}
 	}
 
 	_handleFieldFocused(event) {
@@ -122,7 +129,6 @@ class Numeric extends Component {
 
 	_internalValueFn() {
 		const {value} = this;
-
 		return value;
 	}
 }
