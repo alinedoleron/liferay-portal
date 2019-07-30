@@ -1,0 +1,59 @@
+{namespace Slider}
+
+    /**
+    * Prints the Slider field.
+    */
+    {template .render}
+        {@param? _handleFieldChanged: any}
+        {@param label: string}
+        {@param name: string}
+        {@param showLabel: bool}
+        {@param? predefinedValue: string}
+        {@param tip: string}
+        {@param value: ?}
+
+        {call FieldBase.render}
+            {param contentRenderer kind="html"}
+                {call .content}
+                    {param _handleFieldChanged: $_handleFieldChanged /}
+                    {param name: $name /}
+                    {param predefinedValue: $predefinedValue /}
+                    {param value: $value /}
+                {/call}
+            {/param}
+            {param label: $label /}
+            {param name: $name /}
+            {param tip: $tip /}
+            {param showLabel: $showLabel /}
+        {/call}
+    {/template}
+
+    {template .content}
+        {@param? _handleFieldChanged: any}
+        {@param name: string}
+        {@param? predefinedValue: string}
+        {@param value: ?}
+        {let $attributes kind="attributes"}
+            class="ddm-field-slider form-control slider"
+
+            data-oninput="{$_handleFieldChanged}"
+
+            id="myRange"
+
+            min="1"
+
+            max="100"
+
+            name="{$name}"
+
+            type="range"
+
+            {if $value}
+                value="{$value}"
+            {else}
+                value="{$predefinedValue}"
+            {/if}
+        {/let}
+
+        <input {$attributes}>
+    {/template}
