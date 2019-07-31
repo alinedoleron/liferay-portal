@@ -5,6 +5,7 @@
 	{@param pageIndex: number}
 	{@param pages: ?}
 	{@param showSubmitButton: bool}
+	{@param submitLabel: string}
 	{@param spritemap: string}
 	{@param total: number}
 	{@param? _handleFieldBlurred: any}
@@ -15,6 +16,7 @@
 	{@param? empty: bool}
 	{@param? page: ?}
 	{@param? readOnly: bool}
+	{@param? strings: map<string, string>}
 
 	<div class="ddm-form-page-container paginated">
 		{let $classes kind="text"}
@@ -60,11 +62,13 @@
 					{param activePage: $activePage /}
 					{param readOnly: $readOnly /}
 					{param showSubmitButton: $showSubmitButton /}
+					{param strings: $strings /}
+					{param submitLabel: $submitLabel /}
 					{param total: $total /}
 				{/call}
 			{elseif $showSubmitButton}
 				<button class="btn btn-primary lfr-ddm-form-submit pull-right" type="submit">
-					{msg desc=""}submit{/msg}
+					{$submitLabel}
 				</button>
 			{/if}
 		{/if}

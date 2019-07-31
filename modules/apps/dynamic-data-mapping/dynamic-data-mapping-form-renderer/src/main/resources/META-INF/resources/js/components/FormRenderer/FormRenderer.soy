@@ -12,6 +12,8 @@
 	{@param? paginationMode: string}
 	{@param? readOnly: bool}
 	{@param? showSubmitButton: bool}
+	{@param? strings: map<string, string>}
+	{@param? submitLabel: string}
 
 	{let $currentPaginationMode: $paginationMode ?: 'wizard' /}
 	{let $currentPage: $activePage ?: 0 /}
@@ -44,6 +46,8 @@
 				{param key: index($page) /}
 				{param readOnly: $readOnly /}
 				{param showSubmitButton: $showSubmitButton != false /}
+				{param strings: $strings /}
+				{param submitLabel: $submitLabel ?: 'submit' /}
 				{param spritemap: $spritemap /}
 				{param total: $total /}
 			{/call}
