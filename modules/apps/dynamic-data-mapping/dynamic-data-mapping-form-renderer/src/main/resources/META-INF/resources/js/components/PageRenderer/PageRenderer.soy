@@ -4,6 +4,7 @@
 	{@param pages: ?}
 	{@param paginationMode: string}
 	{@param showSubmitButton: bool}
+	{@param submitLabel: string}
 	{@param spritemap: string}
 	{@param total: number}
 	{@param? _handleFieldBlurred: any}
@@ -16,6 +17,7 @@
 	{@param? page: ?}
 	{@param? pageIndex: number}
 	{@param? readOnly: bool}
+	{@param? strings: map<string, string>}
 
 	{let $paginationModeVariant: $paginationMode == 'single-page' ? 'single_page' : $paginationMode /}
 
@@ -36,6 +38,8 @@
 		{param paginationMode: $paginationMode /}
 		{param readOnly: $readOnly /}
 		{param showSubmitButton: $showSubmitButton /}
+		{param strings: $strings /}
+		{param submitLabel: $submitLabel /}
 		{param spritemap: $spritemap /}
 		{param total: $total /}
 	{/delcall}
