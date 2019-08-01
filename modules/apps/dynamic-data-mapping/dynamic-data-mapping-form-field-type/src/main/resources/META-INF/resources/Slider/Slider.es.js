@@ -38,6 +38,24 @@ import {Config} from 'metal-state';
         * @type {?(string|undefined)}
         */
 
+        max: Config.oneOfType([Config.number(), Config.string()]),
+
+        /**
+        * @default undefined
+        * @instance
+        * @memberof Slider
+        * @type {?(string|undefined)}
+        */
+
+        min: Config.oneOfType([Config.number(), Config.string()]),
+
+        /**
+        * @default undefined
+        * @instance
+        * @memberof Slider
+        * @type {?(string|undefined)}
+        */
+
         name: Config.string().required(),
 
         /**
@@ -47,7 +65,34 @@ import {Config} from 'metal-state';
          * @type {?(string|undefined)}
          */
 
-        predefinedValue: Config.string().value(''),
+        predefinedValue: Config.oneOfType([Config.number(), Config.string()]),
+
+        /**
+         * @default false
+         * @instance
+         * @memberof Text
+         * @type {?(bool|undefined)}
+         */
+
+        required: Config.bool().value(false),
+
+        /**
+         * @default true
+         * @instance
+         * @memberof Text
+         * @type {?(bool|undefined)}
+         */
+
+        showLabel: Config.bool().value(true),
+
+        /**
+         * @default undefined
+         * @instance
+         * @memberof Text
+         * @type {?(string|undefined)}
+         */
+
+        spritemap: Config.string(),
 
         /**
         * @default undefined

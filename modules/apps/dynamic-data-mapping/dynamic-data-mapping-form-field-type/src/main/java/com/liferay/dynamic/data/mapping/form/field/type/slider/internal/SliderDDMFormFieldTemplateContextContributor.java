@@ -36,52 +36,10 @@ public class SliderDDMFormFieldTemplateContextContributor
 
 		Map<String, Object> parameters = new HashMap<>();
 
-		String predefinedValue = getPredefinedValue(
-			ddmFormField, ddmFormFieldRenderingContext);
-
-		if (predefinedValue != null) {
-			parameters.put("predefinedValue", predefinedValue);
-		}
-
-		String value = getValue(ddmFormFieldRenderingContext);
-
-		if (Validator.isNotNull(value)) {
-			parameters.put("value", value);
-		}
+		parameters.put(
+            "min", ddmFormField.getProperty("min"));
+        parameters.put("max", ddmFormField.getProperty("max"));
 
 		return parameters;
     }
-
-    protected String getPredefinedValue(
-		DDMFormField ddmFormField,
-		DDMFormFieldRenderingContext ddmFormFieldRenderingContext) {
-
-		LocalizedValue predefinedValue = ddmFormField.getPredefinedValue();
-
-		if (predefinedValue == null) {
-			return null;
-		}
-
-		String predefinedValueString = predefinedValue.getString(
-			ddmFormFieldRenderingContext.getLocale());
-
-		if (ddmFormFieldRenderingContext.isViewMode()) {
-			predefinedValueString = HtmlUtil.extractText(predefinedValueString);
-		}
-
-		return predefinedValueString;
-	}
-
-    protected String getValue(
-		DDMFormFieldRenderingContext ddmFormFieldRenderingContext) {
-
-		String value = String.valueOf(
-			ddmFormFieldRenderingContext.getProperty("value"));
-
-		if (ddmFormFieldRenderingContext.isViewMode()) {
-			value = HtmlUtil.extractText(value);
-		}
-
-		return value;
-	}
 }

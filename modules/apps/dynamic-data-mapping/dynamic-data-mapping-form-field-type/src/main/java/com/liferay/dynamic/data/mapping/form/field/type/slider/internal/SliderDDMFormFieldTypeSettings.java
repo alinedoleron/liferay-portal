@@ -8,9 +8,9 @@ import com.liferay.dynamic.data.mapping.annotations.DDMFormLayoutPage;
 import com.liferay.dynamic.data.mapping.annotations.DDMFormLayoutRow;
 import com.liferay.dynamic.data.mapping.annotations.DDMFormRule;
 import com.liferay.dynamic.data.mapping.form.field.type.DefaultDDMFormFieldTypeSettings;
-import com.liferay.dynamic.data.mapping.model.DDMFormFieldOptions;
-import com.liferay.dynamic.data.mapping.model.DDMFormFieldValidation;
 import com.liferay.dynamic.data.mapping.model.LocalizedValue;
+
+@DDMForm
 @DDMFormLayout(
 	paginationMode = com.liferay.dynamic.data.mapping.model.DDMFormLayout.TABBED_MODE,
 	value = {
@@ -35,7 +35,7 @@ import com.liferay.dynamic.data.mapping.model.LocalizedValue;
 						@DDMFormLayoutColumn(
 							size = 12,
 							value = {
-								"predefinedValue"
+								"name", "predefinedValue", "showLabel", "min", "max"
 							}
 						)
 					}
@@ -46,4 +46,33 @@ import com.liferay.dynamic.data.mapping.model.LocalizedValue;
 )
 public interface SliderDDMFormFieldTypeSettings
 	extends DefaultDDMFormFieldTypeSettings {
+
+	@DDMFormField(
+		label = "%predefined-value",
+		properties = {
+			"placeholder=%enter-a-default-value",
+			"tooltip=%enter-a-default-value-that-is-submitted-if-no-other-value-is-entered"
+		},
+		type = "numeric"
+	)
+	@Override
+	public LocalizedValue predefinedValue();
+
+	@DDMFormField(
+		label = "%min-value",
+		properties = {
+			"placeholder=%enter-the-bottom-limit-of-the-range"
+		},
+		type = "numeric"
+	)
+    public String min();
+
+	@DDMFormField(
+		label = "%max-value",
+		properties = {
+			"placeholder=%enter-the-top-limit-of-the-range"
+		},
+		type = "numeric"
+	)
+    public String max();
 }
