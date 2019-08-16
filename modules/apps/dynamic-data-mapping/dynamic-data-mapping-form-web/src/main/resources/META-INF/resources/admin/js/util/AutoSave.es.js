@@ -158,7 +158,7 @@ class AutoSave extends Component {
 			saveAsDraft,
 		};
 
-		return objectToFormData(formDataObj, namespace);
+		return convertToFormData(formDataObj, namespace);
 	}
 
 	_setInterval(minutes) {

@@ -50,7 +50,7 @@ export const convertToFormData = (body, namespace) => {
 	} else if (body instanceof FormData) {
 		return body;
 	} else if (typeof body === 'object') {
-		return objectToFormData(body, namespace);
+		return objectToFormData(body, new FormData(), namespace);
 	} else {
 		return body;
 	}
