@@ -149,15 +149,16 @@ class AutoSave extends Component {
 	_getFormData(saveAsDraft) {
 		const {form, namespace} = this.props;
 
-		const formData = new FormData(form);
-
 		const state = this.getCurrentState();
 
-		formData.set(`${namespace}name`, JSON.stringify(state.name));
-		formData.set(`${namespace}published`, JSON.stringify(this.published));
-		formData.set(`${namespace}saveAsDraft`, saveAsDraft);
+		const formDataObj = {
+			...form,
+			name: JSON.stringify(state.name),
+			published: JSON.stringify(this.published),
+			saveAsDraft,
+		};
 
-		return convertToFormData(formData);
+		return objectToFormData(formDataObj, namespace);
 	}
 
 	_setInterval(minutes) {

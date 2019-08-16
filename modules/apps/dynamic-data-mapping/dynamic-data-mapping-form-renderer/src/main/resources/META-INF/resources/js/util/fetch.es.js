@@ -12,7 +12,7 @@
  * details.
  */
 
-import {fetch} from 'frontend-js-web';
+import {fetch, objectToFormData} from 'frontend-js-web';
 
 const defaultHeaders = {
 	Accept: 'application/json'
@@ -44,20 +44,14 @@ export const makeFetch = ({
 		});
 };
 
-export const convertToFormData = body => {
+export const convertToFormData = (body, namespace) => {
 	if (body instanceof HTMLFormElement) {
 		return new FormData(body);
 	} else if (body instanceof FormData) {
 		return body;
 	} else if (typeof body === 'object') {
-		const formData = new FormData();
-
-		Object.entries(body).forEach(([key, value]) =>
-			formData.append(key, value)
-		);
-
-		return formData;
+		return objectToFormData(body, namespace);
+	} else {
+		return body;
 	}
-
-	throw new Error('Unsupported body type.');
 };
