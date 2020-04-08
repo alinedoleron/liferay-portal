@@ -26,11 +26,7 @@ class SuccessPage extends Component {
 
 		if (body[editingLanguageId] == '') {
 			body[editingLanguageId] = Liferay.Language.get(
-<<<<<<< HEAD:modules/apps/dynamic-data-mapping/dynamic-data-mapping-form-renderer/src/main/resources/META-INF/resources/js/components/SuccessPage/SuccessPage.es.js
 				'your-information-was-successfully-received-thank-you-for-filling-out-the-form'
-=======
-				'your-responses-have-been-submitted'
->>>>>>> LPS-111055 Move SuccessPage files from FormBuilder package to FormRenderer:modules/apps/dynamic-data-mapping/dynamic-data-mapping-form-renderer/src/main/resources/META-INF/resources/js/components/SuccessPage/SuccessPage.es.js
 			);
 		}
 
