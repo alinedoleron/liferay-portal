@@ -212,4 +212,78 @@ describe('PageRenderer', () => {
 
 		expect(component.refs.pageActions0).not.toBeUndefined();
 	});
+
+	it('propagates pagesSwapped event after button of moving down the page be clicked', () => {
+		pagesEmpty.push(pagesEmpty[0]);
+		pagesEmpty.push({contentRenderer: 'success'});
+
+		component = createPageRenderer({
+			page: pagesEmpty[0],
+			pageIndex: 0,
+			pages: pagesEmpty,
+			total: 3,
+		});
+
+		component._handleMovePageDownClicked();
+
+		expect(component.context.dispatch).toHaveBeenCalledWith(
+			'pagesSwapped',
+			{
+				firstIndex: 0,
+				secondIndex: 1,
+			}
+		);
+	});
+
+	it('propagates pagesSwapped event after button of moving up the page be clicked', () => {
+		pagesEmpty.push(pagesEmpty[0]);
+		pagesEmpty.push({contentRenderer: 'success'});
+
+		component = createPageRenderer({
+			page: pagesEmpty[1],
+			pageIndex: 1,
+			pages: pagesEmpty,
+			total: 3,
+		});
+
+		component._handleMovePageUpClicked();
+
+		expect(component.context.dispatch).toHaveBeenCalledWith(
+			'pagesSwapped',
+			{
+				firstIndex: 1,
+				secondIndex: 0,
+			}
+		);
+	});
+
+	it('disables arrow down on the last page before success page and enables the arrow up', () => {
+		pagesEmpty.push(pagesEmpty[0]);
+		pagesEmpty.push({contentRenderer: 'success'});
+
+		component = createPageRenderer({
+			page: pagesEmpty[1],
+			pageIndex: 1,
+			pages: pagesEmpty,
+			total: 3,
+		});
+
+		expect(component.refs.movePageUp1.disabled).toEqual(false);
+		expect(component.refs.movePageDown1.disabled).toEqual(true);
+	});
+
+	it('enables arrow down on the first page and disables the arrow up, when there are more than one page, except success page', () => {
+		pagesEmpty.push(pagesEmpty[0]);
+		pagesEmpty.push({contentRenderer: 'success'});
+
+		component = createPageRenderer({
+			page: pagesEmpty[0],
+			pageIndex: 0,
+			pages: pagesEmpty,
+			total: 3,
+		});
+
+		expect(component.refs.movePageUp0.disabled).toEqual(true);
+		expect(component.refs.movePageDown0.disabled).toEqual(false);
+	});
 });
