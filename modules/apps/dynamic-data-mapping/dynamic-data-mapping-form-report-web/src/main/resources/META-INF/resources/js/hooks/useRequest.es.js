@@ -12,18 +12,38 @@
  * details.
  */
 
-import React from 'react';
+import {useEffect, useState} from 'react';
 
-import CardList from './components/card/CardList.es';
-import Sidebar from './components/sidebar/Sidebar.es';
-import {SidebarContextProvider} from './components/sidebar/SidebarContext.es';
+import {request} from '../utils/client.es';
 
-export default ({data, fields, formReportRecordsFieldValuesURL}) => (
-	<SidebarContextProvider
-		formReportRecordsFieldValuesURL={formReportRecordsFieldValuesURL}
-	>
-		<CardList data={data} fields={fields} />
+export default (endpoint) => {
+	const [state, setState] = useState({
+		error: null,
+		isLoading: true,
+		response: {},
+	});
 
-		<Sidebar />
-	</SidebarContextProvider>
-);
+	useEffect(() => {
+		if (endpoint === null) {
+			return;
+		}
+
+		request({endpoint})
+			.then((response) => {
+				setState({
+					error: null,
+					isLoading: false,
+					response,
+				});
+			})
+			.catch((error) => {
+				setState({
+					error,
+					isLoading: false,
+					response: {},
+				});
+			});
+	}, [endpoint]);
+
+	return state;
+};
