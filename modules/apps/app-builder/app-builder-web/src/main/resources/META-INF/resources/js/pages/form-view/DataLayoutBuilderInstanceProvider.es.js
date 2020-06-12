@@ -104,7 +104,7 @@ export default ({children, dataLayoutBuilder}) => {
 
 		provider.props = {
 			...provider.props,
-			fieldActions,
+			fieldActions
 		};
 
 		provider.getEvents().fieldHovered(fieldHovered);
