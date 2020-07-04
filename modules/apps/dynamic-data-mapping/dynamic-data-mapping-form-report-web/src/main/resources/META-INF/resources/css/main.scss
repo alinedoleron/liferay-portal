@@ -282,6 +282,12 @@ body,
 
 	.sidebar-reports {
 		top: 56px;
+
+		.component-tbar {
+			position: sticky;
+			top: 0;
+			background: #FFF;
+		}
 	}
 }
 
