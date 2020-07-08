@@ -23,6 +23,7 @@ export default ({data, field, summary, totalEntries, type}) => {
 
 	return (
 		<div className="field-list">
+			<textarea className="clipboard hidden"></textarea>
 			<ul className="entries-list">
 				{Array.isArray(data) &&
 					data.map((field, index) => (

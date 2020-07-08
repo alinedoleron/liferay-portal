@@ -132,6 +132,13 @@ body,
 		width: 100%;
 	}
 
+	.hidden {
+		height: 0;
+		opacity: .01;
+		overflow: hidden;
+		position: absolute;
+	}
+
 	.summary {
 		display: flex;
 		justify-content: flex-start;

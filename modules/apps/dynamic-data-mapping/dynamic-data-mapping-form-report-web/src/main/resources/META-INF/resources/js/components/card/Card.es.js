@@ -40,13 +40,31 @@ const TotalEntriesLabel = ({totalEntries}) => {
 	);
 };
 
+const copy = (event) => {
+	const index = event.target.closest("[data-card]").dataset.card;
+	const textarea = document.querySelector('.clipboard');
+
+	let textAreaContent = "";
+
+	const list = document.querySelector("[data-card='"+ index +"'] .entries-list").childNodes;
+
+	list.forEach(item => {
+			textAreaContent = textAreaContent + item.innerText + '\n'
+		});
+
+	textarea.value = textAreaContent;
+	textarea.select();
+	document.execCommand('copy');
+}
+
 export default ({
 	children,
 	field: {icon, label, title},
+	index,
 	summary,
 	totalEntries,
 }) => (
-	<div className="report-cards-area">
+	<div className="report-cards-area" data-card={index}>
 		<div className="sheet">
 			<div className="col-md-12">
 				<ClayCard displayType="image">
@@ -69,6 +87,8 @@ export default ({
 
 							<TotalEntriesLabel totalEntries={totalEntries} />
 						</div>
+
+						<button className="copy" onClick={(event)=> copy(event)}>Copy</button>
 
 						{!!Object.entries(summary).length && (
 							<Summary summary={summary} />
