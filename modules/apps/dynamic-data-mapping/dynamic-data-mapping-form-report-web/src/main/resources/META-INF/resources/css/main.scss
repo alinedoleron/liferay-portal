@@ -249,9 +249,71 @@ body,
 }
 
 .form-report {
-	align-items: center;
 	display: flex;
-	flex-direction: column;
+
+	.card-item::before {
+			display: block;
+			content: " ";
+			margin-top: -40px;
+			height: 40px;
+			visibility: hidden;
+			pointer-events: none;
+		}
+
+	.report-cards-shortcut {
+		margin-top: 50px;
+		padding-left: 24px;
+		position: fixed;
+		right: 244px;
+
+		ul {
+			list-style-type: none;
+			padding: 0;
+
+			li {
+				a {
+					text-decoration: none;
+					width: 100%;
+					height: 100%;
+					align-items: center;
+					display: flex;
+					color: #6B6C7E;
+
+					.field-label {
+						font-weight: normal;
+						font-size: 14px;
+						line-height: 150%;
+					}
+
+					&:hover {
+						color: #272833;
+						cursor: pointer;
+
+						.indicator {
+							height: 1px;
+							width: 8px;
+							background-color: #272833;
+							margin-right: 8px
+						}
+					}
+
+					&.selected {
+						.field-label {
+							font-weight: 600;
+							color: #272833;
+						}
+
+						& > .indicator {
+							height: 2px;
+							width: 16px;
+							background-color: #272833;
+							margin-right: 8px
+						}
+					}
+				}
+			}
+		}
+	}
 
 	.sidebar-backdrop {
 		background-color: #393a4a;
@@ -423,6 +485,7 @@ body,
 }
 
 .report-cards-area {
+	margin-left: 384px;
 	width: 808px;
 
 	.sheet {

@@ -16,9 +16,10 @@ import ClayCard from '@clayui/card';
 import ClayIcon from '@clayui/icon';
 import ClayLayout from '@clayui/layout';
 import {ClayTooltipProvider} from '@clayui/tooltip';
-import React from 'react';
+import React, {useContext} from 'react';
 
 import EmptyState from '../empty-state/EmptyState.es';
+import {SidebarContext} from '../sidebar/SidebarContext.es';
 import Summary from '../summary/Summary.es';
 
 const TotalEntriesLabel = ({totalEntries}) => {
@@ -44,10 +45,14 @@ const TotalEntriesLabel = ({totalEntries}) => {
 export default ({
 	children,
 	field: {icon, label, title},
+	index,
 	summary,
 	totalEntries,
-}) => (
-	<div className="report-cards-area">
+}) => {
+	const {portletNamespace} = useContext(SidebarContext);
+
+	return (
+	<div className="card-item" id={`${portletNamespace}_card_${index}`}>
 		<ClayLayout.Sheet>
 			<ClayLayout.Col>
 				<ClayCard displayType="image">
@@ -90,5 +95,5 @@ export default ({
 				</ClayCard>
 			</ClayLayout.Col>
 		</ClayLayout.Sheet>
-	</div>
-);
+	</div>)
+};
