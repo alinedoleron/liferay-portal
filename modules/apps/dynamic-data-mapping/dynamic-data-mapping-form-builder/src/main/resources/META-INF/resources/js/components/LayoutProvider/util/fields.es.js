@@ -25,7 +25,7 @@ export const generateFieldName = (
 	desiredName,
 	currentName = null,
 	blacklist = [],
-	generateFieldNameUsingFieldLabel
+	generateFieldNameUsingFieldLabel = false
 ) => {
 	let fieldName;
 	let existingField;

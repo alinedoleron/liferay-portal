@@ -20,6 +20,9 @@ import mockFieldType from '../../__mock__/mockFieldType.es';
 import mockPages from '../../__mock__/mockPages.es';
 
 let component;
+let spyLiferayLanguage;
+
+const DEFAULT_FIELD_NAME_REGEX = /^Field[0-9]{8}$/;
 
 const changeField = ({settingsContext}, fieldName, value) => {
 	const visitor = new PagesVisitor(settingsContext.pages);
@@ -96,12 +99,24 @@ describe('LayoutProvider', () => {
 		});
 
 		jest.useFakeTimers();
+
+		spyLiferayLanguage = jest.spyOn(Liferay.Language, 'get');
+
+		spyLiferayLanguage.mockImplementation((key) => {
+			if (key === 'field') {
+				return 'Field';
+			}
+
+			return key;
+		});
 	});
 
 	afterEach(() => {
 		if (component) {
 			component.dispose();
 		}
+
+		spyLiferayLanguage.mockRestore();
 	});
 
 	it('receives pages through PROPS and move to the internal state', () => {
@@ -347,7 +362,7 @@ describe('LayoutProvider', () => {
 				expect(
 					provider.state.pages[0].rows[0].columns[1].fields[0]
 						.fieldName
-				).toEqual('TextField');
+				).toEqual(expect.stringMatching(DEFAULT_FIELD_NAME_REGEX));
 			});
 
 			it('listen the fieldAdded event and add the field in the row to the pages', () => {
@@ -375,7 +390,7 @@ describe('LayoutProvider', () => {
 				expect(
 					provider.state.pages[0].rows[0].columns[0].fields[0]
 						.fieldName
-				).toEqual('TextField');
+				).toEqual(expect.stringMatching(DEFAULT_FIELD_NAME_REGEX));
 			});
 
 			it('updates the focusedField with the location of the new field when adding to the pages', () => {
@@ -401,7 +416,7 @@ describe('LayoutProvider', () => {
 				jest.runAllTimers();
 
 				expect(provider.state.focusedField.fieldName).toEqual(
-					'TextField'
+					expect.stringMatching(DEFAULT_FIELD_NAME_REGEX)
 				);
 			});
 		});
@@ -470,12 +485,12 @@ describe('LayoutProvider', () => {
 
 							return {
 								...field,
-								fieldName: `name${fieldIndex}${columnIndex}${rowIndex}${pageIndex}`,
 
-								// Overrides the instanceId because it is generated when a field is duplicated,
+								// Overrides the fieldName and the instanceId because they are generated when a field is duplicated,
 								// toMatchSnapshot has problems with deep arrays so we override it here to
 								// avoid this.
 
+								fieldName: 'Any<String>',
 								instanceId: 'Any<String>',
 								name: `name${fieldIndex}${columnIndex}${rowIndex}${pageIndex}`,
 							};

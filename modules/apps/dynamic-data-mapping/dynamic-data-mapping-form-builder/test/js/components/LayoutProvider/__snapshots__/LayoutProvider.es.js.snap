@@ -317,7 +317,7 @@ Array [
           Object {
             "fields": Array [
               Object {
-                "fieldName": "name0000",
+                "fieldName": "Any<String>",
                 "instanceId": "Any<String>",
                 "label": "Radio Field",
                 "localizedValue": Object {},
@@ -400,7 +400,7 @@ Array [
           Object {
             "fields": Array [
               Object {
-                "fieldName": "name0010",
+                "fieldName": "Any<String>",
                 "instanceId": "Any<String>",
                 "label": "copy-of-x",
                 "localizedValue": Object {},
@@ -456,7 +456,7 @@ Array [
                                 Object {
                                   "fieldName": "validation",
                                   "validation": Object {
-                                    "fieldName": "copyofx",
+                                    "fieldName": "Field50443439",
                                   },
                                   "value": Object {
                                     "expression": undefined,
@@ -487,7 +487,7 @@ Array [
           Object {
             "fields": Array [
               Object {
-                "fieldName": "name0020",
+                "fieldName": "Any<String>",
                 "instanceId": "Any<String>",
                 "label": "Text Field 1",
                 "localizedValue": Object {},
@@ -503,7 +503,7 @@ Array [
                 "visible": true,
               },
               Object {
-                "fieldName": "name1020",
+                "fieldName": "Any<String>",
                 "instanceId": "Any<String>",
                 "label": "Text Field 2",
                 "localizedValue": Object {},
@@ -524,7 +524,7 @@ Array [
           Object {
             "fields": Array [
               Object {
-                "fieldName": "name0120",
+                "fieldName": "Any<String>",
                 "instanceId": "Any<String>",
                 "label": "Select Field",
                 "localizedValue": Object {},
@@ -562,7 +562,7 @@ Array [
           Object {
             "fields": Array [
               Object {
-                "fieldName": "name0030",
+                "fieldName": "Any<String>",
                 "instanceId": "Any<String>",
                 "label": "Date Field",
                 "localizedValue": Object {},
@@ -587,7 +587,7 @@ Array [
           Object {
             "fields": Array [
               Object {
-                "fieldName": "name0040",
+                "fieldName": "Any<String>",
                 "instanceId": "Any<String>",
                 "label": "Numeric Field",
                 "localizedValue": Object {},
