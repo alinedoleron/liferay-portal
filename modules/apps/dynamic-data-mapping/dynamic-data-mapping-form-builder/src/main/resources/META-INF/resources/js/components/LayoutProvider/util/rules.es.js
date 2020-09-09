@@ -132,6 +132,18 @@ export const updateRulesReferences = (rules, oldProperties, newProperties) => {
 				}
 				else if (
 					index === 1 &&
+					!isOptionReferencedByOperand(newOptions, operand.value)
+				) {
+					return {
+						...operand,
+						label: '',
+						optionValue: '',
+						type: '',
+						value: '',
+					};
+				}
+				else if (
+					index === 1 &&
 					isFieldValueOperand(condition.operands) &&
 					isEqualLengthOptions(oldOptions, newOptions) &&
 					isOptionReferencedByOperand(oldOptions, operand.value)
