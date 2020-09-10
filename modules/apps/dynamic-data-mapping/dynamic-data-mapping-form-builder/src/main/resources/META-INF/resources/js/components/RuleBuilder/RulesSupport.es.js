@@ -98,6 +98,12 @@ const formatRules = (pages, rules) => {
 				true
 			);
 
+			if (firstOperandFieldExists && secondOperand) {
+				const fieldName = condition.operands[0].value;
+				const options = getFieldOptions(fieldName, pages);
+				secondOperandFieldExists = options.some((option) => option.label == condition.operands[1].value)
+			}
+
 			if (
 				condition.operands.length < 2 &&
 				condition.operands[0].type === 'list'
@@ -127,7 +133,7 @@ const formatRules = (pages, rules) => {
 			if (
 				!secondOperandFieldExists &&
 				secondOperand &&
-				secondOperand.type == 'field'
+				(secondOperand.type == 'field' || secondOperand.type == 'string')
 			) {
 				clearSecondOperandValue(condition);
 			}
