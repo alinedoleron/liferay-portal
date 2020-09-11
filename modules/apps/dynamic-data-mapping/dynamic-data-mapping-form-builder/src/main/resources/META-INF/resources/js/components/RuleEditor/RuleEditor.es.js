@@ -30,7 +30,7 @@ import {Config} from 'metal-state';
 
 import {maxPageIndex, pageOptions} from '../../util/pageSupport.es';
 import {getFieldProperty} from '../LayoutProvider/util/fields.es';
-import {getFieldOptions} from '../RuleBuilder/RulesSupport.es';
+import RulesSupport from '../RuleBuilder/RulesSupport.es';
 import templates from './RuleEditor.soy';
 
 const fieldOptionStructure = Config.shapeOf({
@@ -296,7 +296,10 @@ class RuleEditor extends Component {
 
 				operators = this._getOperatorsByFieldType(dataType);
 
-				firstOperandOptions = getFieldOptions(fieldName, pages);
+				firstOperandOptions = RulesSupport.getFieldOptions(
+					fieldName,
+					pages
+				);
 			}
 
 			return {
