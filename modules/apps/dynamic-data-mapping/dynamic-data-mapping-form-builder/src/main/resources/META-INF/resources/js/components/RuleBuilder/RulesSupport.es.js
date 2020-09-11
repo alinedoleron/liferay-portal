@@ -14,6 +14,8 @@
 
 import {PagesVisitor} from 'dynamic-data-mapping-form-renderer';
 
+import {getFieldProperty} from '../LayoutProvider/util/fields.es';
+
 const regexEmptyField = /\[\]/g;
 const regexFieldPattern = /Field\d{8}/g;
 
@@ -59,19 +61,6 @@ const clearAllConditionFieldValues = (condition) => {
 	return condition;
 };
 
-const getFieldOptions = (fieldName, pages) => {
-	let options = [];
-	const visitor = new PagesVisitor(pages);
-
-	const field = visitor.findField((field) => {
-		return field.fieldName === fieldName;
-	});
-
-	options = field ? field.options : [];
-
-	return options;
-}
-
 const formatRules = (pages, rules) => {
 	const visitor = new PagesVisitor(pages);
 
@@ -98,10 +87,20 @@ const formatRules = (pages, rules) => {
 				true
 			);
 
-			if (firstOperandFieldExists && secondOperand) {
+			const firstOperandFieldType = getFieldType(
+				condition.operands[0].value,
+				pages
+			);
+
+			if (
+				firstOperandFieldExists &&
+				fieldWithOptions(firstOperandFieldType) &&
+				condition.operands[1].type != 'field'
+			) {
 				const fieldName = condition.operands[0].value;
 				const options = getFieldOptions(fieldName, pages);
-				secondOperandFieldExists = options.some((option) => option.label == condition.operands[1].value)
+				secondOperandFieldExists =
+					options && optionBelongsToRule(condition, options);
 			}
 
 			if (
@@ -131,9 +130,16 @@ const formatRules = (pages, rules) => {
 			}
 
 			if (
+				fieldWithOptions(firstOperandFieldType) &&
+				!secondOperandFieldExists
+			) {
+				clearSecondOperandValue(condition);
+			}
+
+			if (
 				!secondOperandFieldExists &&
 				secondOperand &&
-				(secondOperand.type == 'field' || secondOperand.type == 'string')
+				secondOperand.type == 'field'
 			) {
 				clearSecondOperandValue(condition);
 			}
@@ -196,6 +202,14 @@ const fieldNameBelongsToCondition = (fieldName, conditions) => {
 		.some((fieldFound) => fieldFound == true);
 };
 
+const fieldWithOptions = (fieldType) => {
+	return (
+		fieldType == 'radio' ||
+		fieldType == 'checkbox_multiple' ||
+		fieldType == 'select'
+	);
+};
+
 const findInvalidRule = (rule) => {
 	return findRuleByFieldName('', [rule]);
 };
@@ -210,6 +224,29 @@ const findRuleByFieldName = (fieldName, rules) => {
 
 const getExpressionFields = (action, regex = regexFieldPattern) => {
 	return action.expression.match(regex);
+};
+
+const getFieldOptions = (fieldName, pages) => {
+	let options = [];
+	const visitor = new PagesVisitor(pages);
+
+	const field = visitor.findField((field) => {
+		return field.fieldName === fieldName;
+	});
+
+	options = field ? field.options : [];
+
+	return options;
+};
+
+const getFieldType = (fieldName, pages) => {
+	return getFieldProperty(pages, fieldName, 'type');
+};
+
+const optionBelongsToRule = (condition, options) => {
+	return options.some(
+		(option) => option.label == condition.operands[1].value
+	);
 };
 
 const syncActions = (pages, actions) => {
