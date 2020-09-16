@@ -136,6 +136,8 @@ class LayoutProvider extends Component {
 		if (focusedField && focusedField.settingsContext) {
 			const settingsContext = {
 				...focusedField.settingsContext,
+				defaultLanguageId,
+				editingLanguageId,
 				pages: this.getLocalizedPages(
 					focusedField.settingsContext.pages
 				),
@@ -180,6 +182,7 @@ class LayoutProvider extends Component {
 					...settingsContext,
 					availableLanguageIds,
 					defaultLanguageId,
+					editingLanguageId,
 					pages: this.getLocalizedPages(settingsContext.pages),
 				};
 
