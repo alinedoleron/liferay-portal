@@ -61,12 +61,20 @@ const Numeric = ({
 
 	useEffect(() => {
 		if (prevEditingLanguageId !== editingLanguageId && localizable) {
-			const newValue =
+			let newValue =
 				localizedValue[editingLanguageId] !== undefined
 					? localizedValue[editingLanguageId]
 					: localizedValue[defaultLanguageId];
+
+			if (dataType === 'integer' && newValue) {
+				newValue = String(
+					Math.round(newValue.replace(symbols.decimalSymbol, '.'))
+				);
+			}
+
 			setCurrentValue(newValue);
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [
 		defaultLanguageId,
 		editingLanguageId,
