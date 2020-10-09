@@ -25,6 +25,7 @@ import {
 	generateName,
 } from 'dynamic-data-mapping-form-renderer';
 import {makeFetch} from 'dynamic-data-mapping-form-renderer/js/util/fetch.es';
+import {openModal} from 'frontend-js-web';
 import dom from 'metal-dom';
 import {Drag, DragDrop} from 'metal-drag-drop';
 import {EventHandler} from 'metal-events';
@@ -328,66 +329,6 @@ class Sidebar extends Component {
 						'cancel-field-changes-question'
 					)}
 				/>
-				<ClayModal
-					body={Liferay.Language.get(
-						'a-rule-is-applied-to-this-field'
-					)}
-					elementClasses={'lfr-ddm-forms-delete-rule'}
-					events={{
-						clickButton: this._handleDeleteFieldModalButtonClicked.bind(
-							this
-						),
-					}}
-					footerButtons={[
-						{
-							alignment: 'right',
-							label: Liferay.Language.get('cancel'),
-							style: 'secondary',
-							type: 'close',
-						},
-						{
-							alignment: 'right',
-							label: Liferay.Language.get('delete'),
-							style: 'primary',
-							type: 'button',
-						},
-					]}
-					ref={'deleteFieldRuleModal'}
-					size={'lg'}
-					title={Liferay.Language.get(
-						'delete-field-with-rule-applied'
-					)}
-				/>
-				<ClayModal
-					body={Liferay.Language.get(
-						'a-rule-is-applied-to-this-field-by-changing-its-type'
-					)}
-					elementClasses={'lfr-ddm-forms-delete-rule'}
-					events={{
-						clickButton: this._handleChangeFieldTypeModalButtonClicked.bind(
-							this
-						),
-					}}
-					footerButtons={[
-						{
-							alignment: 'right',
-							label: Liferay.Language.get('cancel'),
-							style: 'secondary',
-							type: 'close',
-						},
-						{
-							alignment: 'right',
-							label: Liferay.Language.get('change-field-type'),
-							style: 'primary',
-							type: 'button',
-						},
-					]}
-					ref={'changeFieldTypeRuleModal'}
-					size={'lg'}
-					title={Liferay.Language.get(
-						'change-field-type-with-rule-applied'
-					)}
-				/>
 			</div>
 		);
 	}
@@ -586,40 +527,54 @@ class Sidebar extends Component {
 		const {fieldName} = this.props.focusedField;
 		const {rules} = this.props;
 
-		if (RulesSupport.findRuleByFieldName(fieldName, rules)) {
+		if (rules && RulesSupport.findRuleByFieldName(fieldName, rules)) {
 			const dropdown = document.querySelector('.dropdown-menu.show');
 
 			dropdown.classList.remove('show');
 
-			this.refs.changeFieldTypeRuleModal.data = {
-				newFieldType,
-			};
-
-			this.refs.changeFieldTypeRuleModal.show();
+			openModal({
+				bodyHTML: Liferay.Language.get(
+					'a-rule-is-applied-to-this-field-by-changing-its-type'
+				),
+				buttons: [
+					{
+						displayType: 'secondary',
+						label: Liferay.Language.get('cancel'),
+						type: 'cancel',
+					},
+					{
+						displayType: 'danger',
+						label: Liferay.Language.get('change-field-type'),
+						onClick: () => {
+							this._handleChangeFieldTypeModalButtonClicked(
+								newFieldType
+							);
+						},
+						type: 'cancel',
+					},
+				],
+				id: 'ddm-change-field-type-with-rule-modal',
+				size: 'md',
+				title: Liferay.Language.get(
+					'change-field-type-with-rule-applied'
+				),
+			});
 		}
 		else {
 			this.changeFieldType(newFieldType);
 		}
 	}
 
-	_handleChangeFieldTypeModalButtonClicked(event) {
-		const {newFieldType} = this.refs.changeFieldTypeRuleModal.data;
-
-		if (event.target.classList.contains('btn-primary')) {
-			this.changeFieldType(newFieldType);
-		}
+	_handleChangeFieldTypeModalButtonClicked(newFieldType) {
+		this.changeFieldType(newFieldType);
 	}
 
 	_handleCloseButtonClicked() {
 		this.close();
 	}
 
-	_handleDeleteFieldModalButtonClicked(event) {
-		const {fieldName} = this.refs.deleteFieldRuleModal.data;
-
-		if (event.target.classList.contains('btn-primary')) {
-			this._deleteField(fieldName);
-		}
+	_handleDeleteFieldModalButtonClicked(fieldName) {
+		this._deleteField(fieldName);
 	}
 
 	_handleDocumentMouseDown({target}) {
@@ -784,18 +739,43 @@ class Sidebar extends Component {
 			else if (settingsItem === 'delete-field') {
 				const {rules} = this.props;
 
-				if (RulesSupport.findRuleByFieldName(fieldName, rules)) {
+				if (
+					rules &&
+					RulesSupport.findRuleByFieldName(fieldName, rules)
+				) {
 					const dropdown = document.querySelector(
 						'.dropdown-menu.show'
 					);
 
 					dropdown.classList.remove('show');
 
-					this.refs.deleteFieldRuleModal.data = {
-						fieldName,
-					};
-
-					this.refs.deleteFieldRuleModal.show();
+					openModal({
+						bodyHTML: Liferay.Language.get(
+							'a-rule-is-applied-to-this-field'
+						),
+						buttons: [
+							{
+								displayType: 'secondary',
+								label: Liferay.Language.get('cancel'),
+								type: 'cancel',
+							},
+							{
+								displayType: 'danger',
+								label: Liferay.Language.get('delete'),
+								onClick: () => {
+									this._handleDeleteFieldModalButtonClicked(
+										fieldName
+									);
+								},
+								type: 'cancel',
+							},
+						],
+						id: 'ddm-delete-field-with-rule-modal',
+						size: 'md',
+						title: Liferay.Language.get(
+							'delete-field-with-rule-applied'
+						),
+					});
 				}
 				else {
 					this._deleteField(fieldName);
