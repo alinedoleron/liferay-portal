@@ -176,7 +176,10 @@ describe('RulesSupport', () => {
 			expect(
 				RulesSupport.findRuleByFieldName('num1', rules)
 			).toBeTruthy();
+<<<<<<< HEAD
 
+=======
+>>>>>>> LPS-119818 Add unit tests for RulesSupport
 			expect(
 				RulesSupport.findRuleByFieldName('num2', rules)
 			).toBeTruthy();
@@ -213,7 +216,10 @@ describe('RulesSupport', () => {
 			expect(
 				RulesSupport.findRuleByFieldName('select1', rules)
 			).toBeTruthy();
+<<<<<<< HEAD
 
+=======
+>>>>>>> LPS-119818 Add unit tests for RulesSupport
 			expect(
 				RulesSupport.findRuleByFieldName('text2', rules)
 			).toBeTruthy();
