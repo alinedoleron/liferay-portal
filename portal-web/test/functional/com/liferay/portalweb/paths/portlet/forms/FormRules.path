@@ -197,6 +197,11 @@
     <td>//li[@class='list-group-item'][${key_ruleNumber}]//p[contains(@class,'rule-description')]//b[@class='text-lowercase']/following-sibling::b[contains(.,'${key_action}')]/span[contains(.,'${key_actionTarget}')] | //li[@class='list-group-item'][${key_ruleNumber}]//p[contains(@class,'rule-description')]//b[@class='text-lowercase']/following-sibling::span[contains(.,'${key_action}')]/following-sibling::span[contains(.,'${key_actionTarget}')]</td>
     <td></td>
 </tr>
+<tr>
+    <td>RULE_BUILDER_BROKEN</td>
+    <td>//li[@class='list-group-item'][${key_ruleNumber}]//div[contains(@class,'invalid-rule')]//span[contains(text(), 'Broken Rule')]</td>
+    <td></td>
+</tr>
 </tbody>
 </table>
 </body>
