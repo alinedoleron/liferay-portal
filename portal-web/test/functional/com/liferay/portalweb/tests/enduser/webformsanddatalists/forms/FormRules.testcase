@@ -671,12 +671,6 @@ definition {
 
 		Form.closeSidebar();
 
-		Form.addTextField(fieldPositionNumber = "2");
-
-		Form.editFieldLabelMetal(fieldValue = "Text Field 2");
-
-		Form.closeSidebar();
-
 		FormsAdminNavigator.gotoRules();
 
 		FormRules.addRule();
@@ -702,15 +696,9 @@ definition {
 		Form.deleteFieldModalConfirmation(
 			fieldLabel = "Text Field",
 			fieldName = "${fieldNameTextField}");
-
 		FormsAdminNavigator.gotoRules();
 
 		FormRules.viewBrokenRule(ruleNumber = "1");
-	}
-
-	@description = "This is a use case for LPS-79095."
-	@priority = "5"
-	test EditRule {
 		property test.name.skip.portal.instance = "FormRules#EditRule";
 		property portal.acceptance = "true";
 		Navigator.openURL();
