@@ -25,12 +25,14 @@ import {
 	generateName,
 } from 'dynamic-data-mapping-form-renderer';
 import {makeFetch} from 'dynamic-data-mapping-form-renderer/js/util/fetch.es';
+import {openModal} from 'frontend-js-web';
 import dom from 'metal-dom';
 import {Drag, DragDrop} from 'metal-drag-drop';
 import {EventHandler} from 'metal-events';
 import Component, {Fragment} from 'metal-jsx';
 import {Config} from 'metal-state';
 
+import RulesSupport from '../../components/RuleBuilder/RulesSupport.es';
 import {focusedFieldStructure} from '../../util/config.es';
 import {selectText} from '../../util/dom.es';
 import {
@@ -522,7 +524,48 @@ class Sidebar extends Component {
 
 	_handleChangeFieldTypeItemClicked({data}) {
 		const newFieldType = data.item.name;
+		const {fieldName} = this.props.focusedField;
+		const {rules} = this.props;
 
+		if (rules && RulesSupport.findRuleByFieldName(fieldName, rules)) {
+			const dropdown = document.querySelector('.dropdown-menu.show');
+
+			dropdown.classList.remove('show');
+
+			openModal({
+				bodyHTML: Liferay.Language.get(
+					'a-rule-is-applied-to-this-field-by-changing-its-type'
+				),
+				buttons: [
+					{
+						displayType: 'secondary',
+						label: Liferay.Language.get('cancel'),
+						type: 'cancel',
+					},
+					{
+						displayType: 'danger',
+						label: Liferay.Language.get('change-field-type'),
+						onClick: () => {
+							this._handleChangeFieldTypeModalButtonClicked(
+								newFieldType
+							);
+						},
+						type: 'cancel',
+					},
+				],
+				id: 'ddm-change-field-type-with-rule-modal',
+				size: 'md',
+				title: Liferay.Language.get(
+					'change-field-type-with-rule-applied'
+				),
+			});
+		}
+		else {
+			this.changeFieldType(newFieldType);
+		}
+	}
+
+	_handleChangeFieldTypeModalButtonClicked(newFieldType) {
 		this.changeFieldType(newFieldType);
 	}
 
@@ -690,6 +733,19 @@ class Sidebar extends Component {
 				this._duplicateField(fieldName);
 			}
 			else if (settingsItem === 'delete-field') {
+				const {rules} = this.props;
+
+				if (
+					rules &&
+					RulesSupport.findRuleByFieldName(fieldName, rules)
+				) {
+					const dropdown = document.querySelector(
+						'.dropdown-menu.show'
+					);
+
+					dropdown.classList.remove('show');
+				}
+
 				this._deleteField(fieldName);
 			}
 			else if (settingsItem === 'cancel-field-changes') {

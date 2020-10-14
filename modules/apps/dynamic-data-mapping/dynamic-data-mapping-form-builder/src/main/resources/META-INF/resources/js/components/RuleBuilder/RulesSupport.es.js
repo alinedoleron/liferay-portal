@@ -14,7 +14,7 @@
 
 import {PagesVisitor} from 'dynamic-data-mapping-form-renderer';
 
-import {DEFAULT_FIELD_NAME_REGEX, EMPTY_FIELD_REGEX} from '../../util/regex.es';
+import {DEFAULT_FIELD_NAMES_REGEX_FOR_EXPRESSION} from '../../util/regex.es';
 import {getFieldProperty} from '../LayoutProvider/util/fields.es';
 
 const clearTargetValue = (actions, index) => {
@@ -160,30 +160,28 @@ const fieldNameBelongsToAction = (fieldName, actions) => {
 	return actions
 		.map((action) => {
 			if (action.action === 'auto-fill') {
-				return Object.values(action.outputs).some(
-					(output) => output === fieldName
+				return (
+					Object.values(action.inputs).some(
+						(input) => input === fieldName
+					) ||
+					Object.values(action.outputs).some(
+						(output) => output === fieldName
+					)
 				);
 			}
 			else if (action.action === 'calculate') {
-				const expressionFields = getExpressionFields(action);
+				const {expression, target} = action;
 
 				if (fieldName === '') {
-					const expressionEmptyFields = getExpressionFields(
-						action,
-						EMPTY_FIELD_REGEX
-					);
-
 					return (
-						(expressionEmptyFields &&
-							expressionEmptyFields.indexOf(emptyField) !== -1) ||
-						action.target === fieldName
+						expression.indexOf(emptyField) !== -1 ||
+						target === fieldName
 					);
 				}
 				else {
 					return (
-						!expressionFields ||
-						expressionFields.indexOf(fieldName) >= 0 ||
-						action.target === fieldName
+						expression.indexOf(fieldName) !== -1 ||
+						target === fieldName
 					);
 				}
 			}
@@ -224,7 +222,10 @@ const findRuleByFieldName = (fieldName, rules) => {
 	);
 };
 
-const getExpressionFields = (action, regex = DEFAULT_FIELD_NAME_REGEX) => {
+const getExpressionFields = (
+	action,
+	regex = DEFAULT_FIELD_NAMES_REGEX_FOR_EXPRESSION
+) => {
 	return action.expression.match(regex);
 };
 
@@ -258,11 +259,15 @@ const syncActions = (pages, actions) => {
 
 			Object.keys(inputs)
 				.filter((key) => !targetFieldExists(inputs[key], pages))
-				.map((key) => delete inputs[key]);
+				.map((key) => {
+					inputs[key] = '';
+				});
 
 			Object.keys(outputs)
 				.filter((key) => !targetFieldExists(outputs[key], pages))
-				.map((key) => delete outputs[key]);
+				.map((key) => {
+					outputs[key] = '';
+				});
 		}
 		else if (action.action === 'calculate') {
 			const expressionFields = getExpressionFields(action);
