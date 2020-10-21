@@ -36,6 +36,15 @@
 	<liferay-ui:message arguments="<%= HtmlUtil.escape(mndfn.getFieldName()) %>" key="the-definition-field-name-x-was-defined-more-than-once" translateArguments="<%= false %>" />
 </liferay-ui:error>
 
+<liferay-ui:error exception="<%= DDMFormValidationException.MustNotDuplicateFieldReference.class %>">
+
+	<%
+	DDMFormValidationException.MustNotDuplicateFieldReference mndfr = (DDMFormValidationException.MustNotDuplicateFieldReference)errorException;
+	%>
+
+	<liferay-ui:message arguments="<%= HtmlUtil.escape(mndfr.getFieldReference()) %>" key="the-definition-field-reference-x-was-defined-more-than-once" translateArguments="<%= false %>" />
+</liferay-ui:error>
+
 <liferay-ui:error exception="<%= DDMFormValidationException.MustSetFieldsForForm.class %>" message="please-add-at-least-one-field" />
 
 <liferay-ui:error exception="<%= DDMFormValidationException.MustSetOptionsForField.class %>">
@@ -54,6 +63,15 @@
 	%>
 
 	<liferay-ui:message arguments="<%= HtmlUtil.escape(msvcffn.getFieldName()) %>" key="invalid-characters-were-defined-for-field-name-x" translateArguments="<%= false %>" />
+</liferay-ui:error>
+
+<liferay-ui:error exception="<%= DDMFormValidationException.MustSetValidCharactersForFieldReference.class %>">
+
+	<%
+	DDMFormValidationException.MustSetValidCharactersForFieldReference msvcffr = (DDMFormValidationException.MustSetValidCharactersForFieldReference)errorException;
+	%>
+
+	<liferay-ui:message arguments="<%= HtmlUtil.escape(msvcffr.getFieldReference()) %>" key="invalid-characters-were-defined-for-field-name-x" translateArguments="<%= false %>" />
 </liferay-ui:error>
 
 <liferay-ui:error exception="<%= DDMFormValidationException.MustSetValidFormRuleExpression.class %>" message="there-are-invalid-rule-expressions" />
