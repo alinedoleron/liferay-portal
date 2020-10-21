@@ -26,6 +26,7 @@ import com.liferay.dynamic.data.mapping.model.DDMFormRule;
 import com.liferay.dynamic.data.mapping.model.LocalizedValue;
 import com.liferay.dynamic.data.mapping.test.util.DDMFormTestUtil;
 import com.liferay.dynamic.data.mapping.validator.DDMFormValidationException.MustNotDuplicateFieldName;
+import com.liferay.dynamic.data.mapping.validator.DDMFormValidationException.MustNotDuplicateFieldReference;
 import com.liferay.dynamic.data.mapping.validator.DDMFormValidationException.MustSetAvailableLocales;
 import com.liferay.dynamic.data.mapping.validator.DDMFormValidationException.MustSetDefaultLocale;
 import com.liferay.dynamic.data.mapping.validator.DDMFormValidationException.MustSetDefaultLocaleAsAvailableLocale;
@@ -33,6 +34,7 @@ import com.liferay.dynamic.data.mapping.validator.DDMFormValidationException.Mus
 import com.liferay.dynamic.data.mapping.validator.DDMFormValidationException.MustSetOptionsForField;
 import com.liferay.dynamic.data.mapping.validator.DDMFormValidationException.MustSetValidAvailableLocalesForProperty;
 import com.liferay.dynamic.data.mapping.validator.DDMFormValidationException.MustSetValidCharactersForFieldName;
+import com.liferay.dynamic.data.mapping.validator.DDMFormValidationException.MustSetValidCharactersForFieldReference;
 import com.liferay.dynamic.data.mapping.validator.DDMFormValidationException.MustSetValidCharactersForFieldType;
 import com.liferay.dynamic.data.mapping.validator.DDMFormValidationException.MustSetValidDefaultLocaleForProperty;
 import com.liferay.dynamic.data.mapping.validator.DDMFormValidationException.MustSetValidFormRuleExpression;
@@ -91,6 +93,21 @@ public class DDMFormValidatorTest {
 		_ddmFormValidatorImpl.validate(ddmForm);
 	}
 
+	@Test(expected = MustSetValidCharactersForFieldReference.class)
+	public void testDashInFieldReference() throws Exception {
+		DDMForm ddmForm = DDMFormTestUtil.createDDMForm(
+			createAvailableLocales(LocaleUtil.US), LocaleUtil.US);
+
+		DDMFormField ddmFormField = new DDMFormField(
+			"textDash", DDMFormFieldType.TEXT);
+
+		ddmFormField.setFieldReference("text-dash");
+
+		ddmForm.addDDMFormField(ddmFormField);
+
+		_ddmFormValidatorImpl.validate(ddmForm);
+	}
+
 	@Test(expected = MustSetDefaultLocaleAsAvailableLocale.class)
 	public void testDefaultLocaleMissingAsAvailableLocale() throws Exception {
 		DDMForm ddmForm = new DDMForm();
@@ -108,6 +125,21 @@ public class DDMFormValidatorTest {
 
 		ddmForm.addDDMFormField(
 			new DDMFormField("$text", DDMFormFieldType.TEXT));
+
+		_ddmFormValidatorImpl.validate(ddmForm);
+	}
+
+	@Test(expected = MustSetValidCharactersForFieldReference.class)
+	public void testDollarInFieldReference() throws Exception {
+		DDMForm ddmForm = DDMFormTestUtil.createDDMForm(
+			createAvailableLocales(LocaleUtil.US), LocaleUtil.US);
+
+		DDMFormField ddmFormField = new DDMFormField(
+			"text", DDMFormFieldType.TEXT);
+
+		ddmFormField.setFieldReference("$text");
+
+		ddmForm.addDDMFormField(ddmFormField);
 
 		_ddmFormValidatorImpl.validate(ddmForm);
 	}
@@ -131,6 +163,33 @@ public class DDMFormValidatorTest {
 		_ddmFormValidatorImpl.validate(ddmForm);
 	}
 
+	@Test(expected = MustNotDuplicateFieldReference.class)
+	public void testDuplicateCaseInsensitiveFieldReference() throws Exception {
+		DDMForm ddmForm = DDMFormTestUtil.createDDMForm(
+			createAvailableLocales(LocaleUtil.US), LocaleUtil.US);
+
+		DDMFormField ddmFormField1 = new DDMFormField(
+			"Name1", DDMFormFieldType.TEXT);
+
+		ddmFormField1.setFieldReference("Reference1");
+
+		ddmForm.addDDMFormField(ddmFormField1);
+
+		DDMFormField ddmFormField2 = new DDMFormField(
+			"Name2", DDMFormFieldType.TEXT);
+
+		DDMFormField nestedDDMFormField = new DDMFormField(
+			"Name3", DDMFormFieldType.TEXT);
+
+		nestedDDMFormField.setFieldReference("reference1");
+
+		ddmFormField2.addNestedDDMFormField(nestedDDMFormField);
+
+		ddmForm.addDDMFormField(ddmFormField2);
+
+		_ddmFormValidatorImpl.validate(ddmForm);
+	}
+
 	@Test(expected = MustNotDuplicateFieldName.class)
 	public void testDuplicateFieldName() throws Exception {
 		DDMForm ddmForm = DDMFormTestUtil.createDDMForm(
@@ -146,6 +205,33 @@ public class DDMFormValidatorTest {
 			new DDMFormField("Name1", DDMFormFieldType.TEXT));
 
 		ddmForm.addDDMFormField(name2DDMFormField);
+
+		_ddmFormValidatorImpl.validate(ddmForm);
+	}
+
+	@Test(expected = MustNotDuplicateFieldReference.class)
+	public void testDuplicateFieldReference() throws Exception {
+		DDMForm ddmForm = DDMFormTestUtil.createDDMForm(
+			createAvailableLocales(LocaleUtil.US), LocaleUtil.US);
+
+		DDMFormField ddmFormField1 = new DDMFormField(
+			"Name1", DDMFormFieldType.TEXT);
+
+		ddmFormField1.setFieldReference("Reference1");
+
+		ddmForm.addDDMFormField(ddmFormField1);
+
+		DDMFormField ddmFormField2 = new DDMFormField(
+			"Name2", DDMFormFieldType.TEXT);
+
+		DDMFormField nestedDDMFormField = new DDMFormField(
+			"Name3", DDMFormFieldType.TEXT);
+
+		nestedDDMFormField.setFieldReference("Reference1");
+
+		ddmFormField2.addNestedDDMFormField(nestedDDMFormField);
+
+		ddmForm.addDDMFormField(ddmFormField2);
 
 		_ddmFormValidatorImpl.validate(ddmForm);
 	}
@@ -178,6 +264,21 @@ public class DDMFormValidatorTest {
 
 		DDMFormField ddmFormField = new DDMFormField(
 			"*", DDMFormFieldType.TEXT);
+
+		ddmForm.addDDMFormField(ddmFormField);
+
+		_ddmFormValidatorImpl.validate(ddmForm);
+	}
+
+	@Test(expected = MustSetValidCharactersForFieldReference.class)
+	public void testInvalidFieldReference() throws Exception {
+		DDMForm ddmForm = DDMFormTestUtil.createDDMForm(
+			createAvailableLocales(LocaleUtil.US), LocaleUtil.US);
+
+		DDMFormField ddmFormField = new DDMFormField(
+			"text", DDMFormFieldType.TEXT);
+
+		ddmFormField.setFieldReference("*");
 
 		ddmForm.addDDMFormField(ddmFormField);
 
@@ -384,6 +485,21 @@ public class DDMFormValidatorTest {
 
 		ddmForm.addDDMFormField(
 			new DDMFormField("Text with Space", DDMFormFieldType.TEXT));
+
+		_ddmFormValidatorImpl.validate(ddmForm);
+	}
+
+	@Test(expected = MustSetValidCharactersForFieldReference.class)
+	public void testSpaceInFieldReference() throws Exception {
+		DDMForm ddmForm = DDMFormTestUtil.createDDMForm(
+			createAvailableLocales(LocaleUtil.US), LocaleUtil.US);
+
+		DDMFormField ddmFormField = new DDMFormField(
+			"TextWithSpace", DDMFormFieldType.TEXT);
+
+		ddmFormField.setFieldReference("Text with Space");
+
+		ddmForm.addDDMFormField(ddmFormField);
 
 		_ddmFormValidatorImpl.validate(ddmForm);
 	}
