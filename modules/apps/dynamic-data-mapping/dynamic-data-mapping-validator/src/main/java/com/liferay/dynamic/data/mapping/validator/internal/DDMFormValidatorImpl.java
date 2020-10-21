@@ -30,6 +30,7 @@ import com.liferay.dynamic.data.mapping.model.DDMFormFieldValidationExpression;
 import com.liferay.dynamic.data.mapping.model.LocalizedValue;
 import com.liferay.dynamic.data.mapping.validator.DDMFormValidationException;
 import com.liferay.dynamic.data.mapping.validator.DDMFormValidationException.MustNotDuplicateFieldName;
+import com.liferay.dynamic.data.mapping.validator.DDMFormValidationException.MustNotDuplicateFieldReference;
 import com.liferay.dynamic.data.mapping.validator.DDMFormValidationException.MustSetAvailableLocales;
 import com.liferay.dynamic.data.mapping.validator.DDMFormValidationException.MustSetDefaultLocale;
 import com.liferay.dynamic.data.mapping.validator.DDMFormValidationException.MustSetDefaultLocaleAsAvailableLocale;
@@ -38,6 +39,7 @@ import com.liferay.dynamic.data.mapping.validator.DDMFormValidationException.Mus
 import com.liferay.dynamic.data.mapping.validator.DDMFormValidationException.MustSetOptionsForField;
 import com.liferay.dynamic.data.mapping.validator.DDMFormValidationException.MustSetValidAvailableLocalesForProperty;
 import com.liferay.dynamic.data.mapping.validator.DDMFormValidationException.MustSetValidCharactersForFieldName;
+import com.liferay.dynamic.data.mapping.validator.DDMFormValidationException.MustSetValidCharactersForFieldReference;
 import com.liferay.dynamic.data.mapping.validator.DDMFormValidationException.MustSetValidCharactersForFieldType;
 import com.liferay.dynamic.data.mapping.validator.DDMFormValidationException.MustSetValidDefaultLocaleForProperty;
 import com.liferay.dynamic.data.mapping.validator.DDMFormValidationException.MustSetValidFormRuleExpression;
@@ -94,9 +96,11 @@ public class DDMFormValidatorImpl implements DDMFormValidator {
 
 		_validateDDMFormFieldNames(ddmFormFields);
 
+		_validateDDMFormFieldReferences(ddmFormFields);
+
 		validateDDMFormFields(
-			ddmFormFields, new HashSet<String>(), ddmForm.getAvailableLocales(),
-			ddmForm.getDefaultLocale());
+			ddmFormFields, new HashSet<String>(), new HashSet<String>(),
+			ddmForm.getAvailableLocales(), ddmForm.getDefaultLocale());
 	}
 
 	@Reference(unbind = "-")
@@ -246,14 +250,40 @@ public class DDMFormValidatorImpl implements DDMFormValidator {
 		}
 	}
 
+	protected void validateDDMFormFieldReference(
+			DDMFormField ddmFormField, Set<String> ddmFormFieldReferences)
+		throws DDMFormValidationException {
+
+		Matcher matcher = _ddmFormFieldNamePattern.matcher(
+			ddmFormField.getFieldReference());
+
+		if (!matcher.matches()) {
+			throw new MustSetValidCharactersForFieldReference(
+				ddmFormField.getFieldReference());
+		}
+
+		if (ddmFormFieldReferences.contains(
+				StringUtil.toLowerCase(ddmFormField.getFieldReference()))) {
+
+			throw new MustNotDuplicateFieldReference(
+				ddmFormField.getFieldReference());
+		}
+
+		ddmFormFieldReferences.add(
+			StringUtil.toLowerCase(ddmFormField.getFieldReference()));
+	}
+
 	protected void validateDDMFormFields(
 			List<DDMFormField> ddmFormFields, Set<String> ddmFormFieldNames,
+			Set<String> ddmFormFieldReferences,
 			Set<Locale> ddmFormAvailableLocales, Locale ddmFormDefaultLocale)
 		throws DDMFormFieldValueValidationException,
 			   DDMFormValidationException {
 
 		for (DDMFormField ddmFormField : ddmFormFields) {
 			validateDDMFormFieldName(ddmFormField, ddmFormFieldNames);
+
+			validateDDMFormFieldReference(ddmFormField, ddmFormFieldReferences);
 
 			validateDDMFormFieldType(ddmFormField);
 
@@ -278,7 +308,8 @@ public class DDMFormValidatorImpl implements DDMFormValidator {
 
 			validateDDMFormFields(
 				ddmFormField.getNestedDDMFormFields(), ddmFormFieldNames,
-				ddmFormAvailableLocales, ddmFormDefaultLocale);
+				ddmFormFieldReferences, ddmFormAvailableLocales,
+				ddmFormDefaultLocale);
 		}
 	}
 
@@ -413,6 +444,20 @@ public class DDMFormValidatorImpl implements DDMFormValidator {
 			ddmFormAvailableLocales, ddmFormDefaultLocale);
 	}
 
+	private Set<String> _getDuplicatedFields(
+		Set<Map.Entry<String, Long>> entrySet) {
+
+		Stream<Map.Entry<String, Long>> entrySetStream = entrySet.stream();
+
+		return entrySetStream.filter(
+			entry -> entry.getValue() > 1
+		).map(
+			Map.Entry::getKey
+		).collect(
+			Collectors.toSet()
+		);
+	}
+
 	private void _validateDDMFormFieldNames(List<DDMFormField> ddmFormFields)
 		throws DDMFormValidationException {
 
@@ -424,21 +469,31 @@ public class DDMFormValidatorImpl implements DDMFormValidator {
 			Collectors.groupingBy(String::valueOf, Collectors.counting())
 		);
 
-		Set<Map.Entry<String, Long>> entrySet =
-			ddmFormFieldNamesCount.entrySet();
-
-		Stream<Map.Entry<String, Long>> entrySetStream = entrySet.stream();
-
-		Set<String> duplicatedFieldNames = entrySetStream.filter(
-			entry -> entry.getValue() > 1
-		).map(
-			Map.Entry::getKey
-		).collect(
-			Collectors.toSet()
-		);
+		Set<String> duplicatedFieldNames = _getDuplicatedFields(
+			ddmFormFieldNamesCount.entrySet());
 
 		if (SetUtil.isNotEmpty(duplicatedFieldNames)) {
 			throw new MustNotDuplicateFieldName(duplicatedFieldNames);
+		}
+	}
+
+	private void _validateDDMFormFieldReferences(
+			List<DDMFormField> ddmFormFields)
+		throws DDMFormValidationException {
+
+		Stream<DDMFormField> stream = ddmFormFields.stream();
+
+		Map<String, Long> ddmFormFieldReferencesCount = stream.map(
+			DDMFormField::getFieldReference
+		).collect(
+			Collectors.groupingBy(String::valueOf, Collectors.counting())
+		);
+
+		Set<String> duplicatedFieldReferences = _getDuplicatedFields(
+			ddmFormFieldReferencesCount.entrySet());
+
+		if (SetUtil.isNotEmpty(duplicatedFieldReferences)) {
+			throw new MustNotDuplicateFieldReference(duplicatedFieldReferences);
 		}
 	}
 
