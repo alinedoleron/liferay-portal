@@ -87,6 +87,43 @@ public class DDMFormValidationException extends PortalException {
 
 	}
 
+	public static class MustNotDuplicateFieldReference
+		extends DDMFormValidationException {
+
+		public MustNotDuplicateFieldReference(
+			Set<String> duplicatedFieldReferences) {
+
+			super(
+				String.format(
+					"Field references %s were defined more than once",
+					duplicatedFieldReferences));
+
+			_duplicatedFieldReferences = duplicatedFieldReferences;
+		}
+
+		public MustNotDuplicateFieldReference(String fieldReference) {
+			this(SetUtil.fromArray(new String[] {fieldReference}));
+		}
+
+		public Set<String> getDuplicatedFieldReferences() {
+			return _duplicatedFieldReferences;
+		}
+
+		public String getFieldReference() {
+			String[] fieldReferences = _duplicatedFieldReferences.toArray(
+				new String[0]);
+
+			if (fieldReferences.length == 0) {
+				return null;
+			}
+
+			return fieldReferences[0];
+		}
+
+		private final Set<String> _duplicatedFieldReferences;
+
+	}
+
 	public static class MustSetAvailableLocales
 		extends DDMFormValidationException {
 
@@ -221,6 +258,26 @@ public class DDMFormValidationException extends PortalException {
 		}
 
 		private String _fieldName;
+
+	}
+
+	public static class MustSetValidCharactersForFieldReference
+		extends DDMFormValidationException {
+
+		public MustSetValidCharactersForFieldReference(String fieldReference) {
+			super(
+				String.format(
+					"Invalid characters entered for field reference %s",
+					fieldReference));
+
+			_fieldReference = fieldReference;
+		}
+
+		public String getFieldReference() {
+			return _fieldReference;
+		}
+
+		private final String _fieldReference;
 
 	}
 
