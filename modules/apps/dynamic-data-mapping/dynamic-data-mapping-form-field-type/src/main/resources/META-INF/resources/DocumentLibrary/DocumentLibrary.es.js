@@ -203,6 +203,7 @@ const DocumentLibrary = ({
 };
 
 const Main = ({
+	allowGuestUsers,
 	displayErrors,
 	errorMessage,
 	fileEntryTitle,
