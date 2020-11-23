@@ -117,6 +117,8 @@ public class DDMFormTemplateContextProcessor {
 		setDDMFormFieldLabel(jsonObject.getString("label"), ddmFormField);
 		setDDMFormFieldLocalizable(
 			jsonObject.getBoolean("localizable", false), ddmFormField);
+		setDDMFormFieldMaximumRepetitions(
+			jsonObject.getInt("maximumRepetitions"), ddmFormField);
 		setDDMFormFieldMultiple(
 			jsonObject.getBoolean("multiple"), ddmFormField);
 		setDDMFormFieldOptions(
@@ -292,6 +294,12 @@ public class DDMFormTemplateContextProcessor {
 		boolean localizable, DDMFormField ddmFormField) {
 
 		ddmFormField.setLocalizable(localizable);
+	}
+
+	protected void setDDMFormFieldMaximumRepetitions(
+		int maximumRepetitions, DDMFormField ddmFormField) {
+
+		ddmFormField.setProperty("maximumRepetitions", maximumRepetitions);
 	}
 
 	protected void setDDMFormFieldMultiple(
