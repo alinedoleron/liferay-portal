@@ -12,23 +12,17 @@
  * details.
  */
 
-import React, {useContext} from 'react';
+import React from 'react';
 
-import AppContext from '../../../AppContext.es';
 import {dropLayoutBuilderField} from '../../../actions.es';
 import FieldSets from '../../../components/field-sets/FieldSets.es';
 import FieldTypeList from '../../../components/field-types/FieldTypeList.es';
 import Sidebar from '../../../components/sidebar/Sidebar.es';
-import DataLayoutBuilderContext from '../../../data-layout-builder/DataLayoutBuilderContext.es';
 
-export default function ({keywords, setKeywords}) {
-	const [dataLayoutBuilder] = useContext(DataLayoutBuilderContext);
-
-	const [
-		{
-			config: {allowFieldSets},
-		},
-	] = useContext(AppContext);
+export default function ({dataLayoutBuilder, keywords, setKeywords}) {
+	const {
+		config: {allowFieldSets},
+	} = dataLayoutBuilder.props.appContext[0];
 
 	const onDoubleClick = ({name}) => {
 		const {activePage, pages} = dataLayoutBuilder.getStore();

@@ -15,9 +15,8 @@
 import ClayButton from '@clayui/button';
 import ClayLabel from '@clayui/label';
 import classNames from 'classnames';
-import React, {useContext} from 'react';
+import React from 'react';
 
-import AppContext from '../../AppContext.es';
 import {DELETE_DATA_LAYOUT_RULE} from '../../actions.es';
 import {
 	forEachDataDefinitionField,
@@ -57,9 +56,14 @@ const Text = ({capitalize = false, children = '', lowercase = false}) => (
 	</span>
 );
 
-export default function RuleItem({rule, toggleRulesEditorVisibility}) {
+export default function RuleItem({
+	appContext,
+	dispatch,
+	rule,
+	toggleRulesEditorVisibility,
+}) {
 	const {actions, conditions, logicalOperator, name: ruleName} = rule;
-	const [{dataDefinition}, dispatch] = useContext(AppContext);
+	const {dataDefinition} = appContext;
 	const {defaultLanguageId} = dataDefinition;
 	const name = getLocalizedValue(defaultLanguageId, ruleName);
 

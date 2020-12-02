@@ -14,18 +14,21 @@
 
 import ClayButton from '@clayui/button';
 import ClayLayout from '@clayui/layout';
-import React, {useContext} from 'react';
+import React from 'react';
 
-import AppContext from '../../AppContext.es';
 import EmptyState from '../empty-state/EmptyState.es';
 import RuleItem from './RuleItem.es';
 
-export default ({keywords, toggleRulesEditorVisibility}) => {
-	const [
-		{
-			dataLayout: {dataRules},
-		},
-	] = useContext(AppContext);
+export default ({
+	dataLayoutBuilder,
+	dispatch,
+	keywords,
+	toggleRulesEditorVisibility,
+}) => {
+	const appContext = dataLayoutBuilder.props.appContext[0];
+	const {
+		dataLayout: {dataRules},
+	} = appContext;
 
 	const filteredDataRules = dataRules
 		.map((rule, index) => ({...rule, ruleEditedIndex: index}))
@@ -61,6 +64,8 @@ export default ({keywords, toggleRulesEditorVisibility}) => {
 					<hr />
 					{filteredDataRules.map((rule, index) => (
 						<RuleItem
+							appContext={appContext}
+							dispatch={dispatch}
 							key={index}
 							rule={rule}
 							toggleRulesEditorVisibility={

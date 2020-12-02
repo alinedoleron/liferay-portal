@@ -21,7 +21,7 @@ import RuleEditorModal from '../../../components/rules/RuleEditorModal.es';
 import RuleList from '../../../components/rules/RuleList.es';
 import Sidebar from '../../../components/sidebar/Sidebar.es';
 
-export default function ({title}) {
+export default function ({dataLayoutBuilder, dispatch, title}) {
 	const [rulesEditorState, setRulesEditorState] = useState({
 		isVisible: false,
 		rule: null,
@@ -65,12 +65,15 @@ export default function ({title}) {
 			</Sidebar.Header>
 			<Sidebar.Body>
 				<RuleList
+					dataLayoutBuilder={dataLayoutBuilder}
+					dispatch={dispatch}
 					keywords={keywords}
 					toggleRulesEditorVisibility={toggleRulesEditorVisibility}
 				/>
 			</Sidebar.Body>
 
 			<RuleEditorModal
+				dataLayoutBuilder={dataLayoutBuilder}
 				isVisible={rulesEditorState.isVisible}
 				onClose={() => toggleRulesEditorVisibility()}
 				rule={rulesEditorState.rule}

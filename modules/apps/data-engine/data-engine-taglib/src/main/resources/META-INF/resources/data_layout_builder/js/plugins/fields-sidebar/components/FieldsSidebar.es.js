@@ -14,16 +14,19 @@
 
 import ClayForm from '@clayui/form';
 import classNames from 'classnames';
-import React, {useContext, useState} from 'react';
+import React, {useState} from 'react';
 
-import AppContext from '../../../AppContext.es';
 import Sidebar from '../../../components/sidebar/Sidebar.es';
 import FieldsSidebarBody from './FieldsSidebarBody.es';
 import FieldsSidebarSettingsBody from './FieldsSidebarSettingsBody.es';
 import FieldsSidebarSettingsHeader from './FieldsSidebarSettingsHeader.es';
 
-export default function ({title}) {
-	const [{focusedCustomObjectField, focusedField}] = useContext(AppContext);
+export default function ({dataLayoutBuilder, dispatch, title}) {
+	const {
+		focusedCustomObjectField,
+		focusedField,
+	} = dataLayoutBuilder.props.appContext[0];
+
 	const [keywords, setKeywords] = useState('');
 
 	const hasFocusedField = Object.keys(focusedField).length > 0;
@@ -40,7 +43,9 @@ export default function ({title}) {
 				<Sidebar.Title title={title} />
 
 				{displaySettings ? (
-					<FieldsSidebarSettingsHeader />
+					<FieldsSidebarSettingsHeader
+						dataLayoutBuilder={dataLayoutBuilder}
+					/>
 				) : (
 					<ClayForm onSubmit={(event) => event.preventDefault()}>
 						<Sidebar.SearchInput
@@ -53,9 +58,13 @@ export default function ({title}) {
 
 			<Sidebar.Body>
 				{displaySettings ? (
-					<FieldsSidebarSettingsBody />
+					<FieldsSidebarSettingsBody
+						dataLayoutBuilder={dataLayoutBuilder}
+						dispatch={dispatch}
+					/>
 				) : (
 					<FieldsSidebarBody
+						dataLayoutBuilder={dataLayoutBuilder}
 						keywords={keywords}
 						setKeywords={setKeywords}
 					/>

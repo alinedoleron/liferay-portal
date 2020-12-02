@@ -20,12 +20,11 @@ import classNames from 'classnames';
 import {useIsMounted, useStateSafe} from 'frontend-js-react-web';
 import React from 'react';
 
-import AppContext from '../../AppContext.es';
 import useLazy from '../../hooks/useLazy.es';
 import useLoad from '../../hooks/useLoad.es';
 import usePlugins from '../../hooks/usePlugins.es';
 
-const {Suspense, useCallback, useContext, useEffect} = React;
+const {Suspense, useCallback, useEffect} = React;
 
 const CLASSNAME_INDICATORS = [
 	'.change-tracking-indicator',
@@ -39,11 +38,13 @@ const CLASSNAME_INDICATORS = [
 const swallow = [(value) => value, (_error) => undefined];
 
 export default function MultiPanelSidebar({
+	appContext,
+	dataLayoutBuilder,
 	panels,
 	sidebarPanels,
 	variant = 'dark',
 }) {
-	const [{sidebarOpen, sidebarPanelId}, dispatch] = useContext(AppContext);
+	const [{sidebarOpen, sidebarPanelId}, dispatch] = appContext;
 	const [hasError, setHasError] = useStateSafe(false);
 	const isMounted = useIsMounted();
 	const load = useLoad();
@@ -64,7 +65,11 @@ export default function MultiPanelSidebar({
 	let registerPanel;
 
 	if (sidebarPanelId) {
-		registerPanel = register(sidebarPanelId, promise, {app, panel});
+		registerPanel = register(sidebarPanelId, promise, {
+			app,
+			dataLayoutBuilder,
+			panel,
+		});
 	}
 
 	const togglePlugin = () => {
@@ -323,6 +328,7 @@ export default function MultiPanelSidebar({
 						>
 							<Suspense fallback={<ClayLoadingIndicator />}>
 								<SidebarPanel
+									appContext={appContext}
 									getInstance={getInstance}
 									pluginId={sidebarPanelId}
 								/>

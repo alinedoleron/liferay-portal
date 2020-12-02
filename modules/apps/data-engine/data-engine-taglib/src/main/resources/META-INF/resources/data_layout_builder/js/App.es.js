@@ -83,6 +83,8 @@ const AppContent = ({
 					dataLayoutBuilder={dataLayoutBuilder}
 				>
 					<MultiPanelSidebar
+						appContext={[state, dispatch]}
+						dataLayoutBuilder={dataLayoutBuilder}
 						panels={panels}
 						sidebarPanels={sidebarPanels}
 						variant={sidebarVariant}

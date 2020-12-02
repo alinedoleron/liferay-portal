@@ -16,16 +16,8 @@ import ClayButton from '@clayui/button';
 import {ClayInput} from '@clayui/form';
 import ClayModal, {useModal} from '@clayui/modal';
 import {RuleEditor} from 'dynamic-data-mapping-form-builder';
-import React, {
-	useCallback,
-	useContext,
-	useEffect,
-	useRef,
-	useState,
-} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 
-import AppContext from '../../AppContext.es';
-import DataLayoutBuilderContext from '../../data-layout-builder/DataLayoutBuilderContext.es';
 import {getItem} from '../../utils/client.es';
 import ModalWithEventPrevented from '../modal/ModalWithEventPrevented.es';
 
@@ -39,20 +31,18 @@ class RuleEditorWrapper extends RuleEditor {
 	}
 }
 
-const RuleEditorModalContent = ({onClose, rule}) => {
+const RuleEditorModalContent = ({dataLayoutBuilder, onClose, rule}) => {
+	const appContext = dataLayoutBuilder.props.appContext[0];
 	const ruleEditorRef = useRef();
 	const [invalidRule, setInvalidRule] = useState(true);
 	const [ruleEditor, setRuleEditor] = useState(null);
 	const [ruleName, setRuleName] = useState('');
 
-	const [
-		{
-			config: {ruleSettings},
-			spritemap,
-		},
-	] = useContext(AppContext);
+	const {
+		config: {ruleSettings},
+		spritemap,
+	} = appContext;
 
-	const [dataLayoutBuilder] = useContext(DataLayoutBuilderContext);
 	const {pages} = dataLayoutBuilder.getStore();
 
 	const [state, setState] = useState({
@@ -192,7 +182,12 @@ const RuleEditorModalContent = ({onClose, rule}) => {
 	);
 };
 
-const RuleEditorModal = ({isVisible, onClose: onCloseFn, rule}) => {
+const RuleEditorModal = ({
+	dataLayoutBuilder,
+	isVisible,
+	onClose: onCloseFn,
+	rule,
+}) => {
 	const {observer, onClose} = useModal({
 		onClose: onCloseFn,
 	});
@@ -207,7 +202,11 @@ const RuleEditorModal = ({isVisible, onClose: onCloseFn, rule}) => {
 			observer={observer}
 			size="full-screen"
 		>
-			<RuleEditorModalContent onClose={onClose} rule={rule} />
+			<RuleEditorModalContent
+				dataLayoutBuilder={dataLayoutBuilder}
+				onClose={onClose}
+				rule={rule}
+			/>
 		</ClayModal>
 	);
 };

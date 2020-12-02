@@ -20,25 +20,20 @@ import {
 } from 'dynamic-data-mapping-form-renderer';
 import React, {useContext, useEffect, useMemo, useState} from 'react';
 
-import AppContext from '../../../AppContext.es';
 import {EDIT_CUSTOM_OBJECT_FIELD} from '../../../actions.es';
-import DataLayoutBuilderContext from '../../../data-layout-builder/DataLayoutBuilderContext.es';
 import {getFilteredSettingsContext} from '../../../utils/settingsForm.es';
 
-export default function () {
+export default function ({dataLayoutBuilder, dispatch}) {
 	const spritemap = useContext(ClayIconSpriteContext);
+	const appContext = dataLayoutBuilder.props.appContext[0];
+	const {
+		config,
+		dataLayout: {dataRules},
+		editingLanguageId,
+		focusedCustomObjectField,
+		focusedField,
+	} = appContext;
 
-	const [dataLayoutBuilder] = useContext(DataLayoutBuilderContext);
-	const [
-		{
-			config,
-			dataLayout: {dataRules},
-			editingLanguageId,
-			focusedCustomObjectField,
-			focusedField,
-		},
-		dispatch,
-	] = useContext(AppContext);
 	const [activePage, setActivePage] = useState(0);
 
 	const {

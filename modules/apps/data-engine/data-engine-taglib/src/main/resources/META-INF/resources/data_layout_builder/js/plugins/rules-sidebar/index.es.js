@@ -21,9 +21,11 @@ import RulesSidebar from './components/RulesSidebar.es';
  * Entry-point for "RulesSidebar" (sidebar panel) functionality.
  */
 export default class {
-	constructor({app, panel}) {
+	constructor({app, dataLayoutBuilder, panel}) {
 		this.Component = Component(app);
+		this.dataLayoutBuilder = dataLayoutBuilder;
 		this.title = panel.label;
+		this.dispatch = app.dispatch;
 	}
 
 	renderSidebar() {
@@ -31,7 +33,11 @@ export default class {
 
 		return (
 			<Component>
-				<RulesSidebar title={this.title} />
+				<RulesSidebar
+					dataLayoutBuilder={this.dataLayoutBuilder}
+					dispatch={this.dispatch}
+					title={this.title}
+				/>
 			</Component>
 		);
 	}

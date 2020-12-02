@@ -21,9 +21,11 @@ import FieldsSidebar from './components/FieldsSidebar.es';
  * Entry-point for "FieldsSidebar" (sidebar panel) functionality.
  */
 export default class {
-	constructor({app, panel}) {
+	constructor({app, dataLayoutBuilder, panel}) {
 		this.Component = Component(app);
+		this.dataLayoutBuilder = dataLayoutBuilder;
 		this.title = panel.label;
+		this.dispatch = app.dispatch;
 	}
 
 	renderSidebar() {
@@ -31,7 +33,11 @@ export default class {
 
 		return (
 			<Component>
-				<FieldsSidebar title={this.title} />
+				<FieldsSidebar
+					dataLayoutBuilder={this.dataLayoutBuilder}
+					dispatch={this.dispatch}
+					title={this.title}
+				/>
 			</Component>
 		);
 	}
