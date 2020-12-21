@@ -13,7 +13,7 @@
  */
 
 import ClayModal from 'clay-modal';
-import {FormsRuleBuilder} from 'data-engine-taglib';
+import {FormsRuleBuilder, MultiPanelSidebar} from 'data-engine-taglib';
 import {FormBuilderBase} from 'dynamic-data-mapping-form-builder/js/components/FormBuilder/FormBuilder.es';
 import withEditablePageHeader from 'dynamic-data-mapping-form-builder/js/components/FormBuilder/withEditablePageHeader.es';
 import withMoveableFields from 'dynamic-data-mapping-form-builder/js/components/FormBuilder/withMoveableFields.es';
@@ -33,6 +33,7 @@ import core from 'metal';
 import {EventHandler} from 'metal-events';
 import Component from 'metal-jsx';
 import {Config} from 'metal-state';
+import React, {useContext} from 'react';
 
 import ShareFormModal from './components/ShareFormModal/ShareFormModal.es';
 import AutoSave from './util/AutoSave.es';
@@ -52,6 +53,28 @@ const EDITOR_NAME = 'nameEditor';
  * Form.
  * @extends Component
  */
+// const FormHooks = ({panels, sidebarPanels, sidebarVariant}) => {
+// 	const [,dispatch] = useContext(AppContext);
+
+// 	return (
+// 	<MultiPanelSidebar
+// 		createPlugin={({
+// 			panel,
+// 			sidebarOpen,
+// 			sidebarPanelId,
+// 		}) => ({
+// 			dispatch,
+// 			panel,
+// 			sidebarOpen,
+// 			sidebarPanelId,
+// 		})}
+// 		ref="multiPanelSidebar"
+// 		panels={panels}
+// 		sidebarPanels={sidebarPanels}
+// 		variant={sidebarVariant}
+// 			/>
+// 	);
+// }
 
 class Form extends Component {
 	attached() {
@@ -235,14 +258,18 @@ class Form extends Component {
 			activeNavItem === NAV_ITEMS.FORM &&
 			!this._pageHasFields(store.getPages(), store.state.activePage)
 		) {
-			this.openSidebar();
+
+			// this.openSidebar();
+
 		}
 
-		store.on('fieldDuplicated', () => this.openSidebar());
+		// store.on('fieldDuplicated', () => this.openSidebar());
 
 		store.on('focusedFieldChanged', ({newVal}) => {
 			if (newVal && Object.keys(newVal).length > 0) {
-				this.openSidebar();
+
+				// this.openSidebar();
+
 			}
 		});
 
@@ -255,7 +282,9 @@ class Form extends Component {
 				!pages[activePage].successPageSettings
 			) {
 				if (!this._pageHasFields(pages, activePage)) {
-					this.openSidebar();
+
+					// this.openSidebar();
+
 				}
 			}
 		});
@@ -267,7 +296,9 @@ class Form extends Component {
 				newVal.length !== prevVal.length &&
 				!this._pageHasFields(newVal, store.state.activePage)
 			) {
-				this.openSidebar();
+
+				// this.openSidebar();
+
 			}
 		});
 
@@ -468,9 +499,9 @@ class Form extends Component {
 		}
 	}
 
-	openSidebar() {
-		this.refs.sidebar.open();
-	}
+	// openSidebar() {
+	// 	this.refs.multiPanelSidebar.open();
+	// }
 
 	preventCopyAndPaste(event, limit) {
 		const {target} = event;
@@ -534,6 +565,31 @@ class Form extends Component {
 
 		const LayoutProviderTag = LayoutProvider;
 
+		const {panels, sidebarPanels, sidebarVariant} = {
+			panels: [['fields', 'rules']],
+			sidebarPanels: {
+				fields: {
+					isLink: false,
+					sidebarPanelId: 'fields',
+					icon: 'forms',
+					label: 'Builder',
+					pluginEntryPoint:
+						'data-engine-taglib@3.0.0/data_layout_builder/js/plugins/fields-sidebar/index.es',
+				},
+				rules: {
+					isLink: false,
+					sidebarPanelId: 'rules',
+					icon: 'rules',
+					label: 'Rules',
+					pluginEntryPoint:
+						'data-engine-taglib@3.0.0/data_layout_builder/js/plugins/rules-sidebar/index.es',
+				},
+			},
+			sidebarVariant: 'light',
+		};
+
+		const dispatch = () => {};
+
 		return (
 			<div class={'ddm-form-builder'}>
 				<LayoutProviderTag {...storeProps}>
@@ -570,7 +626,7 @@ class Form extends Component {
 						}
 					/>
 
-					<Sidebar
+					{/* <Sidebar
 						defaultLanguageId={defaultLanguageId}
 						editingLanguageId={editingLanguageId}
 						fieldSetDefinitionURL={fieldSetDefinitionURL}
@@ -582,6 +638,23 @@ class Form extends Component {
 						visible={
 							!this.isShowRuleBuilder() && !this.isShowReport()
 						}
+					/> */}
+
+					<MultiPanelSidebar
+						createPlugin={({
+							panel,
+							sidebarOpen,
+							sidebarPanelId,
+						}) => ({
+							dispatch,
+							panel,
+							sidebarOpen,
+							sidebarPanelId,
+						})}
+						panels={panels}
+						ref="multiPanelSidebar"
+						sidebarPanels={sidebarPanels}
+						variant={sidebarVariant}
 					/>
 				</LayoutProviderTag>
 
@@ -701,9 +774,11 @@ class Form extends Component {
 
 			this.hideAddButton();
 		}
-		else {
-			this.openSidebar();
-		}
+
+		// else {
+		// 	this.openSidebar();
+		// }
+
 	}
 
 	_createEditor(name) {
