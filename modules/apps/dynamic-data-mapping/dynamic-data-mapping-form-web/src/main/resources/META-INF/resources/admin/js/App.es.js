@@ -30,6 +30,7 @@ import {DndProvider} from 'react-dnd';
 import {HTML5Backend} from 'react-dnd-html5-backend';
 import {HashRouter as Router, Route, Switch} from 'react-router-dom';
 
+import ElementSetList from './components/ElementSetList.es';
 import {NavigationBar} from './components/NavigationBar.es';
 import {INITIAL_CONFIG_STATE} from './config/initialConfigState.es';
 import {BUILDER_INITIAL_STATE, initState} from './config/initialState.es';
@@ -52,6 +53,21 @@ import {
 export const App = ({autosaveInterval, autosaveURL, ...otherProps}) => {
 	const {config, state} = parseProps(otherProps);
 
+	const tabs = [
+		{
+			label: Liferay.Language.get('element-sets'),
+			render: ({searchTerm}) => (
+				<ElementSetList
+					definitionURL={config.fieldSetDefinitionURL}
+					editingLanguageId={config.editingLanguageId}
+					elementSets={state.fieldSets}
+					namespace={config.portletNamespace}
+					searchTerm={searchTerm}
+				/>
+			),
+		},
+	];
+
 	return (
 		<DndProvider backend={HTML5Backend} context={window}>
 			<ConfigProvider
@@ -73,7 +89,10 @@ export const App = ({autosaveInterval, autosaveURL, ...otherProps}) => {
 							rulesReducer,
 							sidebarReducer,
 						]}
-						value={state}
+						value={{
+							...state,
+							tabs,
+						}}
 					>
 						<AutoSaveProvider
 							interval={autosaveInterval}

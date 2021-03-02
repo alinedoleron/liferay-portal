@@ -12,9 +12,27 @@
  * details.
  */
 
-export const DRAG_FIELD_TYPE_MOVE = 'fieldType:move';
+import {makeFetch} from 'dynamic-data-mapping-form-renderer';
 
-export const DRAG_DATA_DEFINITION_FIELD_ADD = 'dataDefinitionField:add';
-export const DRAG_ELEMENT_SET_ADD = 'elementSet:add';
-export const DRAG_FIELD_TYPE_ADD = 'fieldType:add';
-export const DRAG_FIELDSET_ADD = 'fieldset:add';
+export function elementSetAdded({
+	definitionURL,
+	editingLanguageId,
+	elementSetId,
+	indexes,
+	namespace,
+}) {
+	return async (dispatch) => {
+		const {pages} = await makeFetch({
+			method: 'GET',
+			url: `${definitionURL}?ddmStructureId=${elementSetId}&languageId=${editingLanguageId}&portletNamespace=${namespace}`,
+		});
+
+		dispatch({
+			payload: {
+				elementSetPages: pages,
+				indexes,
+			},
+			type: 'element_set_add',
+		});
+	};
+}

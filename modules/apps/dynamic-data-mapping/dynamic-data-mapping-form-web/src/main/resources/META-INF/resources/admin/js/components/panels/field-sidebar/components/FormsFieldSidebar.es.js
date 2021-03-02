@@ -42,6 +42,7 @@ export const FormsFieldSidebar = ({title}) => {
 		focusedField,
 		pages,
 		rules,
+		tabs,
 	} = useFormState();
 
 	const dispatch = useForm();
@@ -60,6 +61,7 @@ export const FormsFieldSidebar = ({title}) => {
 			functionsMetadata,
 			functionsURL,
 		},
+		tabs,
 		unimplementedProperties: [
 			'allowGuestUsers',
 			'fieldNamespace',
