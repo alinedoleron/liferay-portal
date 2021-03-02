@@ -279,6 +279,13 @@ export const FormBuilder = () => {
 		shareFormInstanceURL,
 	]);
 
+	const tabs = [
+		{
+			label: Liferay.Language.get('element-sets'),
+			render: () => <ElementSetList />,
+		},
+	];
+
 	return (
 		<>
 			<ManagementToolbar
@@ -363,6 +370,7 @@ export const FormBuilder = () => {
 						open={sidebarOpen}
 						panels={[['fields']]}
 						sidebarPanels={sidebarPanels}
+						tabs={tabs}
 						variant="light"
 					/>
 				) : (
