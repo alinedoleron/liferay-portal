@@ -282,7 +282,12 @@ export const FormBuilder = () => {
 	const tabs = [
 		{
 			label: Liferay.Language.get('element-sets'),
-			render: () => <ElementSetList />,
+			render: ({searchTerm}) => (
+				<ElementSetList
+					elementSets={fieldSets}
+					searchTerm={searchTerm}
+				/>
+			),
 		},
 	];
 

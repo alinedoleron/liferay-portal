@@ -48,5 +48,11 @@ export default function ({
 
 	sidebarTabs.push(...tabs);
 
-	return <Sidebar.Tabs setKeywords={setKeywords} tabs={sidebarTabs} />;
+	return (
+		<Sidebar.Tabs
+			searchTerm={keywords}
+			setKeywords={setKeywords}
+			tabs={sidebarTabs}
+		/>
+	);
 }

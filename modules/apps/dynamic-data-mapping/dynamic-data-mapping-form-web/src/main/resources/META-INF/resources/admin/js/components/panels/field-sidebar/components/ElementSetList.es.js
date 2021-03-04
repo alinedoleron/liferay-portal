@@ -14,6 +14,38 @@
 
 import React from 'react';
 
-const ElementSetList = () => <div className="element-set-test">Test!</div>;
+import EmptyState from '../../../components/empty-state/EmptyState.es';
+import FieldType from '../../../components/field-types/FieldType.es';
+import {getSearchRegex} from '../../../utils/search.es';
+
+const EmptyPanel = ({searchTerm}) => (
+	<div className="mt-2">
+		<EmptyState
+			emptyState={{
+				description: Liferay.Language.get(
+					'there-are-no-element-sets-yet'
+				),
+				title: Liferay.Language.get('there-are-no-element-sets'),
+			}}
+			keywords={searchTerm}
+			small
+		/>
+	</div>
+);
+
+const ElementSetList = ({elementSets, searchTerm = ''}) => {
+	const regex = getSearchRegex(searchTerm);
+	const elementSetList = elementSets.filter(({name}) => regex.test(name));
+
+	return elementSetList.length ? (
+		<div className="mt-3">
+			{elementSetList.map(({name}, key) => (
+				<FieldType icon="forms" key={key} label={name} />
+			))}
+		</div>
+	) : (
+		<EmptyPanel searchTerm={searchTerm} />
+	);
+};
 
 export default ElementSetList;
