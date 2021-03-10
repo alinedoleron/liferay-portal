@@ -42,11 +42,13 @@ import {useToast} from '../hooks/useToast.es';
 import fieldDelete from '../thunks/fieldDelete.es';
 import {createFormURL} from '../util/form.es';
 import {submitEmailContent} from '../util/submitEmailContent.es';
+import {EVENT_TYPES} from '../eventTypes.es';
 
 export const FormBuilder = () => {
 	const {
 		autocompleteUserURL,
 		dataEngineSidebar,
+		fieldSetDefinitionURL,
 		formInstanceId,
 		portletNamespace,
 		publishFormInstanceURL,
@@ -284,7 +286,15 @@ export const FormBuilder = () => {
 			label: Liferay.Language.get('element-sets'),
 			render: ({searchTerm}) => (
 				<ElementSetList
-					elementSets={fieldSets}
+					definitionURL={fieldSetDefinitionURL}
+					editingLanguageId={editingLanguageId}
+					namespace={portletNamespace}
+					onDoubleClick={(payload) =>
+						dispatch(
+							EVENT_TYPES.ELEMENT_SET_ADD,
+							payload
+						)
+					}
 					searchTerm={searchTerm}
 				/>
 			),

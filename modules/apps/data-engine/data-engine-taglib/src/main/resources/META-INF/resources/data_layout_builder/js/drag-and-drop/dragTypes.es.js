@@ -15,5 +15,6 @@
 export const DRAG_FIELD_TYPE_MOVE = 'fieldType:move';
 
 export const DRAG_DATA_DEFINITION_FIELD_ADD = 'dataDefinitionField:add';
+export const DRAG_ELEMENT_SET_ADD = 'elementSet:add';
 export const DRAG_FIELD_TYPE_ADD = 'fieldType:add';
 export const DRAG_FIELDSET_ADD = 'fieldset:add';

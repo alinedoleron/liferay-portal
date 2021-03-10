@@ -16,7 +16,10 @@ import React from 'react';
 
 import EmptyState from '../../../components/empty-state/EmptyState.es';
 import FieldType from '../../../components/field-types/FieldType.es';
+import {DRAG_ELEMENT_SET_ADD} from '../../../drag-and-drop/dragTypes.es';
 import {getSearchRegex} from '../../../utils/search.es';
+
+// import DataLayoutBuilderContext from '../../../data-layout-builder/DataLayoutBuilder.es';
 
 const EmptyPanel = ({searchTerm}) => (
 	<div className="mt-2">
@@ -33,15 +36,34 @@ const EmptyPanel = ({searchTerm}) => (
 	</div>
 );
 
-const ElementSetList = ({elementSets, searchTerm = ''}) => {
+const ElementSetList = ({
+	elementSets,
+	onDoubleClick,
+	searchTerm = '',
+	...context
+}) => {
 	const regex = getSearchRegex(searchTerm);
 	const elementSetList = elementSets.filter(({name}) => regex.test(name));
 
 	return elementSetList.length ? (
 		<div className="mt-3">
-			{elementSetList.map(({name}, key) => (
-				<FieldType icon="forms" key={key} label={name} />
-			))}
+			{elementSetList.map((elementSet, key) => {
+				const payload = {
+					elementSetId: elementSet.id,
+					...context,
+				};
+
+				return (
+					<FieldType
+						dragType={DRAG_ELEMENT_SET_ADD}
+						icon="forms"
+						key={key}
+						label={elementSet.name}
+						onDoubleClick={() => onDoubleClick(payload)}
+						payload={payload}
+					/>
+				);
+			})}
 		</div>
 	) : (
 		<EmptyPanel searchTerm={searchTerm} />

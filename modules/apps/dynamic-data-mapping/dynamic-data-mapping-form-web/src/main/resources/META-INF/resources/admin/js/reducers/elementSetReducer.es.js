@@ -24,46 +24,49 @@ import {EVENT_TYPES} from '../eventTypes.es';
 export default (state, action) => {
 	switch (action.type) {
 		case EVENT_TYPES.ELEMENT_SET_ADD: {
-			const {fieldSetPages, indexes} = action.payload;
-			const {pages} = state;
-			const {pageIndex, rowIndex} = indexes;
-
-			const visitor = new PagesVisitor(fieldSetPages);
-
-			const newFieldsetPages = visitor.mapFields((field) => {
-				const name = FieldUtil.generateFieldName(
-					pages,
-					field.fieldName
-				);
-
-				const settingsContextVisitor = new PagesVisitor(
-					field.settingsContext.pages
-				);
-
-				return {
-					...field,
-					fieldName: name,
-					fieldReference: name,
-					settingsContext: {
-						...field.settingsContext,
-						pages: settingsContextVisitor.mapFields(
-							(settingsContextField) => {
-								if (
-									settingsContextField.fieldName ===
-										'fieldReference' ||
-									settingsContextField.fieldName === 'name'
-								) {
-									settingsContextField = {
-										...settingsContextField,
-										value: name,
-									};
-								}
-
-								return settingsContextField;
-							}
-						),
-					},
+			return _fetchElementSet(fetchProps).then((fieldSetPages) => {
+				const {activePage, pages} = state;
+				const {pageIndex, rowIndex} = indexes ?? {
+					pageIndex: activePage,
+					rowIndex: pages[activePage].rows.length,
 				};
+
+				const visitor = new PagesVisitor(fieldSetPages);
+
+				const newFieldsetPages = visitor.mapFields((field) => {
+					const name = FieldUtil.generateFieldName(
+						pages,
+						field.fieldName
+					);
+
+					const settingsContextVisitor = new PagesVisitor(
+						field.settingsContext.pages
+					);
+
+					return {
+						...field,
+						fieldName: name,
+						fieldReference: name,
+						settingsContext: {
+							...field.settingsContext,
+							pages: settingsContextVisitor.mapFields(
+								(settingsContextField) => {
+									if (
+										settingsContextField.fieldName ===
+											'fieldReference' ||
+										settingsContextField.fieldName === 'name'
+									) {
+										settingsContextField = {
+											...settingsContextField,
+											value: name,
+										};
+									}
+
+									return settingsContextField;
+								}
+							),
+						},
+					};
 			});
 
 			return {
@@ -83,9 +86,22 @@ export default (state, action) => {
 
 					return page;
 				}),
-			};
+			}
+		});
 		}
 		default:
 			return state;
 	}
 };
+
+function _fetchElementSet({
+	definitionURL,
+	editingLanguageId,
+	elementSetId,
+	namespace,
+}) {
+	return makeFetch({
+		method: 'GET',
+		url: `${definitionURL}?ddmStructureId=${elementSetId}&languageId=${editingLanguageId}&portletNamespace=${namespace}`,
+	}).then(({pages}) => pages);
+}
