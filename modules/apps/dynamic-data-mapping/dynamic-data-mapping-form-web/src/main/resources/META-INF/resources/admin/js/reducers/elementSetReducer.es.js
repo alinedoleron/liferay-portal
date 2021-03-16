@@ -21,52 +21,52 @@ import {EVENT_TYPES} from '../eventTypes.es';
  * NOTE: This is a literal copy of the old LayoutProvider logic. Small changes
  * were made only to adapt to the reducer.
  */
-export default (state, action) => {
-	switch (action.type) {
+export default (state, {payload, type}) => {
+	switch (type) {
 		case EVENT_TYPES.ELEMENT_SET_ADD: {
-			return _fetchElementSet(fetchProps).then((fieldSetPages) => {
-				const {activePage, pages} = state;
-				const {pageIndex, rowIndex} = indexes ?? {
-					pageIndex: activePage,
-					rowIndex: pages[activePage].rows.length,
-				};
+			const {elementSetPages, indexes} = payload;
+			const {activePage, pages} = state;
+			const {pageIndex, rowIndex} = indexes ?? {
+				pageIndex: activePage,
+				rowIndex: pages[activePage].rows.length,
+			};
 
-				const visitor = new PagesVisitor(fieldSetPages);
+			const visitor = new PagesVisitor(elementSetPages);
 
-				const newFieldsetPages = visitor.mapFields((field) => {
-					const name = FieldUtil.generateFieldName(
-						pages,
-						field.fieldName
-					);
+			const newElementSetPages = visitor.mapFields((field) => {
+				const name = FieldUtil.generateFieldName(
+					pages,
+					field.fieldName
+				);
 
-					const settingsContextVisitor = new PagesVisitor(
-						field.settingsContext.pages
-					);
+				const settingsContextVisitor = new PagesVisitor(
+					field.settingsContext.pages
+				);
 
-					return {
-						...field,
-						fieldName: name,
-						fieldReference: name,
-						settingsContext: {
-							...field.settingsContext,
-							pages: settingsContextVisitor.mapFields(
-								(settingsContextField) => {
-									if (
-										settingsContextField.fieldName ===
-											'fieldReference' ||
-										settingsContextField.fieldName === 'name'
-									) {
-										settingsContextField = {
-											...settingsContextField,
-											value: name,
-										};
-									}
-
-									return settingsContextField;
+				return {
+					...field,
+					fieldName: name,
+					fieldReference: name,
+					settingsContext: {
+						...field.settingsContext,
+						pages: settingsContextVisitor.mapFields(
+							(settingsContextField) => {
+								if (
+									settingsContextField.fieldName ===
+										'fieldReference' ||
+									settingsContextField.fieldName === 'name'
+								) {
+									settingsContextField = {
+										...settingsContextField,
+										value: name,
+									};
 								}
-							),
-						},
-					};
+
+								return settingsContextField;
+							}
+						),
+					},
+				};
 			});
 
 			return {
@@ -78,7 +78,7 @@ export default (state, action) => {
 							...page,
 							rows: [
 								...rows.slice(0, rowIndex + 1),
-								...newFieldsetPages[0].rows,
+								...newElementSetPages[0].rows,
 								...rows.slice(rowIndex + 1),
 							],
 						};
@@ -86,22 +86,9 @@ export default (state, action) => {
 
 					return page;
 				}),
-			}
-		});
+			};
 		}
 		default:
 			return state;
 	}
 };
-
-function _fetchElementSet({
-	definitionURL,
-	editingLanguageId,
-	elementSetId,
-	namespace,
-}) {
-	return makeFetch({
-		method: 'GET',
-		url: `${definitionURL}?ddmStructureId=${elementSetId}&languageId=${editingLanguageId}&portletNamespace=${namespace}`,
-	}).then(({pages}) => pages);
-}

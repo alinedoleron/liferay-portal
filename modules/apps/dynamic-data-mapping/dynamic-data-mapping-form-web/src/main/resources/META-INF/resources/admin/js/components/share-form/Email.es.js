@@ -14,7 +14,9 @@
 
 import {useResource} from '@clayui/data-provider';
 import ClayForm, {ClayInput} from '@clayui/form';
-import ClayMultiSelect from '@clayui/multi-select';
+
+// import ClayMultiSelect from '@clayui/multi-select';
+
 import React, {useState} from 'react';
 
 function formatAutocompleteValue(data) {

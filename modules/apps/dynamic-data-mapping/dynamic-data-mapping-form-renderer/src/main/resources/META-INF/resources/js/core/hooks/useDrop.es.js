@@ -16,6 +16,7 @@ import {DataConverter, DragTypes} from 'data-engine-taglib';
 import {useDrop as useDndDrop} from 'react-dnd';
 
 import {EVENT_TYPES} from '../actions/eventTypes.es';
+import {elementSetAdded} from '../thunks/elementSetAdded.es';
 import {useConfig} from './useConfig.es';
 import {useForm, useFormState} from './useForm.es';
 
@@ -160,13 +161,7 @@ export const useDrop = ({
 					});
 					break;
 				case DRAG_ELEMENT_SET_ADD:
-					dispatch({
-						payload: {
-							indexes,
-							...payload,
-						},
-						type: EVENT_TYPES.ELEMENT_SET_ADD,
-					});
+					dispatch(elementSetAdded({indexes, ...payload}));
 					break;
 				default:
 					break;
