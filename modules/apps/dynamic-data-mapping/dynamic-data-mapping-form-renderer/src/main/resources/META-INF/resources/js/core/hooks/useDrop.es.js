@@ -25,6 +25,8 @@ export const DND_ORIGIN_TYPE = {
 	FIELD: 'field',
 };
 
+const DRAG_ELEMENT_SET_ADD = 'elementSet:add';
+
 export const useDrop = ({
 	columnIndex,
 	fieldName,
@@ -41,7 +43,6 @@ export const useDrop = ({
 	const indexes = {columnIndex, pageIndex, rowIndex};
 	const {
 		DRAG_DATA_DEFINITION_FIELD_ADD,
-		DRAG_ELEMENT_SET_ADD,
 		DRAG_FIELD_TYPE_ADD,
 		DRAG_FIELD_TYPE_MOVE,
 		DRAG_FIELDSET_ADD,

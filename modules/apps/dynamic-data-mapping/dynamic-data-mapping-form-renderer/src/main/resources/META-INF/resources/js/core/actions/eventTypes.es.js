@@ -45,10 +45,6 @@ const SECTION = {
 	ADD: 'section_add',
 };
 
-const ELEMENT_SET = {
-	ADD: 'element_set_add',
-};
-
 const FIELD_SET = {
 	ADD: 'fieldset_add',
 };
@@ -66,7 +62,6 @@ const LANGUAGE = {
 export const MAPPED_EVENT_TYPES = {
 	[DND.MOVE]: 'fieldMoved',
 	[DND.RESIZE]: 'columnResized',
-	[ELEMENT_SET.ADD]: 'elementSetAdded',
 	[FIELD_SET.ADD]: 'fieldSetAdded',
 	[FIELD.ADD]: 'fieldAdded',
 	[FIELD.BLUR]: 'fieldBlurred',
@@ -83,7 +78,6 @@ export const MAPPED_EVENT_TYPES = {
 export const EVENT_TYPES = {
 	...LEGACY_EVENTS,
 	DND,
-	ELEMENT_SET,
 	FIELD,
 	FIELD_SET,
 	LANGUAGE,
