@@ -26,7 +26,7 @@ export default function getFieldsWithoutOptions(
 	];
 
 	const fieldHasOptions = (options) =>
-		options[defaultLanguageId][0].edited &&
+		options[defaultLanguageId][0].reference &&
 		options[defaultLanguageId][0].label;
 
 	return dataDefinitionFields.filter((field) => {
