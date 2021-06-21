@@ -174,13 +174,18 @@ public class NumericDDMFormFieldTemplateContextContributor
 					getPropertyValue(
 						ddmFormField, ddmFormFieldRenderingContext, locale,
 						"numericInputMask"));
+			Object symbolsJSONObject = numericInputMaskJSONObject.get("symbols");
+
+			if(symbolsJSONObject == null) {
+				symbolsJSONObject = getSymbolsMap(ddmFormFieldRenderingContext.getLocale());
+			}
 
 			return HashMapBuilder.<String, Object>put(
 				"append", numericInputMaskJSONObject.getString("append")
 			).put(
 				"appendType", numericInputMaskJSONObject.getString("appendType")
 			).put(
-				"symbols", numericInputMaskJSONObject.getJSONObject("symbols")
+				"symbols", symbolsJSONObject
 			).build();
 		}
 		catch (JSONException jsonException) {
