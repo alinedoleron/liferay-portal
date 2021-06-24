@@ -94,8 +94,8 @@ public class NumericDDMFormFieldTemplateContextContributorTest
 
 		Assert.assertEquals(
 			"double",
-			_numericDDMFormFieldTemplateContextContributor.getDataType(
-				ddmFormField, ddmFormFieldRenderingContext));
+			_numericDDMFormFieldTemplateContextContributor.getPropertyValue(
+				ddmFormField, ddmFormFieldRenderingContext, "dataType"));
 	}
 
 	@Test
@@ -112,8 +112,8 @@ public class NumericDDMFormFieldTemplateContextContributorTest
 
 		Assert.assertEquals(
 			"integer",
-			_numericDDMFormFieldTemplateContextContributor.getDataType(
-				ddmFormField, ddmFormFieldRenderingContext));
+			_numericDDMFormFieldTemplateContextContributor.getPropertyValue(
+				ddmFormField, ddmFormFieldRenderingContext, "dataType"));
 	}
 
 	@Test
@@ -133,8 +133,8 @@ public class NumericDDMFormFieldTemplateContextContributorTest
 
 		Assert.assertEquals(
 			"double",
-			_numericDDMFormFieldTemplateContextContributor.getDataType(
-				ddmFormField, ddmFormFieldRenderingContext));
+			_numericDDMFormFieldTemplateContextContributor.getPropertyValue(
+				ddmFormField, ddmFormFieldRenderingContext, "dataType"));
 	}
 
 	@Test
