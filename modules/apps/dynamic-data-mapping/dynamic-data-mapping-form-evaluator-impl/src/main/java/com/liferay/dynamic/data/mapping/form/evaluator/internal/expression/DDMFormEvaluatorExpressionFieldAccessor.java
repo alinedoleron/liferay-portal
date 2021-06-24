@@ -145,6 +145,39 @@ public class DDMFormEvaluatorExpressionFieldAccessor
 		return _defaultDDMFormFieldValueAccessor;
 	}
 
+	protected Object getFieldLocalizedValue(
+		DDMFormEvaluatorFieldContextKey ddmFormFieldContextKey) {
+
+		Object localizedValue = getFieldPropertyChanged(
+			ddmFormFieldContextKey, "localizedValue");
+
+		if (localizedValue != null) {
+			return localizedValue;
+		}
+
+		DDMFormFieldValue ddmFormFieldValue =
+			_ddmFormEvaluatorFormValuesHelper.getDDMFormFieldValue(
+				ddmFormFieldContextKey);
+
+		return ddmFormFieldValue.getValue();
+	}
+
+	protected Object getFieldLocalizedValue(String fieldName) {
+		Set<DDMFormEvaluatorFieldContextKey> ddmFormFieldContextKeySet =
+			_ddmFormEvaluatorFormValuesHelper.getDDMFormFieldContextKeySet(
+				fieldName);
+
+		DDMFormEvaluatorFieldContextKey[] ddmFormFieldContextKeysArray =
+			ddmFormFieldContextKeySet.toArray(
+				new DDMFormEvaluatorFieldContextKey[0]);
+
+		if (ArrayUtil.isNotEmpty(ddmFormFieldContextKeysArray)) {
+			return getFieldLocalizedValue(ddmFormFieldContextKeysArray[0]);
+		}
+
+		return null;
+	}
+
 	protected Object getFieldProperty(String fieldName, String property) {
 		Object value = getFieldPropertyChanged(fieldName, property);
 
@@ -166,6 +199,9 @@ public class DDMFormEvaluatorExpressionFieldAccessor
 		if (property.equals("value")) {
 			return getFieldValue(ddmFormFieldContextKey);
 		}
+		else if (property.equals("localizedValue")) {
+			return getFieldLocalizedValue(ddmFormFieldContextKey);
+		}
 
 		return getFieldProperty(ddmFormFieldContextKey.getName(), property);
 	}
@@ -175,6 +211,9 @@ public class DDMFormEvaluatorExpressionFieldAccessor
 
 		if (property.equals("value")) {
 			return getFieldValues(fieldName);
+		}
+		else if (property.equals("localizedValue")) {
+			return getFieldLocalizedValue(fieldName);
 		}
 
 		return getFieldProperty(fieldName, property);
