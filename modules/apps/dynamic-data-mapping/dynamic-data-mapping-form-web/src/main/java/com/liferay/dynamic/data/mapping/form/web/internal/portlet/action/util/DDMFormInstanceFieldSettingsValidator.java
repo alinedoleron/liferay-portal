@@ -37,10 +37,12 @@ import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.StringUtil;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -315,6 +317,23 @@ public class DDMFormInstanceFieldSettingsValidator {
 
 			DDMForm fieldDDMForm = DDMFormFactory.create(
 				ddmFormFieldType.getDDMFormFieldTypeSettings());
+
+			if (StringUtil.equals(ddmFormField.getDataType(), "integer") &&
+				GetterUtil.getBoolean(ddmFormField.getProperty("inputMask"))) {
+
+				Map<String, DDMFormField> fieldDDMFormFieldsMap =
+					fieldDDMForm.getDDMFormFieldsMap(false);
+
+				DDMFormField predefinedValueDDMFormField =
+					fieldDDMFormFieldsMap.get("predefinedValue");
+
+				predefinedValueDDMFormField.setDataType("integer");
+				predefinedValueDDMFormField.setProperty(
+					"inputMask", ddmFormField.getProperty("inputMask"));
+				predefinedValueDDMFormField.setProperty(
+					"inputMaskFormat",
+					ddmFormField.getProperty("inputMaskFormat"));
+			}
 
 			DDMFormValues fieldDDMFormValues = createDDMFormFieldFormValues(
 				jsonObject.getJSONObject("settingsContext"), fieldDDMForm,
