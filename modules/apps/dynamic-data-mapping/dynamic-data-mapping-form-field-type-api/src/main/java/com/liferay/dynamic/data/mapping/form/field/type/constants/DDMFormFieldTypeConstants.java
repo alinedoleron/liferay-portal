@@ -52,6 +52,8 @@ public class DDMFormFieldTypeConstants {
 
 	public static final String OBJECT_FIELD = "object_field";
 
+	public static final String NUMERIC_INPUT_MASK = "numeric_input_mask";
+
 	public static final String OPTIONS = "options";
 
 	public static final String PARAGRAPH = "paragraph";
