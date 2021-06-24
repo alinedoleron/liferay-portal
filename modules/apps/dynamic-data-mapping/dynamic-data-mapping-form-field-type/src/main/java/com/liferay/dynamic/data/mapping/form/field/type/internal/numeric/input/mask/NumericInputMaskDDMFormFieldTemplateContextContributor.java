@@ -64,8 +64,6 @@ public class NumericInputMaskDDMFormFieldTemplateContextContributor
 		).put(
 			"thousandsSeparators",
 			_getOptions(getThousandsSeparators(ddmFormFieldRenderingContext))
-		).put(
-			"value", ddmFormFieldRenderingContext.getValue()
 		).putAll(
 			getValueProperties(ddmFormFieldRenderingContext)
 		).build();
