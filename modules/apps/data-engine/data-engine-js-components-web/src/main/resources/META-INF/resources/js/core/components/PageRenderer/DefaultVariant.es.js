@@ -52,7 +52,6 @@ export const Column = forwardRef(
 			onMouseOver,
 			pageIndex,
 			rowIndex,
-			viewMode,
 		},
 		ref
 	) => {
@@ -90,7 +89,7 @@ export const Column = forwardRef(
 						data-field-name={firstField.fieldName}
 					>
 						{column.fields.map((field, index) => {
-							if (viewMode && field.type !== 'numeric') {
+							if (field.type !== 'numeric') {
 								field.predefinedValue = '';
 							}
 
