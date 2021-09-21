@@ -237,4 +237,89 @@ describe('Field Checkbox Multiple', () => {
 
 		expect(handleFieldEdited).toHaveBeenCalled();
 	});
+
+	it('checks the value if there is a value', () => {
+		render(
+			<CheckboxMultipleWithProvider
+				options={[
+					{
+						label: 'Option 1',
+						value: 'option1',
+					},
+					{
+						label: 'Option 2',
+						value: 'option2',
+					},
+					{
+						label: 'Option 3',
+						value: 'option3',
+					},
+				]}
+				predefinedValue={['option1', 'option2']}
+				spritemap={spritemap}
+				value={['option3']}
+			/>
+		);
+
+		expect(document.querySelector('[value="option1"]').checked).toBe(false);
+		expect(document.querySelector('[value="option2"]').checked).toBe(false);
+		expect(document.querySelector('[value="option3"]').checked).toBe(true);
+	});
+
+	it('checks the predefinedValue if there is no value', () => {
+		render(
+			<CheckboxMultipleWithProvider
+				options={[
+					{
+						label: 'Option 1',
+						value: 'option1',
+					},
+					{
+						label: 'Option 2',
+						value: 'option2',
+					},
+					{
+						label: 'Option 3',
+						value: 'option3',
+					},
+				]}
+				predefinedValue={['option1', 'option2']}
+				spritemap={spritemap}
+				value={[]}
+			/>
+		);
+
+		expect(document.querySelector('[value="option1"]').checked).toBe(true);
+		expect(document.querySelector('[value="option2"]').checked).toBe(true);
+		expect(document.querySelector('[value="option3"]').checked).toBe(false);
+	});
+
+	it('uncheck all values if the user has edited the field to clear the predefinedValue', () => {
+		render(
+			<CheckboxMultipleWithProvider
+				localizedValueEdited={{en_US: true}}
+				options={[
+					{
+						label: 'Option 1',
+						value: 'option1',
+					},
+					{
+						label: 'Option 2',
+						value: 'option2',
+					},
+					{
+						label: 'Option 3',
+						value: 'option3',
+					},
+				]}
+				predefinedValue={['option1', 'option2']}
+				spritemap={spritemap}
+				value={[]}
+			/>
+		);
+
+		expect(document.querySelector('[value="option1"]').checked).toBe(false);
+		expect(document.querySelector('[value="option2"]').checked).toBe(false);
+		expect(document.querySelector('[value="option3"]').checked).toBe(false);
+	});
 });
