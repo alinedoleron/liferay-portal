@@ -10,6 +10,7 @@
 		"@clayui/tabs": "3.39.0",
 		"@clayui/tooltip": "3.39.0",
 		"classnames": "2.3.1",
+		"dynamic-data-mapping-form-report-web": "*",
 		"dom-align": "1.10.4",
 		"frontend-js-web": "*",
 		"incremental-dom-string": "0.0.2",
