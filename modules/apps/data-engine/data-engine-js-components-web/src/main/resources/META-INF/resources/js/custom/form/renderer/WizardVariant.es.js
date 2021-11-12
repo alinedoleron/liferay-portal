@@ -13,8 +13,10 @@
  */
 
 import ClayButton from '@clayui/button';
+import ClayIcon from '@clayui/icon';
 import classnames from 'classnames';
-import React from 'react';
+import Reports from 'dynamic-data-mapping-form-report-web';
+import React, {useState} from 'react';
 
 import * as DefaultVariant from '../../../core/components/PageRenderer/DefaultVariant.es';
 import {useConfig} from '../../../core/hooks/useConfig.es';
@@ -55,54 +57,96 @@ export const Container = ({
 	readOnly,
 	strings = null,
 }) => {
+	const [showReport, setShowReport] = useState(false);
+
 	const {showSubmitButton, submitLabel} = useConfig();
 
+	const onClick = () => {
+		setShowReport(true);
+	};
+
+	if (showReport) {
+		const showPartialResultsToRespondentsElement = document.querySelector(
+			'[id$="showPartialResultsToRespondents"]'
+		);
+
+		showPartialResultsToRespondentsElement.style.display = 'none';
+	}
+
 	return (
-		<div className="ddm-form-page-container wizard">
-			{pages.length > 1 && pageIndex === activePage && (
-				<MultiStep
-					activePage={activePage}
-					editable={editable}
-					pages={pages}
-				/>
-			)}
-
-			<div
-				className={classnames(
-					'ddm-layout-builder ddm-page-container-layout',
-					{
-						hide: activePage !== pageIndex,
-					}
-				)}
-			>
-				<div className="form-builder-layout">{children}</div>
-			</div>
-
-			{pageIndex === activePage && (
+		<>
+			{showReport ? (
 				<>
-					{pages.length > 0 && (
-						<PaginationControls
+					<div className="ddm-form-page-back">
+						<ClayButton
+							displayType="link"
+							onClick={() => setShowReport(false)}
+						>
+							<ClayIcon symbol="order-arrow-left" />
+							{Liferay.Language.get('back')}
+						</ClayButton>
+					</div>
+
+					<Reports
+
+					// data={data}
+					// fields={fields}
+					// formReportRecordsFieldValuesURL={
+					// 	formReportRecordsFieldValuesURL
+					// }
+					// portletNamespace={portletNamespace}
+
+					/>
+				</>
+			) : (
+				<div className="ddm-form-page-container wizard">
+					{pages.length > 1 && pageIndex === activePage && (
+						<MultiStep
 							activePage={activePage}
-							readOnly={readOnly}
-							showSubmitButton={showSubmitButton}
-							strings={strings}
-							submitLabel={submitLabel}
-							total={pages.length}
+							editable={editable}
+							pages={pages}
 						/>
 					)}
 
-					{!pages.length && showSubmitButton && (
-						<ClayButton
-							className="float-right lfr-ddm-form-submit"
-							id="ddm-form-submit"
-							type="submit"
-						>
-							{submitLabel}
-						</ClayButton>
+					<div
+						className={classnames(
+							'ddm-layout-builder ddm-page-container-layout',
+							{
+								hide: activePage !== pageIndex,
+							}
+						)}
+					>
+						<div className="form-builder-layout">{children}</div>
+					</div>
+
+					{pageIndex === activePage && (
+						<>
+							{pages.length > 0 && (
+								<PaginationControls
+									activePage={activePage}
+									onClick={onClick}
+									readOnly={readOnly}
+									showSubmitButton={showSubmitButton}
+									strings={strings}
+									submitLabel={submitLabel}
+									total={pages.length}
+								/>
+							)}
+
+							{!pages.length && showSubmitButton && (
+								<ClayButton
+									className="float-left lfr-ddm-form-submit"
+									id="ddm-form-submit"
+									type="submit"
+								>
+									{submitLabel}
+								</ClayButton>
+							)}
+						</>
 					)}
-				</>
+				</div>
 			)}
-		</div>
+		</>
 	);
 };
 
