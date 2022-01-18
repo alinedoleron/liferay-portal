@@ -109,7 +109,6 @@ const CustomView: React.FC<React.HTMLAttributes<HTMLElement>> = () => {
 	}, [objectViewId, dispatch]);
 
 	const handleSaveObjectView = async () => {
-
 		const response = await Liferay.Util.fetch(
 			`/o/object-admin/v1.0/object-views/${objectViewId}`,
 			{
