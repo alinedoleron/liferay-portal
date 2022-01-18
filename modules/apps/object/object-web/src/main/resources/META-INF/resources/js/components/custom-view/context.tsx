@@ -167,7 +167,7 @@ const viewReducer = (state: TState, action: TAction) => {
 			};
 		}
 		case TYPES.ADD_OBJECT_FIELDS: {
-			const {objectFields} = action.payload;
+			const {objectFields, objectViewColumns} = action.payload;
 
 			const objectFieldsWithCheck = objectFields.map(
 				(field: TObjectField) => {
@@ -187,6 +187,19 @@ const viewReducer = (state: TState, action: TAction) => {
 
 			objectFieldsWithCheck.map((field: TObjectField) => {
 				newObjectFields.push(field);
+			});
+
+			newObjectFields.forEach((field) => {
+				objectViewColumns.forEach(
+					(column: {objectFieldName: string}) => {
+						if (
+							column.objectFieldName ===
+							field.label[defaultLanguageId]
+						) {
+							field.checked = true;
+						}
+					}
+				);
 			});
 
 			return {
