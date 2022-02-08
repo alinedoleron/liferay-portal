@@ -64,5 +64,4 @@ function limitValue({defaultValue, min, value}) {
 	return value;
 }
 
-
 export {checkLabelErrors, checkIdErrors, getUpdatedLabelItem, limitValue};

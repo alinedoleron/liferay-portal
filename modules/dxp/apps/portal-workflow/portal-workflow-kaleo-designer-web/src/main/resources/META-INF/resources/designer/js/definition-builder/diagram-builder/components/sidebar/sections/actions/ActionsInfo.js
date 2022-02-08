@@ -11,6 +11,7 @@
 
 import ClayButton, {ClayButtonWithIcon} from '@clayui/button';
 import ClayForm, {ClayInput, ClaySelect} from '@clayui/form';
+import ClayIcon from '@clayui/icon';
 import PropTypes from 'prop-types';
 import React, {useContext, useState} from 'react';
 
@@ -36,7 +37,7 @@ const executionTypeOptions = [
 	},
 ];
 
-const ActionsInfo = ({identifier, sectionsLength, setSections}) => {
+const ActionsInfo = ({identifier, index, sectionsLength, setSections}) => {
 	const {setSelectedItem} = useContext(DiagramBuilderContext);
 	const [executionType, setExecutionType] = useState('');
 	const [priority, setPriority] = useState();
@@ -44,30 +45,22 @@ const ActionsInfo = ({identifier, sectionsLength, setSections}) => {
 	const [actionName, setActionName] = useState('');
 	const [template, setTemplate] = useState('');
 
-	const updateSelectedItem = (values) => {
-		setSelectedItem((previousItem) => ({
-			...previousItem,
-			data: {
-				...previousItem.data,
-				notifications: {
-					description: values.map(({description}) => description),
-					executionType: values.map(
-						({executionType}) => executionType
-					),
-					name: values.map(({name}) => name),
-					notificationType: values.map(
-						({notificationType}) => notificationType
-					),
-					recipientType: values.map(
-						({recipientType}) => recipientType
-					),
-					template: values.map(({template}) => template),
-					templateLanguage: values.map(
-						({templateLanguage}) => templateLanguage
-					),
+	const updateSelectedItem = (value, type) => {
+		setSelectedItem((previousItem) => {
+			const actions = previousItem.data.actions ?? {};
+
+			actions[type] = actions[type] ?? [];
+
+			actions[type][index] = value;
+
+			return {
+				...previousItem,
+				data: {
+					...previousItem.data,
+					actions,
 				},
-			},
-		}));
+			};
+		});
 	};
 
 	const deleteSection = () => {
@@ -91,7 +84,10 @@ const ActionsInfo = ({identifier, sectionsLength, setSections}) => {
 
 				<ClayInput
 					id="actionName"
-					onChange={({target}) => setActionName(target.value)}
+					onChange={({target}) => {
+						setActionName(target.value);
+						updateSelectedItem(target.value, 'name');
+					}}
 					placeholder={Liferay.Language.get('my-action')}
 					type="text"
 					value={actionName}
@@ -105,7 +101,10 @@ const ActionsInfo = ({identifier, sectionsLength, setSections}) => {
 
 				<ClayInput
 					id="actionDescription"
-					onChange={({target}) => setActionDescription(target.value)}
+					onChange={({target}) => {
+						setActionDescription(target.value);
+						updateSelectedItem(target.value, 'description');
+					}}
 					type="text"
 					value={actionDescription}
 				/>
@@ -119,7 +118,10 @@ const ActionsInfo = ({identifier, sectionsLength, setSections}) => {
 				<ClayInput
 					component="textarea"
 					id="template"
-					onChange={({target}) => setTemplate(target.value)}
+					onChange={({target}) => {
+						setTemplate(target.value);
+						updateSelectedItem(target.value, 'template');
+					}}
 					placeholder="${userName} sent you a ${entryType} for review in the workflow."
 					type="text"
 					value={template}
@@ -134,7 +136,10 @@ const ActionsInfo = ({identifier, sectionsLength, setSections}) => {
 				<ClaySelect
 					aria-label="Select"
 					id="execution-type"
-					onChange={({target}) => setExecutionType(target.value)}
+					onChange={({target}) => {
+						setExecutionType(target.value);
+						updateSelectedItem(target.value, 'executionType');
+					}}
 				>
 					{executionTypeOptions.map((item) => (
 						<ClaySelect.Option
@@ -151,6 +156,16 @@ const ActionsInfo = ({identifier, sectionsLength, setSections}) => {
 					{Liferay.Language.get('priority')}
 				</label>
 
+				<span
+					className="ml-1"
+					title={Liferay.Language.get('label-name')}
+				>
+					<ClayIcon
+						className="text-muted"
+						symbol="question-circle-full"
+					/>
+				</span>
+
 				<ClayInput
 					aria-label="Select"
 					id="priority"
@@ -165,6 +180,7 @@ const ActionsInfo = ({identifier, sectionsLength, setSections}) => {
 						});
 
 						setPriority(newValue);
+						updateSelectedItem(target.value, 'priority');
 					}}
 					onChange={({target}) => {
 						let {value: newValue} = target;
