@@ -20,8 +20,6 @@ import CurrentActions from './CurrentActions';
 const ActionsSummary = ({setContentName}) => {
 	const {selectedItem} = useContext(DiagramBuilderContext);
 
-	console.log(selectedItem);
-
 	return (
 		<SidebarPanel panelTitle={Liferay.Language.get('actions')}>
 			{!selectedItem?.data?.actions ? (
@@ -34,7 +32,7 @@ const ActionsSummary = ({setContentName}) => {
 				</ClayButton>
 			) : (
 				<CurrentActions
-					actions={selectedItem.data.actions}
+					actions={selectedItem.data?.actions}
 					setContentName={setContentName}
 				/>
 			)}

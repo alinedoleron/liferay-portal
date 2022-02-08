@@ -12,10 +12,12 @@
 import {ClayButtonWithIcon} from '@clayui/button';
 import ClayLayout from '@clayui/layout';
 import ClayLink from '@clayui/link';
-import React from 'react';
+import React, {useContext} from 'react';
 
-const CurrentActions = ({actions}) => {
-	const actionsNames = actions.name;
+import {DiagramBuilderContext} from '../../../../DiagramBuilderContext';
+
+const CurrentActions = ({actions, setContentName}) => {
+	const {setSelectedItem} = useContext(DiagramBuilderContext);
 
 	const deleteCurrentActions = () => {
 		setSelectedItem((previousValue) => ({
@@ -28,16 +30,32 @@ const CurrentActions = ({actions}) => {
 	};
 
 	return (
-		<>
-			{actionsNames.forEach((name) => {
-			
-						<span>	{name}</span>
+		<ClayLayout.ContentCol className="current-assignments-area" float>
+			<ClayLayout.Row
+				className="current-assignments-row"
+				justify="between"
+			>
+				<ClayLink
+					button={false}
+					className="truncate-container"
+					displayType="secondary"
+					href="#"
+					onClick={() => setContentName('actions')}
+				>
+					{actions?.name.map((name, index) => (
+						<span key={index}>{name}</span>
+					))}
+				</ClayLink>
 
-			})
-			}
-	
-	</>
-	)
+				<ClayButtonWithIcon
+					className="delete-button text-secondary trash-button"
+					displayType="unstyled"
+					onClick={deleteCurrentActions}
+					symbol="trash"
+				/>
+			</ClayLayout.Row>
+		</ClayLayout.ContentCol>
+	);
 };
 
 export default CurrentActions;
