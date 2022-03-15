@@ -27,7 +27,10 @@ const options = [
 	},
 ];
 
-const SelectActionType = ({actionType, setActionType}) => {
+const SelectActionType = ({
+	actionType,
+	setActionType,
+}) => {
 	return (
 		<ClayForm.Group>
 			<label htmlFor="action-type">{Liferay.Language.get('type')}</label>
