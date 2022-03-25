@@ -14,6 +14,10 @@ import React, {useContext, useState} from 'react';
 
 import {DEFAULT_LANGUAGE} from '../../../../../source-builder/constants';
 import {DiagramBuilderContext} from '../../../../DiagramBuilderContext';
+import ScriptInput from '../../../shared-components/ScriptInput';
+import Role from '../notifications/Role';
+import RoleType from '../notifications/RoleType';
+import User from '../notifications/User';
 import BaseNotificationsInfo from '../shared-components/BaseNotificationsInfo';
 import {getRecipientTypeOptions} from '../utils';
 
@@ -27,6 +31,13 @@ let executionTypeOptions = [
 		value: 'onExit',
 	},
 ];
+
+const recipientTypeComponents = {
+	role: Role,
+	roleType: RoleType,
+	scriptedRecipient: ScriptInput,
+	user: User,
+};
 
 const NotificationsInfo = ({index: notificationIndex, ...restProps}) => {
 	const {selectedItem, setSelectedItem} = useContext(DiagramBuilderContext);
@@ -58,7 +69,8 @@ const NotificationsInfo = ({index: notificationIndex, ...restProps}) => {
 				value: 'onAssignment',
 			});
 		}
-	} else if (selectedItem.type !== 'task') {
+	}
+	else if (selectedItem.type !== 'task') {
 		recipientTypeOptions = recipientTypeOptions.filter(({value}) => {
 			return value !== 'taskAssignees';
 		});
@@ -114,6 +126,7 @@ const NotificationsInfo = ({index: notificationIndex, ...restProps}) => {
 			executionType={executionType}
 			executionTypeOptions={executionTypeOptions}
 			notificationIndex={notificationIndex}
+			recipientTypeComponents={recipientTypeComponents}
 			scriptedRecipientUpdateSelectedItem={
 				scriptedRecipientUpdateSelectedItem
 			}

@@ -25,8 +25,9 @@ const ActionTypeAction = ({
 		'';
 	},
 	setActionSections,
-	
+
 	// timersIndex,
+
 }) => {
 	const {selectedItem} = useContext(DiagramBuilderContext);
 
