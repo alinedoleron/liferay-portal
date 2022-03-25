@@ -75,13 +75,15 @@ const Timers = ({setContentName, setErrors}) => {
 							reassignments.resourceAction = filteredTimerActions.map(
 								({resourceAction}) => resourceAction
 							);
-						} else if (
+						}
+						else if (
 							reassignments.assignmentType[0] === 'roleId'
 						) {
 							reassignments.roleId = filteredTimerActions.map(
 								({roleId}) => roleId
 							);
-						} else if (
+						}
+						else if (
 							reassignments.assignmentType[0] === 'user' &&
 							Object.keys(filteredTimerActions[0]).includes(
 								'users'
@@ -90,12 +92,16 @@ const Timers = ({setContentName, setErrors}) => {
 							reassignments.emailAddress = filteredTimerActions[0].users.map(
 								({emailAddress}) => emailAddress
 							);
-						} else if (
+						}
+						else if (
 							reassignments.assignmentType[0] === 'roleType'
 						) {
-							console.log(
-								'filteredTimerActions',
-								filteredTimerActions
+							reassignments.roleName = filteredTimerActions.map(
+								({roleName}) => roleName
+							);
+
+							reassignments.roleType = filteredTimerActions.map(
+								({roleType}) => roleType
 							);
 						}
 
@@ -132,7 +138,8 @@ const Timers = ({setContentName, setErrors}) => {
 
 				timerNotifications: serializebleSections.map(() => ({})),
 			};
-		} else {
+		}
+		else {
 			taskTimers = null;
 		}
 
@@ -172,11 +179,18 @@ const Timers = ({setContentName, setErrors}) => {
 					section.resourceAction = data.find(
 						(entry) => entry[0] === 'resourceAction'
 					)[1];
-				} else if (section.assignmentType === 'roleId') {
+				}
+				else if (section.assignmentType === 'roleId') {
 					section.roleId = data.find(
 						(entry) => entry[0] === 'roleId'
 					)[1];
-				} else if (
+				}
+				else if (section.assignmentType === 'roleType') {
+					section.resourceAction = data.find(
+						(entry) => entry[0] === 'roleType'
+					)[1];
+				}
+				else if (
 					section.assignmentType === 'user' &&
 					data.some((entry) => entry[0] === 'emailAddress')
 				) {
@@ -186,7 +200,8 @@ const Timers = ({setContentName, setErrors}) => {
 							emailAddress: email,
 							identifier: `${Date.now()}-${index}`,
 						}));
-				} else {
+				}
+				else {
 					section.assignmentType = 'assetCreator';
 				}
 

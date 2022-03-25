@@ -15,14 +15,18 @@ import SidebarPanel from '../../../SidebarPanel';
 import BaseRoleType from '../../shared-components/BaseRoleType';
 
 const RoleType = (props) => {
-	const updateRoleType = (values) => {
-		props.updateSelectedItem({
-			reassignments: {
-				assignmentType: ['roleType'],
-				autoCreate: values.map(({autoCreate}) => autoCreate),
-				roleName: values.map(({roleName}) => roleName),
-				roleType: values.map(({roleType}) => roleType),
-			},
+	const {actionSectionsIndex, index, setActionSections} = props;
+	const updateRoleType = (roleType) => {
+		setActionSections((currentSections) => {
+			const updatedSections = [...currentSections];
+
+			updatedSections[actionSectionsIndex].assignmentType = 'roleType';
+			updatedSections[actionSectionsIndex].roleName =
+				roleType[index].roleName;
+			updatedSections[actionSectionsIndex].roleType =
+				roleType[index].roleType;
+
+			return updatedSections;
 		});
 	};
 
