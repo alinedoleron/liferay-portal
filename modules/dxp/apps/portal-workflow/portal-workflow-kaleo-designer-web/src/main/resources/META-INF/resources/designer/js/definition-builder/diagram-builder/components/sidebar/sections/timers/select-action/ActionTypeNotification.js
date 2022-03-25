@@ -13,8 +13,19 @@ import React, {useState} from 'react';
 
 import {DEFAULT_LANGUAGE} from '../../../../../../source-builder/constants';
 import BaseNotificationsInfo from '../../shared-components/BaseNotificationsInfo';
+import Role from '../select-notification/Role';
+
+const recipientTypeComponents = {
+	role: Role,
+
+	// roleType: RoleType,
+	// scriptedRecipient: ScriptInput,
+	// user: User,
+
+};
 
 const ActionTypeNotification = ({
+	actionData,
 	actionSectionsIndex,
 	actionType,
 	setActionSections,
@@ -67,12 +78,16 @@ const ActionTypeNotification = ({
 	return notificationSections.map(({identifier, ...restProps}, index) => {
 		return (
 			<BaseNotificationsInfo
+				actionData={actionData}
+				actionSectionsIndex={actionSectionsIndex}
 				identifier={identifier}
 				key={index}
 				notificationIndex={actionSectionsIndex}
+				recipientTypeComponents={recipientTypeComponents}
 				scriptedRecipientUpdateSelectedItem={
 					scriptedRecipientUpdateSelectedItem
 				}
+				setActionSections={setActionSections}
 				setSections={setNotificationSections}
 				updateTimersNotificationInfo={updateNotificationInfo}
 				{...restProps}

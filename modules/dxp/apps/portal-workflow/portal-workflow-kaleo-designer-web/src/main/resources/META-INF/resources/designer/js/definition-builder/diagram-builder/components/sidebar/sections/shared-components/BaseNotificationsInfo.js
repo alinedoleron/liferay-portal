@@ -16,34 +16,28 @@ import PropTypes from 'prop-types';
 import React, {useContext, useEffect, useState} from 'react';
 
 import {DiagramBuilderContext} from '../../../../DiagramBuilderContext';
-import ScriptInput from '../../../shared-components/ScriptInput';
 import SidebarPanel from '../../SidebarPanel';
-import Role from '../notifications/Role';
-import RoleType from '../notifications/RoleType';
-import User from '../notifications/User';
 import {getRecipientTypeOptions} from '../utils';
 
 const getRecipientType = (assignmentType) => {
 	if (assignmentType === 'roleId') {
 		return 'role';
-	} else if (assignmentType === 'roleType') {
+	}
+	else if (assignmentType === 'roleType') {
 		return 'roleType';
-	} else if (assignmentType === 'scriptedRecipient') {
+	}
+	else if (assignmentType === 'scriptedRecipient') {
 		return 'scriptedRecipient';
-	} else if (assignmentType === 'taskAssignees') {
+	}
+	else if (assignmentType === 'taskAssignees') {
 		return 'taskAssignees';
-	} else if (assignmentType === 'user') {
+	}
+	else if (assignmentType === 'user') {
 		return 'user';
-	} else {
+	}
+	else {
 		return null;
 	}
-};
-
-const recipientTypeComponents = {
-	role: Role,
-	roleType: RoleType,
-	scriptedRecipient: ScriptInput,
-	user: User,
 };
 
 const templateLanguageOptions = [
@@ -62,12 +56,16 @@ const templateLanguageOptions = [
 ];
 
 const BaseNotificationsInfo = ({
+	actionData,
+	actionSectionsIndex,
 	executionType,
 	executionTypeOptions,
 	identifier,
 	notificationIndex,
+	recipientTypeComponents,
 	scriptedRecipientUpdateSelectedItem,
 	sectionsLength,
+	setActionSections,
 	setExecutionType,
 	setSections,
 	updateSelectedItem,
@@ -195,7 +193,8 @@ const BaseNotificationsInfo = ({
 
 				if (recipientType === 'assetCreator') {
 					recipientDetails = {assignmentType: ['user']};
-				} else if (recipientType === 'taskAssignees') {
+				}
+				else if (recipientType === 'taskAssignees') {
 					recipientDetails = {assignmentType: ['taskAssignees']};
 				}
 
@@ -222,7 +221,8 @@ const BaseNotificationsInfo = ({
 						],
 						...currentRecipient,
 					};
-				} else {
+				}
+				else {
 					previousItemNotificationsPath.recipients = [];
 
 					previousItemNotificationsPath.recipients[
@@ -253,7 +253,8 @@ const BaseNotificationsInfo = ({
 					roleType: recipients.roleType[i],
 				});
 			}
-		} else if (
+		}
+		else if (
 			recipients &&
 			notificationsPath.recipients[notificationIndex].sectionsData &&
 			recipientType === 'user'
@@ -299,7 +300,8 @@ const BaseNotificationsInfo = ({
 	const updateNotificationInfo = (item) => {
 		if (updateTimersNotificationInfo) {
 			updateTimersNotificationInfo(item);
-		} else {
+		}
+		else {
 			updateNotificationsNotificationInfo(item);
 		}
 	};
@@ -586,6 +588,8 @@ const BaseNotificationsInfo = ({
 						<ClayForm.Group className="recipient-type-form-group">
 							{internalSections.map((props, index) => (
 								<RecipientTypeComponent
+									actionData={actionData}
+									actionSectionsIndex={actionSectionsIndex}
 									index={index}
 									inputValue={
 										notificationsPath?.recipients?.[
@@ -595,6 +599,7 @@ const BaseNotificationsInfo = ({
 									key={`section-${props.identifier}`}
 									notificationIndex={notificationIndex}
 									sectionsLength={internalSections.length}
+									setActionSections={setActionSections}
 									setSections={setInternalSections}
 									updateSelectedItem={
 										scriptedRecipientUpdateSelectedItem
