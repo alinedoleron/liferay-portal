@@ -172,7 +172,8 @@ public class ObjectRelationshipResourceImpl
 					objectRelationship.getObjectDefinitionId1();
 				objectDefinitionId2 =
 					objectRelationship.getObjectDefinitionId2();
-				objectDefinitionName2 = objectDefinition2.getShortName();
+				objectDefinitionName2 = objectDefinition.getShortName();
+				reverse = objectRelationship.isReverse();
 				type = ObjectRelationship.Type.create(
 					objectRelationship.getType());
 			}
