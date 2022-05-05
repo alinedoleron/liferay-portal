@@ -12,16 +12,10 @@
  * details.
  */
 
-import React from 'react';
-interface IProps extends React.HTMLAttributes<HTMLElement> {
-	handleChange: any;
-	handleSubmit: any;
+/// <reference types="react" />
+
+export default function ModalWithProvider({
+	isApproved,
+}: {
 	isApproved: boolean;
-	objectRelationship: any;
-	observer: any;
-	onClose: () => void;
-	relationshipId: string;
-	values: any;
-}
-declare const ModalWithProvider: React.FC<IProps>;
-export default ModalWithProvider;
+}): JSX.Element;

@@ -12,27 +12,24 @@
  * details.
  */
 
-import {ReactNode} from 'react';
-export default function FieldBase({
+import {Observer} from '@clayui/modal/lib/types';
+import React from 'react';
+export default function DangerModal({
 	children,
-	className,
-	disabled,
 	errorMessage,
-	helpMessage,
-	id,
-	label,
-	required,
-	warningMessage,
+	observer,
+	onClose,
+	onDelete,
+	title,
+	token,
 }: IProps): JSX.Element;
 interface IProps {
-	children: ReactNode;
-	className?: string;
-	disabled?: boolean;
-	errorMessage?: string;
-	helpMessage?: string;
-	id?: string;
-	label?: string;
-	required?: boolean;
-	warningMessage?: string;
+	children?: React.ReactNode;
+	errorMessage: string;
+	observer: Observer;
+	onClose: () => void;
+	onDelete: () => void;
+	title: string;
+	token: string;
 }
 export {};

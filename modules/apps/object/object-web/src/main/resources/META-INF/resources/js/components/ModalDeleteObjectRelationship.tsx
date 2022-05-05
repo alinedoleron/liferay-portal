@@ -12,188 +12,90 @@
  * details.
  */
 
-import ClayButton from '@clayui/button';
-import ClayForm from '@clayui/form';
-import ClayModal, {ClayModalProvider, useModal} from '@clayui/modal';
+import {ClayModalProvider, useModal} from '@clayui/modal';
+import {Observer} from '@clayui/modal/lib/types';
 import {fetch} from 'frontend-js-web';
 import React, {useEffect, useState} from 'react';
 
-import useForm from '../hooks/useForm';
-import Input from './Form/Input';
+import DangerModal from './DangerModal';
 
-type TInitialValues = {
-	name: string;
-};
-
-const ModalDeleteObjectRelationship: React.FC<IProps> = ({
-	handleChange,
-	handleSubmit,
+function ModalDeleteObjectRelationship({
 	objectRelationship,
 	observer,
 	onClose,
-	values,
-}) => {
-	const [error, setError] = useState('');
+	onDelete,
+}: IProps) {
 
-	const handleBlur = () => {
-		values.name.toLowerCase() !== objectRelationship?.name.toLowerCase()
-			? setError(
-					Liferay.Language.get(
-						'input-and-relationship-name-does-not-match'
-					)
-			  )
-			: setError('');
-	};
+	// const WarningMessages = () => (
+	// 	<>
+	// 		<div>
+	// 			{Liferay.Language.get(
+	// 				'you-do-not-have-permission-to-delete-this-relationship'
+	// 			)}
+	// 		</div>
+	// 		<div>
+	// 			{Liferay.Language.get(
+	// 				'to-delete-this-relationship-you-need-to-go-to-parent-relationship-side'
+	// 			)}
+	// 		</div>
+	// 	</>
+	// );
 
-	const getDangerMessages = () => {
-		return (
-			<>
-				<p>
-					{Liferay.Language.get(
-						'this-action-cannot-be-undone-and-will-delete-permanently-all-related-fields-from-this-relationship'
-					)}
-				</p>
-				<p>{Liferay.Language.get('it-may-affect-many-records')}</p>
-				<p
-					dangerouslySetInnerHTML={{
-						__html: Liferay.Util.sub(
-							Liferay.Language.get(
-								'please-type-the-relationship-name-x-to-confirm'
-							),
-							`<strong>${objectRelationship?.name}</strong>`
-						),
-					}}
-				/>
-			</>
-		);
-	};
-
-	const getWarningMessages = () => {
-		return (
-			<>
-				<div>
-					{Liferay.Language.get(
-						'you-do-not-have-permission-to-delete-this-relationship'
-					)}
-				</div>
-				<div>
-					{Liferay.Language.get(
-						'to-delete-this-relationship-you-need-to-go-to-parent-relationship-side'
-					)}
-				</div>
-			</>
-		);
-	};
-
-	return (
-		<ClayModal
-			center
+	return objectRelationship.reverse ? (
+		<div />
+	) : (
+		<DangerModal
+			errorMessage={Liferay.Language.get(
+				'input-and-relationship-name-does-not-match'
+			)}
 			observer={observer}
-			status={objectRelationship?.reverse ? 'warning' : 'danger'}
+			onClose={onClose}
+			onDelete={onDelete(objectRelationship.objectRelationshipId)}
+			title="delete-relationship"
+			token={objectRelationship.name}
 		>
-			<ClayForm onSubmit={handleSubmit}>
-				<ClayModal.Header>
-					{objectRelationship?.reverse
-						? Liferay.Language.get('deletion-not-allowed')
-						: Liferay.Language.get('delete-relationship')}
-				</ClayModal.Header>
+			<p>
+				{Liferay.Language.get(
+					'this-action-cannot-be-undone-and-will-delete-permanently-all-related-fields-from-this-relationship'
+				)}
+			</p>
 
-				<ClayModal.Body>
-					<>
-						{objectRelationship?.reverse ? (
-							getWarningMessages()
-						) : (
-							<>
-								{getDangerMessages()}
-								<Input
-									error={error}
-									id="objectRelationshipName"
-									label=""
-									name="name"
-									onBlur={handleBlur}
-									onChange={handleChange}
-									value={values.name}
-								/>
-							</>
-						)}
-					</>
-				</ClayModal.Body>
+			<p>{Liferay.Language.get('it-may-affect-many-records')}</p>
 
-				<ClayModal.Footer
-					last={
-						objectRelationship?.reverse ? (
-							<ClayButton
-								displayType="warning"
-								onClick={() => onClose()}
-							>
-								{Liferay.Language.get('done')}
-							</ClayButton>
-						) : (
-							<ClayButton.Group key={1} spaced>
-								<ClayButton
-									displayType="secondary"
-									onClick={() => onClose()}
-								>
-									{Liferay.Language.get('cancel')}
-								</ClayButton>
-
-								<ClayButton
-									disabled={
-										!values.name || error ? true : false
-									}
-									displayType="danger"
-									type="submit"
-								>
-									{Liferay.Language.get('delete')}
-								</ClayButton>
-							</ClayButton.Group>
-						)
-					}
-				/>
-			</ClayForm>
-		</ClayModal>
+			<p
+				dangerouslySetInnerHTML={{
+					__html: Liferay.Util.sub(
+						Liferay.Language.get(
+							'please-type-the-relationship-name-x-to-confirm'
+						),
+						`<strong>${objectRelationship.name}</strong>`
+					),
+				}}
+			/>
+		</DangerModal>
 	);
-};
-
-interface IProps extends React.HTMLAttributes<HTMLElement> {
-	handleChange: any;
-	handleSubmit: any;
-	isApproved: boolean;
-	objectRelationship: any;
-	observer: any;
-	onClose: () => void;
-	relationshipId: string;
-	values: any;
 }
 
-const ModalWithProvider: React.FC<IProps> = ({isApproved}: any) => {
-	const [visibleModal, setVisibleModal] = useState<boolean>(false);
-	const [relationshipId, setRelationshipId] = useState('');
+interface IProps {
+	objectRelationship: ObjectRelationship;
+	observer: Observer;
+	onClose: () => void;
+	onDelete: any;
+}
+
+export default function ModalWithProvider({isApproved}: {isApproved: boolean}) {
+	const [
+		objectRelationship,
+		setObjectRelationship,
+	] = useState<ObjectRelationship | null>();
 
 	const {observer, onClose} = useModal({
-		onClose: () => {
-			setVisibleModal(false);
-			setRelationshipId('');
-		},
+		onClose: () => setObjectRelationship(null),
 	});
 
-	const [objectRelationship, setObjectRelationship] = useState<any>({});
-
-	const initialValues: TInitialValues = {
-		name: '',
-	};
-
-	const openToast = (options: {
-		message: string;
-		type?: 'danger' | 'success';
-	}) => {
-		const parentWindow = Liferay.Util.getOpener();
-		parentWindow.Liferay.Util.openToast(options);
-	};
-
-	const deleteRelationship = async () => {
+	const deleteRelationship = async (id: string) => {
 		const response = await fetch(
-			`/o/object-admin/v1.0/object-relationships/${relationshipId}`,
+			`/o/object-admin/v1.0/object-relationships/${id}`,
 			{
 				headers: new Headers({
 					'Accept': 'application/json',
@@ -204,40 +106,22 @@ const ModalWithProvider: React.FC<IProps> = ({isApproved}: any) => {
 		);
 
 		if (response.ok) {
-			openToast({
+			Liferay.Util.openToast({
 				message: Liferay.Language.get(
 					'relationship-deleted-successfully'
 				),
 				type: 'success',
 			});
 
-			setTimeout(() => {
-				window.location.reload();
-			}, 500);
+			window.location.reload();
 
 			return;
 		}
 		onClose();
 	};
 
-	const onValidate = (values: TInitialValues) => {
-		const errors: any = {};
-
-		if (!values.name) {
-			errors.name = Liferay.Language.get('required');
-		}
-
-		return errors;
-	};
-
-	const {handleChange, handleSubmit, values} = useForm({
-		initialValues,
-		onSubmit: deleteRelationship,
-		validate: onValidate,
-	});
-
-	const openDeleteObjectRelationshipModal = async ({itemId}: any) => {
-		const objectRelationshipResponse = await fetch(
+	const fetchObjectRelationship = async ({itemId}: {itemId: string}) => {
+		const response = await fetch(
 			`/o/object-admin/v1.0/object-relationships/${itemId}`,
 			{
 				headers: new Headers({
@@ -248,49 +132,34 @@ const ModalWithProvider: React.FC<IProps> = ({isApproved}: any) => {
 			}
 		);
 
-		setObjectRelationship((await objectRelationshipResponse.json()) as any);
-		setRelationshipId(itemId);
+		const objectRelationship = (await response.json()) as ObjectRelationship;
+
+		if (isApproved || objectRelationship.reverse) {
+			setObjectRelationship(objectRelationship);
+		}
+		else {
+			deleteRelationship(itemId);
+		}
 	};
 
 	useEffect(() => {
-		Liferay.on(
-			'deleteObjectRelationship',
-			openDeleteObjectRelationshipModal
-		);
+		Liferay.on('deleteObjectRelationship', fetchObjectRelationship);
 
 		return () => {
 			Liferay.detach('deleteObjectRelationship');
 		};
 	}, []);
 
-	useEffect(() => {
-		if (!isApproved && !objectRelationship?.reverse) {
-			deleteRelationship();
-
-			return;
-		}
-		else if (relationshipId) {
-			setVisibleModal(true);
-		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [relationshipId]);
-
 	return (
 		<ClayModalProvider>
-			{visibleModal && (
+			{objectRelationship && (
 				<ModalDeleteObjectRelationship
-					handleChange={handleChange}
-					handleSubmit={handleSubmit}
-					isApproved={isApproved}
 					objectRelationship={objectRelationship}
 					observer={observer}
 					onClose={onClose}
-					relationshipId={relationshipId}
-					values={values}
+					onDelete={deleteRelationship}
 				/>
 			)}
 		</ClayModalProvider>
 	);
-};
-
-export default ModalWithProvider;
+}

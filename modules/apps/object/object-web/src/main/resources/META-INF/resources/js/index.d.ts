@@ -87,6 +87,18 @@ interface ObjectValidationRuleElementItem {
 	tooltip: string;
 }
 
+interface ObjectRelationship {
+	deletionType: string;
+	label: LocalizedValue<string>;
+	name: string;
+	objectDefinitionId1: number;
+	objectDefinitionId2: number;
+	objectDefinitionName2: string;
+	objectRelationshipId: number;
+	reverse?: boolean;
+	type: string;
+}
+
 interface ObjectValidationType {
 	label: string;
 }
