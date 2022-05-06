@@ -39,6 +39,7 @@ renderResponse.setTitle(objectDefinition.getLabel(locale, true));
 	namespace="<%= liferayPortletResponse.getNamespace() %>"
 	pageNumber="<%= 1 %>"
 	portletURL="<%= liferayPortletResponse.createRenderURL() %>"
+	propsTransformer="js/ObjectDefinitionsRelationshipsFDSPropsTransformer"
 	style="fluid"
 />
 

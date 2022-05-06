@@ -30,7 +30,7 @@ function ModalDeleteObjectRelationship({
 		<WarningModal
 			observer={observer}
 			onClose={onClose}
-			title="deletion-not-allowed"
+			title={Liferay.Language.get('deletion-not-allowed')}
 		>
 			<div>
 				{Liferay.Language.get(
@@ -121,30 +121,19 @@ export default function ModalWithProvider({isApproved}: {isApproved: boolean}) {
 		onClose();
 	};
 
-	const fetchObjectRelationship = async ({itemId}: {itemId: string}) => {
-		const response = await fetch(
-			`/o/object-admin/v1.0/object-relationships/${itemId}`,
-			{
-				headers: new Headers({
-					'Accept': 'application/json',
-					'Content-Type': 'application/json',
-				}),
-				method: 'GET',
-			}
-		);
-
-		const objectRelationship = (await response.json()) as ObjectRelationship;
+	const getObjectRelationship = async ({itemData}: any) => {
+		const objectRelationship = itemData;
 
 		if (isApproved || objectRelationship.reverse) {
-			setObjectRelationship(objectRelationship);
+			setObjectRelationship(itemData);
 		}
 		else {
-			deleteRelationship(itemId);
+			deleteRelationship(itemData.id);
 		}
 	};
 
 	useEffect(() => {
-		Liferay.on('deleteObjectRelationship', fetchObjectRelationship);
+		Liferay.on('deleteObjectRelationship', getObjectRelationship);
 
 		return () => {
 			Liferay.detach('deleteObjectRelationship');
