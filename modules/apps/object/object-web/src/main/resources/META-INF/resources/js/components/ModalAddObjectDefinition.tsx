@@ -27,6 +27,7 @@ import {
 	firstLetterUppercase,
 	removeAllSpecialCharacters,
 } from '../utils/string';
+import AutoComplete from './Form/AutoComplete';
 import Input from './Form/Input';
 import Select from './Form/Select';
 
@@ -50,6 +51,29 @@ const storageTypes = [
 	Liferay.Language.get('object-definition-salesforce'),
 ];
 
+const associatedObjects = [
+	'Ticket',
+	'Option',
+	'Account',
+	'Account Address',
+	'Account Team Member',
+	'Activity',
+	'Option',
+	'Assets',
+	'Authorization Form',
+	'Form',
+	'Ticket',
+	'Option',
+	'Account',
+	'Account Address',
+	'Account Team Member',
+	'Activity',
+	'Option',
+	'Assets',
+	'Authorization Form',
+	'Form',
+];
+
 const ModalAddObjectDefinition: React.FC<IProps> = ({
 	apiURL,
 	observer,
@@ -57,6 +81,7 @@ const ModalAddObjectDefinition: React.FC<IProps> = ({
 }) => {
 	const flags = useFeatureFlag();
 	const initialValues: TInitialValues = {
+		associatedObject: '',
 		label: '',
 		name: undefined,
 		pluralLabel: '',
@@ -64,7 +89,21 @@ const ModalAddObjectDefinition: React.FC<IProps> = ({
 	};
 	const [error, setError] = useState<string>('');
 
+	const [query, setQuery] = useState<string>('');
+	const [visibleObjectFields, setVisibleObjectFields] = useState<any[]>([]);
+	const [expanded, setExpanded] = useState<boolean>(false);
+
+	useEffect(() => {
+		const objectFields = associatedObjects.filter((associatedObject) => {
+			return associatedObject?.toLowerCase().match(query.toLowerCase());
+		});
+		expanded
+			? setVisibleObjectFields(objectFields)
+			: setVisibleObjectFields(objectFields.slice(0, 9));
+	}, [query, expanded]);
+
 	const onSubmit = async ({
+		associatedObject,
 		label,
 		name,
 		pluralLabel,
@@ -85,6 +124,7 @@ const ModalAddObjectDefinition: React.FC<IProps> = ({
 		if (flags['LPS-135430']) {
 			objectDefinition = {
 				...objectDefinition,
+				associatedObject,
 				storageType,
 			};
 		}
@@ -183,22 +223,71 @@ const ModalAddObjectDefinition: React.FC<IProps> = ({
 					/>
 
 					{flags['LPS-135430'] && (
-						<Select
-							id="objectDefinitionStorageType"
-							label={Liferay.Language.get('storage-type')}
-							name="storageType"
-							onChange={({target: {value}}: any) => {
-								setValues({
-									...values,
-									storageType: storageTypes[value],
-								});
-							}}
-							options={storageTypes}
-							tooltip={Liferay.Language.get(
-								'object-definition-storage-type-tooltip'
+						<>
+							<Select
+								id="objectDefinitionStorageType"
+								label={Liferay.Language.get('storage-type')}
+								name="storageType"
+								onChange={({target: {value}}: any) => {
+									setValues({
+										...values,
+										storageType: storageTypes[value],
+									});
+								}}
+								options={storageTypes}
+								tooltip={Liferay.Language.get(
+									'object-definition-storage-type-tooltip'
+								)}
+								value={selectedStorageType(values.storageType)}
+							/>
+							{values.storageType.toLowerCase() ===
+								'salesforce' && (
+								<AutoComplete
+									emptyStateMessage={Liferay.Language.get(
+										'there-are-no-object-definitions'
+									)}
+									footerContent={
+										<div className="lfr-objects__autocomplete-see-more">
+											<ClayButton
+												displayType="secondary"
+												onClick={() =>
+													setExpanded(true)
+												}
+											>
+												{Liferay.Language.get(
+													'see-more'
+												)}
+											</ClayButton>
+										</div>
+									}
+									items={visibleObjectFields}
+									label={Liferay.Language.get(
+										'associated-object'
+									)}
+									onChangeQuery={setQuery}
+									onSelectItem={(item) => {
+										setValues({
+											...values,
+											associatedObject: item,
+										});
+									}}
+									query={query}
+									searchPlaceholder={Liferay.Language.get(
+										'search-an-object-definition'
+									)}
+									selectPlaceholder={Liferay.Language.get(
+										'search-an-object-definition'
+									)}
+									value={values.associatedObject}
+								>
+									{(item) => (
+										<div className="d-flex justify-content-between">
+											<div>{item}</div>
+										</div>
+									)}
+								</AutoComplete>
 							)}
-							value={selectedStorageType(values.storageType)}
-						/>
+						</>
 					)}
 				</ClayModal.Body>
 
@@ -230,6 +319,7 @@ interface IProps extends React.HTMLAttributes<HTMLElement> {
 }
 
 type TInitialValues = {
+	associatedObject: string;
 	label: string;
 	name?: string;
 	pluralLabel: string;
