@@ -20,12 +20,15 @@ interface IAutoCompleteProps extends React.HTMLAttributes<HTMLElement> {
 	emptyStateMessage: string;
 	error?: string;
 	feedbackMessage?: string;
+	footerContent?: React.ReactNode;
 	items: any[];
 	label: string;
 	onChangeQuery: (value: string) => void;
 	onSelectItem: (item: any) => void;
 	query: string;
 	required?: boolean;
+	searchPlaceholder?: string;
+	selectPlaceholder?: string;
 	value?: string;
 }
 declare const AutoComplete: React.FC<IAutoCompleteProps>;

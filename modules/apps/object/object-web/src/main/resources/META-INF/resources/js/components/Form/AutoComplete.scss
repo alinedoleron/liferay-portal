@@ -1,3 +1,13 @@
+.lfr-objects__autocomplete {
+	&-see-more {
+		margin: 16px;
+
+		button {
+			width: 100%;
+		}
+	}
+}
+
 .dropdown-menu {
 	max-width: 550px;
 	width: 100%;

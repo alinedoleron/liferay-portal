@@ -26,12 +26,15 @@ interface IAutoCompleteProps extends React.HTMLAttributes<HTMLElement> {
 	emptyStateMessage: string;
 	error?: string;
 	feedbackMessage?: string;
+	footerContent?: React.ReactNode;
 	items: any[];
 	label: string;
 	onChangeQuery: (value: string) => void;
 	onSelectItem: (item: any) => void;
 	query: string;
 	required?: boolean;
+	searchPlaceholder?: string;
+	selectPlaceholder?: string;
 	value?: string;
 }
 
@@ -42,6 +45,7 @@ const AutoComplete: React.FC<IAutoCompleteProps> = ({
 	emptyStateMessage,
 	error,
 	feedbackMessage,
+	footerContent,
 	id,
 	items,
 	label,
@@ -49,6 +53,8 @@ const AutoComplete: React.FC<IAutoCompleteProps> = ({
 	onSelectItem,
 	query,
 	required = false,
+	searchPlaceholder = Liferay.Language.get('search'),
+	selectPlaceholder = Liferay.Language.get('choose-an-option'),
 	value,
 }) => {
 	const [active, setActive] = useState<boolean>(false);
@@ -68,14 +74,14 @@ const AutoComplete: React.FC<IAutoCompleteProps> = ({
 				trigger={
 					<CustomSelect
 						contentRight={<>{value && contentRight}</>}
-						placeholder={Liferay.Language.get('choose-an-option')}
+						placeholder={selectPlaceholder}
 						value={value}
 					/>
 				}
 			>
 				<ClayDropDown.Search
 					onChange={({target: {value}}) => onChangeQuery(value)}
-					placeholder={Liferay.Language.get('search')}
+					placeholder={searchPlaceholder}
 					value={query}
 				/>
 
@@ -102,6 +108,8 @@ const AutoComplete: React.FC<IAutoCompleteProps> = ({
 						</ClayDropDown.Item>
 					</ClayDropDown.ItemList>
 				)}
+
+				{footerContent}
 			</ClayDropDown>
 		</FieldBase>
 	);
