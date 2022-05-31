@@ -14,6 +14,7 @@
 
 import ClayButton from '@clayui/button';
 import ClayForm, {ClayCheckbox} from '@clayui/form';
+import ClayIcon from '@clayui/icon';
 import ClayList from '@clayui/list';
 import ClayModal from '@clayui/modal';
 import {ManagementToolbar} from 'frontend-js-components-web';
@@ -26,21 +27,19 @@ import ViewContext, {TYPES} from '../context';
 import './ModalAddColumnsObjectCustomView.scss';
 import {TObjectField, TObjectViewColumn} from '../types';
 interface IProps extends React.HTMLAttributes<HTMLElement> {
+	isActionBuilder?: boolean;
+	objectViewColumns: TObjectViewColumn[];
 	observer: any;
 	onClose: () => void;
 }
 
 const ModalAddColumnsObjectCustomView: React.FC<IProps> = ({
+	isActionBuilder,
+	objectViewColumns,
 	observer,
 	onClose,
 }) => {
-	const [
-		{
-			objectFields,
-			objectView: {objectViewColumns},
-		},
-		dispatch,
-	] = useContext(ViewContext);
+	const [{objectFields}, dispatch] = useContext(ViewContext);
 
 	const [checkedItems, setCheckedItems] = useState<TObjectViewColumn[]>(
 		objectViewColumns
@@ -223,12 +222,25 @@ const ModalAddColumnsObjectCustomView: React.FC<IProps> = ({
 							key={`list-item-${index}`}
 						>
 							<ClayCheckbox
-								checked={field.checked}
+								checked={
+									isActionBuilder
+										? field.required || field.checked
+										: field.checked
+								}
+								disabled={
+									isActionBuilder ? field.required : false
+								}
 								label={field.label[defaultLanguageId]}
 								onChange={() => {
 									toggleFieldCheckbox(field.name);
 								}}
 							/>
+
+							{isActionBuilder && field.required && (
+								<span className="reference-mark">
+									<ClayIcon symbol="asterisk" />
+								</span>
+							)}
 						</ClayList.Item>
 					))}
 				</ClayList>

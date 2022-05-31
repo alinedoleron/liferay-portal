@@ -61,6 +61,7 @@ const ViewBuilderScreen: React.FC<{}> = () => {
 
 			{visibleModal && (
 				<ModalAddColumnsObjectCustomView
+					objectViewColumns={objectViewColumns ?? []}
 					observer={observer}
 					onClose={onClose}
 				/>

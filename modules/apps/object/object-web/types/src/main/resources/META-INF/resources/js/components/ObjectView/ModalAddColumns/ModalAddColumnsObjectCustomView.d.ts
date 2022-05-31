@@ -14,7 +14,10 @@
 
 import React from 'react';
 import './ModalAddColumnsObjectCustomView.scss';
+import {TObjectViewColumn} from '../types';
 interface IProps extends React.HTMLAttributes<HTMLElement> {
+	isActionBuilder?: boolean;
+	objectViewColumns: TObjectViewColumn[];
 	observer: any;
 	onClose: () => void;
 }
