@@ -15,29 +15,52 @@
 import {useModal} from '@clayui/modal';
 import React, {useContext, useState} from 'react';
 
+import {defaultLanguageId} from '../../../utils/locale';
 import {BuilderScreen} from '../BuilderScreen/BuilderScreen';
-import ModalAddColumnsObjectCustomView from '../ModalAddColumns/ModalAddColumnsObjectCustomView';
 import {ModalEditViewColumn} from '../ModalEditViewColumn/ModalEditViewColumn';
-import ViewContext from '../context';
+import ViewContext, {TYPES} from '../context';
+import {TObjectField} from '../types';
 
 const ViewBuilderScreen: React.FC<{}> = () => {
-	const [
-		{
-			objectView: {objectViewColumns},
-		},
-	] = useContext(ViewContext);
-
-	const [visibleModal, setVisibleModal] = useState(false);
-
 	const [visibleEditModal, setVisibleEditModal] = useState(false);
 	const [editingObjectFieldName, setEditingObjectFieldName] = useState('');
 
 	const {observer, onClose} = useModal({
-		onClose: () =>
-			visibleEditModal
-				? setVisibleEditModal(false)
-				: setVisibleModal(false),
+		onClose: () => setVisibleEditModal(false),
 	});
+
+	const [
+		{
+			objectFields,
+			objectView: {objectViewColumns},
+		},
+		dispatch,
+	] = useContext(ViewContext);
+
+	const objectFieldNames = new Set(
+		objectViewColumns.map(({objectFieldName}) => objectFieldName)
+	);
+
+	const selected = objectFields.filter(({name}) =>
+		objectFieldNames.has(name)
+	);
+
+	const handleAddColumns = () => {
+		const parentWindow = Liferay.Util.getOpener();
+
+		parentWindow.Liferay.fire('openModalAddColumns', {
+			getName: ({label}: TObjectField) => label[defaultLanguageId],
+			items: objectFields,
+			onSave: (selectedObjectFields: TObjectField[]) =>
+				dispatch({
+					payload: {
+						selectedObjectFields,
+					},
+					type: TYPES.ADD_OBJECT_VIEW_COLUMN,
+				}),
+			selected,
+		});
+	};
 
 	return (
 		<>
@@ -54,17 +77,10 @@ const ViewBuilderScreen: React.FC<{}> = () => {
 				objectColumns={objectViewColumns ?? []}
 				onEditingObjectFieldName={setEditingObjectFieldName}
 				onVisibleEditModal={setVisibleEditModal}
-				onVisibleModal={setVisibleModal}
+				openModal={handleAddColumns}
 				secondColumnHeader={Liferay.Language.get('column-label')}
 				title={Liferay.Language.get('columns')}
 			/>
-
-			{visibleModal && (
-				<ModalAddColumnsObjectCustomView
-					observer={observer}
-					onClose={onClose}
-				/>
-			)}
 
 			{visibleEditModal && (
 				<ModalEditViewColumn
