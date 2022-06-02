@@ -13,6 +13,7 @@
  */
 
 import {ClayCheckbox} from '@clayui/form';
+import {useModal} from '@clayui/modal';
 
 // @ts-ignore
 
@@ -23,14 +24,15 @@ import {FrontendDataSet} from '@liferay/frontend-data-set-web';
 import {render} from '@liferay/frontend-js-react-web';
 import React, {useEffect, useState} from 'react';
 
-import {defaultLanguageId} from '../../utils/locale';
 import Card from '../Card/Card';
 import {CheckboxItem} from '../Form/CheckBoxItem';
+import ModalAddColumns from '../ObjectView/ModalAddColumns/ModalAddColumns';
 
 // @ts-ignore
 
 import TestFrontendDataSet from '../TestFrontendDataSet';
 import {onActionDropdownItemClick} from './fdsUtil'; // mudar esse import quando o PR de dan entrar
+// import {TObjectField, TObjectViewColumn} from '../ObjectView/types';
 
 export default function PredefinedValueFDS({
 	currentObjectDefinitionFields,
@@ -41,9 +43,10 @@ export default function PredefinedValueFDS({
 		creationMenu: {
 			primaryItems: [
 				{
-					href: '#',
+					href: 'openModalAddColumns',
+					id: 'openModalAddColumns',
 					label: 'funcionou!',
-					target: 'modal',
+					target: 'event',
 				},
 			],
 		},
@@ -94,6 +97,12 @@ export default function PredefinedValueFDS({
 	const [frontEndDataSetProps, setFrontEndDataSetProps] = useState(
 		dataSetProps
 	);
+
+	const [visibleModal, setVisibleModal] = useState(false);
+
+	const {observer, onClose} = useModal({
+		onClose: () => setVisibleModal(false),
+	});
 
 	const getEntityFields = (dataSetFields: ObjectField[] | undefined) => {
 		const dataSetItems = dataSetFields?.map((item) => {
@@ -153,6 +162,10 @@ export default function PredefinedValueFDS({
 		setDataSetFields(updatedFieldList);
 	};
 
+	const openModal = (event: any) => {
+		setVisibleModal(true);
+	};
+
 	useEffect(() => {
 		Liferay.on('deleteDataSetField', deleteDataSetField);
 
@@ -162,10 +175,33 @@ export default function PredefinedValueFDS({
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
+	useEffect(() => {
+		Liferay.on('openModalAddColumns', openModal);
+
+		return () => {
+			Liferay.detach('openModalAddColumns');
+		};
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
+
 	return (
-		<Card title={Liferay.Language.get('predefined-values')}>
-			<div id="lfr-object-web__predefined-values-render-fds" />
-		</Card>
+		<>
+			<Card title={Liferay.Language.get('predefined-values')}>
+				<div id="lfr-object-web__predefined-values-render-fds" />
+			</Card>
+
+			{visibleModal && (
+				<ModalAddColumns
+					disableRequired
+					getName={({name}: ObjectField) => name}
+					items={currentObjectDefinitionFields}
+					observer={observer}
+					onClose={onClose}
+					onSave={setDataSetFields}
+					selected={dataSetFields}
+				/>
+			)}
+		</>
 	);
 }
 

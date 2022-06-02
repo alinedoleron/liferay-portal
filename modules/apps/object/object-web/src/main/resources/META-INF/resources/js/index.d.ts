@@ -54,7 +54,7 @@ interface ObjectField {
 	indexedLanguageId: Locale | null;
 	label: LocalizedValue<string>;
 	listTypeDefinitionId: number;
-	name?: string;
+	name: string;
 	objectFieldSettings?: ObjectFieldSetting[];
 	relationshipType?: unknown;
 	required: boolean;
