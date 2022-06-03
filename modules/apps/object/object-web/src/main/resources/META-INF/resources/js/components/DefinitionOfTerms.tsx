@@ -27,6 +27,7 @@ import React, {useEffect, useState} from 'react';
 
 import {defaultLanguageId} from '../utils/locale';
 import {AutoComplete} from '@liferay/object-js-components-web';
+import {createResourceURL} from 'frontend-js-web';
 
 const HEADERS = new Headers({
 	'Accept': 'application/json',
@@ -144,27 +145,37 @@ export default function DefinitionOfTerms() {
 	};
 
 	const getEntityFields = async (objectDefinition: ObjectDefinition) => {
+		// const response = await fetch(
+		// 	`/o/object-admin/v1.0/object-definitions/${objectDefinition.id}/object-fields`,
+		// 	{
+		// 		headers: HEADERS,
+		// 		method: 'GET',
+		// 	}
+		// );
+		const url = Liferay.ThemeDisplay.getLayoutURL();
 		const response = await fetch(
-			`/o/object-admin/v1.0/object-definitions/${objectDefinition.id}/object-fields`,
-			{
-				headers: HEADERS,
-				method: 'GET',
-			}
+			createResourceURL(
+				url, {
+				objectDefinitionId: objectDefinition.id,
+				p_p_resource_id:
+					'/notification_templates/get_notification_template_terms',
+			})
 		);
 
-		const {items} = (await response.json()) as {items: ObjectField[]};
+		const {items} = (await response.json()) as any;
 
-		const dataSetItems = items.map((item) => {
-			return {
-				name: item.label[defaultLanguageId],
-				term: getFieldTerm(item.label[defaultLanguageId] as string),
-			};
-		});
+		console.log(items);
+		// const dataSetItems = items.map((item) => {
+		// 	return {
+		// 		name: item.label[defaultLanguageId],
+		// 		term: getFieldTerm(item.label[defaultLanguageId] as string),
+		// 	};
+		// });
 
-		setFrontEndDataSetProps({
-			...frontEndDataSetProps,
-			items: dataSetItems,
-		});
+		// setFrontEndDataSetProps({
+		// 	...frontEndDataSetProps,
+		// 	items: dataSetItems,
+		// });
 	};
 
 	const datasetDisplayLauncher = (...frontEndDataSetProps: any[]) =>

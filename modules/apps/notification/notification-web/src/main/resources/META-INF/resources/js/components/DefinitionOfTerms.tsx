@@ -153,7 +153,6 @@ export default function DefinitionOfTerms() {
 				method: 'GET',
 			}
 		);
-
 		const {items} = (await response.json()) as {items: ObjectField[]};
 
 		const dataSetItems = items.map((item) => {

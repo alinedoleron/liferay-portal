@@ -235,6 +235,7 @@ declare module Liferay {
 		export function getPathThemeImages(): string;
 		export function getSiteGroupId(): number;
 		export function isControlPanel(): boolean;
+		export function getLayoutURL(): string;
 	}
 
 	namespace Util {

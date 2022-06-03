@@ -38,15 +38,15 @@ public class NotificationTemplatesTableFDSView extends BaseTableFDSView {
 
 	@Override
 	public FDSTableSchema getFDSTableSchema(Locale locale) {
+
 		FDSTableSchemaBuilder fdsTableSchemaBuilder =
-			_fdsTableSchemaBuilderFactory.create();
+					_fdsTableSchemaBuilderFactory.create();
 
-		FDSTableSchemaField fdsTableSchemaField =
-			fdsTableSchemaBuilder.addFDSTableSchemaField("name", "name");
-
-		fdsTableSchemaField.setContentRenderer("actionLink");
-
-		return fdsTableSchemaBuilder.build();
+		return fdsTableSchemaBuilder.add(
+					"name", "name",
+					fdsTableSchemaField -> fdsTableSchemaField.setContentRenderer(
+						"actionLink")
+				).build();
 	}
 
 	@Reference
