@@ -28,6 +28,7 @@ export function useForm<T, P = {}, K extends Partial<T> = Partial<T>>({
 
 	const handleSubmit = (event: FormEvent) => {
 		event.preventDefault();
+		event.stopPropagation();
 
 		const errors = validate(values);
 
