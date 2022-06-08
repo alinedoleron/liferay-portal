@@ -70,6 +70,17 @@ export default function Action({
 		openToast({message: title, type: 'danger'});
 	};
 
+	
+   const detail = [ 
+    {
+      "fieldName": "conditionExpression",
+      "message": "Syntax Error",
+    },
+    {
+      "fieldName": "script",
+      "message": "Syntax Error",
+    }];
+
 	const {
 		errors,
 		handleChange,
@@ -79,6 +90,13 @@ export default function Action({
 	} = useObjectActionForm({initialValues, onSubmit});
 
 	const [activeIndex, setActiveIndex] = useState(0);
+
+	const errorMessages = detail.forEach(({fieldName, message} : {fieldName : string, message: string}) => {
+		if(fieldName === 'conditionExpression' || fieldName === 'script')
+			errors[fieldName] = message;
+		});
+	
+	console.log(errorMessages);
 
 	return (
 		<SidePanelForm
