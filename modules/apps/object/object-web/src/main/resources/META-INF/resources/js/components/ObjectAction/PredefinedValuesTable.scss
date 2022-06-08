@@ -1,0 +1,35 @@
+@import 'atlas-variables';
+
+.reference-mark {
+	color: #b95000;
+	font-size: 6px;
+	margin-top: 2px;
+	padding-left: 4px;
+}
+
+.lfr-object-web__predefined-values-table {
+	&-add-modal-button {
+		display: flex;
+		justify-content: end;
+	}
+
+	&-cell-field,
+	&-cell-input-method {
+		min-width: 200px;
+	}
+
+	&-cell-new-value {
+		min-width: 400px;
+	}
+
+	&-field,
+	&-input-method {
+		align-items: center;
+		display: flex;
+	}
+
+	&-tooltip-icon {
+		color: $secondary-l1;
+		margin-left: 12px;
+	}
+}

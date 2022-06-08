@@ -42,6 +42,7 @@ export default function Action({
 	objectAction: initialValues,
 	objectActionExecutors,
 	objectActionTriggers,
+	objectDefinitionsRelationshipsURL,
 	readOnly,
 	requestParams: {method, url},
 	successMessage,
@@ -115,6 +116,9 @@ export default function Action({
 						ffNotificationTemplates={ffNotificationTemplates}
 						objectActionExecutors={objectActionExecutors}
 						objectActionTriggers={objectActionTriggers}
+						objectDefinitionsRelationshipsURL={
+							objectDefinitionsRelationshipsURL
+						}
 						setValues={setValues}
 						validateExpressionBuilderContentURL={
 							validateExpressionBuilderContentURL
@@ -147,6 +151,12 @@ function useObjectActionForm({initialValues, onSubmit}: IUseObjectActionForm) {
 		) {
 			errors.url = REQUIRED_MSG;
 		}
+		else if (
+			values.objectActionExecutorKey === 'add-object-entry' &&
+			!values.parameters?.objectDefinitionId
+		) {
+			errors.objectDefinitionId = REQUIRED_MSG;
+		}
 
 		if (
 			typeof values.conditionExpression === 'string' &&
@@ -177,6 +187,7 @@ interface IProps {
 	objectAction: Partial<ObjectAction>;
 	objectActionExecutors: CustomItem[];
 	objectActionTriggers: CustomItem[];
+	objectDefinitionsRelationshipsURL: string;
 	readOnly?: boolean;
 	requestParams: {
 		method: 'GET' | 'POST' | 'DELETE' | 'PUT';

@@ -22,6 +22,7 @@ export default function EditObjectAction({
 	objectAction: {id, ...values},
 	objectActionExecutors,
 	objectActionTriggers,
+	objectDefinitionsRelationshipsURL,
 	readOnly,
 	validateExpressionBuilderContentURL,
 }: IProps) {
@@ -31,6 +32,9 @@ export default function EditObjectAction({
 			objectAction={values}
 			objectActionExecutors={objectActionExecutors}
 			objectActionTriggers={objectActionTriggers}
+			objectDefinitionsRelationshipsURL={
+				objectDefinitionsRelationshipsURL
+			}
 			readOnly={readOnly}
 			requestParams={{
 				method: 'PUT',
@@ -52,6 +56,7 @@ interface IProps {
 	objectAction: ObjectAction;
 	objectActionExecutors: CustomItem[];
 	objectActionTriggers: CustomItem[];
+	objectDefinitionsRelationshipsURL: string;
 	readOnly?: boolean;
 	validateExpressionBuilderContentURL: string;
 }
