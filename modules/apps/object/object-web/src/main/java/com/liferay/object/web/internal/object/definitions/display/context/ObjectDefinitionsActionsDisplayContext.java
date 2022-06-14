@@ -229,6 +229,14 @@ public class ObjectDefinitionsActionsDisplayContext
 		).buildString();
 	}
 
+	public String getValidateExpressionBuilderContentURL() {
+		return ResourceURLBuilder.createResourceURL(
+			objectRequestHelper.getLiferayPortletResponse()
+		).setResourceID(
+			"/object_definitions/validate_expression_builder_content"
+		).buildString();
+	}
+
 	@Override
 	protected String getAPIURI() {
 		return "/object-actions";
