@@ -31,7 +31,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -40,8 +39,6 @@ import org.junit.Assert;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
-
-import org.mockito.Mockito;
 
 /**
  * @author Marcellus Tavares
@@ -159,85 +156,16 @@ public class DDMExpressionImplTest {
 
 	@Test
 	public void testFunction0() throws Exception {
-		DDMExpressionImpl<BigDecimal> ddmExpressionImpl =
-			new DDMExpressionImpl<>("zero()");
-
-		ddmExpressionImpl.setDDMExpressionFunctionTracker(
-			new DDMExpressionFunctionTracker() {
-
-				@Override
-				public Map<String, DDMExpressionFunction>
-					getCustomDDMExpressionFunctions() {
-
-					return Collections.emptyMap();
-				}
-
-				@Override
-				public Map<String, DDMExpressionFunctionFactory>
-					getDDMExpressionFunctionFactories(
-						Set<String> functionNames) {
-
-					return _createDDMExpressionFunctionFactory(
-						new ZeroFunction());
-				}
-
-				@Override
-				public Map<String, DDMExpressionFunction>
-					getDDMExpressionFunctions(Set<String> functionNames) {
-
-					return Collections.singletonMap("zero", new ZeroFunction());
-				}
-
-				@Override
-				public void ungetDDMExpressionFunctions(
-					Map<String, DDMExpressionFunction>
-						ddmExpressionFunctionsMap) {
-				}
-
-			});
+		DDMExpressionImpl<BigDecimal> ddmExpressionImpl = _createDDMExpression(
+			"zero()");
 
 		Assert.assertEquals(BigDecimal.ZERO, ddmExpressionImpl.evaluate());
 	}
 
 	@Test
 	public void testFunction1() throws Exception {
-		DDMExpressionImpl<BigDecimal> ddmExpressionImpl =
-			new DDMExpressionImpl<>("multiply([1,2,3])");
-
-		ddmExpressionImpl.setDDMExpressionFunctionTracker(
-			new DDMExpressionFunctionTracker() {
-
-				@Override
-				public Map<String, DDMExpressionFunction>
-					getCustomDDMExpressionFunctions() {
-
-					return Collections.emptyMap();
-				}
-
-				@Override
-				public Map<String, DDMExpressionFunctionFactory>
-					getDDMExpressionFunctionFactories(
-						Set<String> functionNames) {
-
-					return _createDDMExpressionFunctionFactory(
-						new MultiplyFunction());
-				}
-
-				@Override
-				public Map<String, DDMExpressionFunction>
-					getDDMExpressionFunctions(Set<String> functionNames) {
-
-					return Collections.singletonMap(
-						"multiply", new MultiplyFunction());
-				}
-
-				@Override
-				public void ungetDDMExpressionFunctions(
-					Map<String, DDMExpressionFunction>
-						ddmExpressionFunctionsMap) {
-				}
-
-			});
+		DDMExpressionImpl<BigDecimal> ddmExpressionImpl = _createDDMExpression(
+			"multiply([1,2,3])");
 
 		BigDecimal bigDecimal = ddmExpressionImpl.evaluate();
 
@@ -246,42 +174,8 @@ public class DDMExpressionImplTest {
 
 	@Test
 	public void testFunction2() throws Exception {
-		DDMExpressionImpl<BigDecimal> ddmExpressionImpl =
-			new DDMExpressionImpl<>("max([1,2,3,4])");
-
-		ddmExpressionImpl.setDDMExpressionFunctionTracker(
-			new DDMExpressionFunctionTracker() {
-
-				@Override
-				public Map<String, DDMExpressionFunction>
-					getCustomDDMExpressionFunctions() {
-
-					return Collections.emptyMap();
-				}
-
-				@Override
-				public Map<String, DDMExpressionFunctionFactory>
-					getDDMExpressionFunctionFactories(
-						Set<String> functionNames) {
-
-					return _createDDMExpressionFunctionFactory(
-						new MaxFunction());
-				}
-
-				@Override
-				public Map<String, DDMExpressionFunction>
-					getDDMExpressionFunctions(Set<String> functionNames) {
-
-					return Collections.singletonMap("max", new MaxFunction());
-				}
-
-				@Override
-				public void ungetDDMExpressionFunctions(
-					Map<String, DDMExpressionFunction>
-						ddmExpressionFunctionsMap) {
-				}
-
-			});
+		DDMExpressionImpl<BigDecimal> ddmExpressionImpl = _createDDMExpression(
+			"max([1,2,3,4])");
 
 		BigDecimal bigDecimal = ddmExpressionImpl.evaluate();
 
@@ -290,49 +184,9 @@ public class DDMExpressionImplTest {
 
 	@Test
 	public void testFunctions() throws Exception {
-		DDMExpressionImpl<BigDecimal> ddmExpressionImpl =
-			new DDMExpressionImpl<>("square(a) + add(3, abs(b))");
+		DDMExpressionImpl<BigDecimal> ddmExpressionImpl = _createDDMExpression(
+			"square(a) + add(3, abs(b))");
 
-		ddmExpressionImpl.setDDMExpressionFunctionTracker(
-			new DDMExpressionFunctionTracker() {
-
-				@Override
-				public Map<String, DDMExpressionFunction>
-					getCustomDDMExpressionFunctions() {
-
-					return Collections.emptyMap();
-				}
-
-				@Override
-				public Map<String, DDMExpressionFunctionFactory>
-					getDDMExpressionFunctionFactories(
-						Set<String> functionNames) {
-
-					return _createDDMExpressionFunctionFactory(
-						new AbsFunction(), new AddFunction(),
-						new SquareFunction());
-				}
-
-				@Override
-				public Map<String, DDMExpressionFunction>
-					getDDMExpressionFunctions(Set<String> functionNames) {
-
-					return HashMapBuilder.<String, DDMExpressionFunction>put(
-						"abs", new AbsFunction()
-					).put(
-						"add", new AddFunction()
-					).put(
-						"square", new SquareFunction()
-					).build();
-				}
-
-				@Override
-				public void ungetDDMExpressionFunctions(
-					Map<String, DDMExpressionFunction>
-						ddmExpressionFunctionsMap) {
-				}
-
-			});
 		ddmExpressionImpl.setVariable("a", 2);
 		ddmExpressionImpl.setVariable("b", -3);
 
@@ -451,46 +305,8 @@ public class DDMExpressionImplTest {
 
 	@Test
 	public void testNestedFunctions() throws Exception {
-		DDMExpressionImpl<BigDecimal> ddmExpressionImpl =
-			new DDMExpressionImpl<>("add(2, multiply(2,3,2))");
-
-		ddmExpressionImpl.setDDMExpressionFunctionTracker(
-			new DDMExpressionFunctionTracker() {
-
-				@Override
-				public Map<String, DDMExpressionFunction>
-					getCustomDDMExpressionFunctions() {
-
-					return Collections.emptyMap();
-				}
-
-				@Override
-				public Map<String, DDMExpressionFunctionFactory>
-					getDDMExpressionFunctionFactories(
-						Set<String> functionNames) {
-
-					return _createDDMExpressionFunctionFactory(
-						new AddFunction(), new MultiplyFunction());
-				}
-
-				@Override
-				public Map<String, DDMExpressionFunction>
-					getDDMExpressionFunctions(Set<String> functionNames) {
-
-					return HashMapBuilder.<String, DDMExpressionFunction>put(
-						"add", new AddFunction()
-					).put(
-						"multiply", new MultiplyFunction()
-					).build();
-				}
-
-				@Override
-				public void ungetDDMExpressionFunctions(
-					Map<String, DDMExpressionFunction>
-						ddmExpressionFunctionsMap) {
-				}
-
-			});
+		DDMExpressionImpl<BigDecimal> ddmExpressionImpl = _createDDMExpression(
+			"add(2, multiply(2,3,2))");
 
 		BigDecimal bigDecimal = ddmExpressionImpl.evaluate();
 
@@ -641,30 +457,52 @@ public class DDMExpressionImplTest {
 	private <T> DDMExpressionImpl<T> _createDDMExpression(String expression)
 		throws Exception {
 
-		DDMExpressionImpl<T> ddmExpressionImpl = new DDMExpressionImpl<>(
+		return new DDMExpressionImpl<>(
+			new DDMExpressionFunctionTracker() {
+
+				@Override
+				public Map<String, DDMExpressionFunction>
+					getCustomDDMExpressionFunctions() {
+
+					return Collections.emptyMap();
+				}
+
+				@Override
+				public Map<String, DDMExpressionFunctionFactory>
+					getDDMExpressionFunctionFactories(
+						Set<String> functionNames) {
+
+					return HashMapBuilder.
+						<String, DDMExpressionFunctionFactory>put(
+							"abs", () -> new AbsFunction()
+						).put(
+							"add", () -> new AddFunction()
+						).put(
+							"max", () -> new MaxFunction()
+						).put(
+							"multiply", () -> new MultiplyFunction()
+						).put(
+							"square", () -> new SquareFunction()
+						).put(
+							"zero", () -> new ZeroFunction()
+						).build();
+				}
+
+				@Override
+				public Map<String, DDMExpressionFunction>
+					getDDMExpressionFunctions(Set<String> functionNames) {
+
+					return Collections.emptyMap();
+				}
+
+				@Override
+				public void ungetDDMExpressionFunctions(
+					Map<String, DDMExpressionFunction>
+						ddmExpressionFunctionsMap) {
+				}
+
+			},
 			expression);
-
-		ddmExpressionImpl.setDDMExpressionFunctionTracker(
-			Mockito.mock(DDMExpressionFunctionTracker.class));
-
-		return ddmExpressionImpl;
-	}
-
-	private Map<String, DDMExpressionFunctionFactory>
-		_createDDMExpressionFunctionFactory(
-			DDMExpressionFunction... ddmExpressionFunctions) {
-
-		Map<String, DDMExpressionFunctionFactory>
-			ddmExpressionFunctionFactoryMap = new HashMap<>();
-
-		for (DDMExpressionFunction ddmExpressionFunction :
-				ddmExpressionFunctions) {
-
-			ddmExpressionFunctionFactoryMap.put(
-				ddmExpressionFunction.getName(), () -> ddmExpressionFunction);
-		}
-
-		return ddmExpressionFunctionFactoryMap;
 	}
 
 }

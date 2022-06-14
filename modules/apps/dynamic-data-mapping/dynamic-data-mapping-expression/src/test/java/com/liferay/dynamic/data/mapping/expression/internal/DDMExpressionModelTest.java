@@ -14,6 +14,12 @@
 
 package com.liferay.dynamic.data.mapping.expression.internal;
 
+import com.liferay.dynamic.data.mapping.expression.DDMExpressionFunction;
+import com.liferay.dynamic.data.mapping.expression.DDMExpressionFunctionFactory;
+import com.liferay.dynamic.data.mapping.expression.DDMExpressionFunctionTracker;
+import com.liferay.dynamic.data.mapping.expression.internal.functions.EqualsFunction;
+import com.liferay.dynamic.data.mapping.expression.internal.functions.MultiplyFunction;
+import com.liferay.dynamic.data.mapping.expression.internal.functions.ZeroFunction;
 import com.liferay.dynamic.data.mapping.expression.model.AndExpression;
 import com.liferay.dynamic.data.mapping.expression.model.ArithmeticExpression;
 import com.liferay.dynamic.data.mapping.expression.model.ComparisonExpression;
@@ -25,14 +31,20 @@ import com.liferay.dynamic.data.mapping.expression.model.NotExpression;
 import com.liferay.dynamic.data.mapping.expression.model.OrExpression;
 import com.liferay.dynamic.data.mapping.expression.model.Parenthesis;
 import com.liferay.dynamic.data.mapping.expression.model.Term;
+import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.test.rule.LiferayUnitTestRule;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+
+import org.mockito.Mockito;
 
 /**
  * @author Leonardo Barros
@@ -47,6 +59,7 @@ public class DDMExpressionModelTest {
 	@Test
 	public void testAndExpression() throws Exception {
 		DDMExpressionImpl<Boolean> ddmExpressionImpl = new DDMExpressionImpl<>(
+			Mockito.mock(DDMExpressionFunctionTracker.class),
 			"true && (2 != 3)");
 
 		Expression expressionModel = ddmExpressionImpl.getModel();
@@ -95,7 +108,7 @@ public class DDMExpressionModelTest {
 	@Test
 	public void testArithmeticExpression() throws Exception {
 		DDMExpressionImpl<Double> ddmExpressionImpl = new DDMExpressionImpl<>(
-			"a + b * c - d");
+			Mockito.mock(DDMExpressionFunctionTracker.class), "a + b * c - d");
 
 		Expression expressionModel = ddmExpressionImpl.getModel();
 
@@ -159,8 +172,8 @@ public class DDMExpressionModelTest {
 
 	@Test
 	public void testFunctionCallExpression() throws Exception {
-		DDMExpressionImpl<Boolean> ddmExpressionImpl = new DDMExpressionImpl<>(
-			"date()");
+		DDMExpressionImpl<Boolean> ddmExpressionImpl = _createDDMExpression(
+			"zero()");
 
 		Expression expressionModel = ddmExpressionImpl.getModel();
 
@@ -170,14 +183,14 @@ public class DDMExpressionModelTest {
 		FunctionCallExpression functionCallExpression =
 			(FunctionCallExpression)expressionModel;
 
-		Assert.assertEquals("date", functionCallExpression.getFunctionName());
+		Assert.assertEquals("zero", functionCallExpression.getFunctionName());
 		Assert.assertEquals(0, functionCallExpression.getArity());
 	}
 
 	@Test
 	public void testGreaterThanExpression() throws Exception {
 		DDMExpressionImpl<Boolean> ddmExpressionImpl = new DDMExpressionImpl<>(
-			"(2 * 5) > 3");
+			Mockito.mock(DDMExpressionFunctionTracker.class), "(2 * 5) > 3");
 
 		Expression expressionModel = ddmExpressionImpl.getModel();
 
@@ -233,8 +246,8 @@ public class DDMExpressionModelTest {
 
 	@Test
 	public void testLessThanEqualExpression() throws Exception {
-		DDMExpressionImpl<Boolean> ddmExpressionImpl = new DDMExpressionImpl<>(
-			"((1 + 4) / (5 - 2)) <= sum(Var1,Var2)");
+		DDMExpressionImpl<Boolean> ddmExpressionImpl = _createDDMExpression(
+			"((1 + 4) / (5 - 2)) <= multiply(Var1,Var2)");
 
 		Expression expressionModel = ddmExpressionImpl.getModel();
 
@@ -333,7 +346,8 @@ public class DDMExpressionModelTest {
 		FunctionCallExpression functionCallExpression =
 			(FunctionCallExpression)comparisonRightOperandExpression;
 
-		Assert.assertEquals("sum", functionCallExpression.getFunctionName());
+		Assert.assertEquals(
+			"multiply", functionCallExpression.getFunctionName());
 		Assert.assertEquals(2, functionCallExpression.getArity());
 
 		List<Expression> parameterExpressions =
@@ -363,7 +377,7 @@ public class DDMExpressionModelTest {
 	@Test
 	public void testNotExpression() throws Exception {
 		DDMExpressionImpl<Boolean> ddmExpressionImpl = new DDMExpressionImpl<>(
-			"not false");
+			Mockito.mock(DDMExpressionFunctionTracker.class), "not false");
 
 		Expression expressionModel = ddmExpressionImpl.getModel();
 
@@ -382,8 +396,8 @@ public class DDMExpressionModelTest {
 
 	@Test
 	public void testOrExpression() throws Exception {
-		DDMExpressionImpl<Boolean> ddmExpressionImpl = new DDMExpressionImpl<>(
-			"(-3 < Var1) || (not equals(Var2,sum(Var3,Var4)))");
+		DDMExpressionImpl<Boolean> ddmExpressionImpl = _createDDMExpression(
+			"(-3 < Var1) || (not equals(Var2,multiply(Var3,Var4)))");
 
 		Expression expressionModel = ddmExpressionImpl.getModel();
 
@@ -468,7 +482,8 @@ public class DDMExpressionModelTest {
 		FunctionCallExpression functionCallExpression2 =
 			(FunctionCallExpression)parameterExpression2;
 
-		Assert.assertEquals("sum", functionCallExpression2.getFunctionName());
+		Assert.assertEquals(
+			"multiply", functionCallExpression2.getFunctionName());
 		Assert.assertEquals(2, functionCallExpression2.getArity());
 
 		List<Expression> parameterExpressions2 =
@@ -492,6 +507,51 @@ public class DDMExpressionModelTest {
 		term = (Term)parameterExpression4;
 
 		Assert.assertEquals("Var4", term.getValue());
+	}
+
+	private <T> DDMExpressionImpl<T> _createDDMExpression(String expression)
+		throws Exception {
+
+		return new DDMExpressionImpl<>(
+			new DDMExpressionFunctionTracker() {
+
+				@Override
+				public Map<String, DDMExpressionFunction>
+					getCustomDDMExpressionFunctions() {
+
+					return Collections.emptyMap();
+				}
+
+				@Override
+				public Map<String, DDMExpressionFunctionFactory>
+					getDDMExpressionFunctionFactories(
+						Set<String> functionNames) {
+
+					return HashMapBuilder.
+						<String, DDMExpressionFunctionFactory>put(
+							"equals", () -> new EqualsFunction()
+						).put(
+							"multiply", () -> new MultiplyFunction()
+						).put(
+							"zero", () -> new ZeroFunction()
+						).build();
+				}
+
+				@Override
+				public Map<String, DDMExpressionFunction>
+					getDDMExpressionFunctions(Set<String> functionNames) {
+
+					return Collections.emptyMap();
+				}
+
+				@Override
+				public void ungetDDMExpressionFunctions(
+					Map<String, DDMExpressionFunction>
+						ddmExpressionFunctionsMap) {
+				}
+
+			},
+			expression);
 	}
 
 }
