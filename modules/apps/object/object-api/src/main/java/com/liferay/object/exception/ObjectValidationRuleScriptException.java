@@ -38,4 +38,16 @@ public class ObjectValidationRuleScriptException extends PortalException {
 		super(throwable);
 	}
 
+	public static class InvalidSyntax
+		extends ObjectValidationRuleScriptException {
+
+		public InvalidSyntax(Throwable throwable) {
+			super(throwable);
+		}
+
+	}
+
+	public static class Required extends ObjectValidationRuleScriptException {
+	}
+
 }
