@@ -14,7 +14,10 @@
 
 package com.liferay.object.exception;
 
+import java.util.Map;
+
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.json.JSONArray;
 
 /**
  * @author Marco Leo
@@ -35,5 +38,12 @@ public class ObjectActionParametersException extends PortalException {
 	public ObjectActionParametersException(Throwable throwable) {
 		super(throwable);
 	}
+	
+	public ObjectActionParametersException(JSONArray jsonArray) {
+		_jsonArray = jsonArray;
+	}
+	
+	//TODO
+	public JSONArray _jsonArray;
 
 }
