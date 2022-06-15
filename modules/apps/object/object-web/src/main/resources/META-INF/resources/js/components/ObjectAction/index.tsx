@@ -46,6 +46,9 @@ export default function Action({
 	requestParams: {method, url},
 	successMessage,
 }: IProps) {
+	const [errorMessage, setErrorMessage] = useState<
+		FormError<ObjectAction & ObjectActionParameters>
+	>({});
 	const onSubmit = async (objectAction: ObjectAction) => {
 		const response = await fetch(url, {
 			body: JSON.stringify(objectAction),
@@ -66,9 +69,22 @@ export default function Action({
 		const {
 			title = Liferay.Language.get('an-error-occurred'),
 			detail,
-		} = (await response.json()) as {detail: string, title?: string};
+		} = (await response.json()) as {detail: string; title?: string};
 
-		console.log(JSON.parse(detail));
+		const parsedDetail = JSON.parse(detail);
+		const errorMessages: any = {};
+		parsedDetail.forEach(
+			({fieldName, message}: {fieldName: string; message: string}) => {
+				if (
+					fieldName === 'conditionExpression' ||
+					fieldName === 'script'
+				) {
+					errorMessages[fieldName] = message;
+				}
+			}
+		);
+
+		setErrorMessage(errorMessages);
 
 		openToast({message: title, type: 'danger'});
 	};
@@ -113,7 +129,11 @@ export default function Action({
 
 				<ClayTabs.TabPane>
 					<ActionBuilder
-						errors={errors}
+						errors={
+							Object.keys(errors).length !== 0
+								? errors
+								: errorMessage
+						}
 						ffNotificationTemplates={ffNotificationTemplates}
 						objectActionExecutors={objectActionExecutors}
 						objectActionTriggers={objectActionTriggers}
