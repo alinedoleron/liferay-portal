@@ -14,19 +14,30 @@
 
 package com.liferay.object.service.impl;
 
+import com.liferay.dynamic.data.mapping.expression.CreateExpressionRequest;
+import com.liferay.dynamic.data.mapping.expression.DDMExpressionFactory;
 import com.liferay.object.action.executor.ObjectActionExecutorRegistry;
+import com.liferay.object.admin.rest.dto.v1_0.util.ObjectActionUtil;
 import com.liferay.object.constants.ObjectActionConstants;
+import com.liferay.object.constants.ObjectActionExecutorConstants;
 import com.liferay.object.constants.ObjectActionTriggerConstants;
 import com.liferay.object.exception.ObjectActionConditionExpressionException;
 import com.liferay.object.exception.ObjectActionExecutorKeyException;
 import com.liferay.object.exception.ObjectActionNameException;
+import com.liferay.object.exception.ObjectActionParametersException;
 import com.liferay.object.exception.ObjectActionTriggerKeyException;
 import com.liferay.object.model.ObjectAction;
 import com.liferay.object.model.ObjectDefinition;
+import com.liferay.object.model.ObjectField;
+import com.liferay.object.service.ObjectFieldLocalService;
 import com.liferay.object.service.base.ObjectActionLocalServiceBaseImpl;
 import com.liferay.object.service.persistence.ObjectDefinitionPersistence;
 import com.liferay.portal.aop.AopService;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.json.JSONArray;
+import com.liferay.portal.kernel.json.JSONFactory;
+import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.messaging.MessageBus;
 import com.liferay.portal.kernel.model.SystemEventConstants;
 import com.liferay.portal.kernel.model.User;
@@ -34,10 +45,15 @@ import com.liferay.portal.kernel.search.Indexable;
 import com.liferay.portal.kernel.search.IndexableType;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.systemevent.SystemEvent;
+import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.kernel.util.Validator;
 
+import groovy.lang.GroovyShell;
+
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import org.osgi.service.component.annotations.Component;
@@ -64,7 +80,8 @@ public class ObjectActionLocalServiceImpl
 
 		_validate(
 			conditionExpression, name, objectActionExecutorKey,
-			objectActionTriggerKey);
+			objectActionTriggerKey, objectDefinitionId,
+			parametersUnicodeProperties);
 
 		ObjectDefinition objectDefinition =
 			_objectDefinitionPersistence.findByPrimaryKey(objectDefinitionId);
@@ -145,12 +162,13 @@ public class ObjectActionLocalServiceImpl
 			UnicodeProperties parametersUnicodeProperties)
 		throws PortalException {
 
-		_validate(
-			conditionExpression, name, objectActionExecutorKey,
-			objectActionTriggerKey);
-
 		ObjectAction objectAction = objectActionPersistence.findByPrimaryKey(
 			objectActionId);
+
+		_validate(
+			conditionExpression, name, objectActionExecutorKey,
+			objectActionTriggerKey, objectAction.getObjectDefinitionId(),
+			parametersUnicodeProperties);
 
 		objectAction.setActive(active);
 		objectAction.setConditionExpression(conditionExpression);
@@ -179,7 +197,9 @@ public class ObjectActionLocalServiceImpl
 
 	private void _validate(
 			String conditionExpression, String name,
-			String objectActionExecutorKey, String objectActionTriggerKey)
+			String objectActionExecutorKey, String objectActionTriggerKey,
+			long objectDefinitionId,
+			UnicodeProperties parametersUnicodeProperties)
 		throws PortalException {
 
 		if (Validator.isNull(name)) {
@@ -192,27 +212,167 @@ public class ObjectActionLocalServiceImpl
 			throw new ObjectActionExecutorKeyException(objectActionExecutorKey);
 		}
 
-		if (Objects.equals(
+		if (!Objects.equals(
 				objectActionTriggerKey,
-				ObjectActionTriggerConstants.KEY_ON_AFTER_ADD) ||
-			Objects.equals(
+				ObjectActionTriggerConstants.KEY_ON_AFTER_ADD) &&
+			!Objects.equals(
 				objectActionTriggerKey,
-				ObjectActionTriggerConstants.KEY_ON_AFTER_DELETE) ||
-			Objects.equals(
+				ObjectActionTriggerConstants.KEY_ON_AFTER_DELETE) &&
+			!Objects.equals(
 				objectActionTriggerKey,
 				ObjectActionTriggerConstants.KEY_ON_AFTER_UPDATE)) {
 
-			return;
+			if (Validator.isNotNull(conditionExpression)) {
+				throw new ObjectActionConditionExpressionException();
+			}
+
+			if (!_messageBus.hasDestination(objectActionTriggerKey)) {
+				throw new ObjectActionTriggerKeyException();
+			}
 		}
 
-		if (!_messageBus.hasDestination(objectActionTriggerKey)) {
-			throw new ObjectActionTriggerKeyException();
-		}
+		JSONArray jsonArray = _jsonFactory.createJSONArray();
 
 		if (Validator.isNotNull(conditionExpression)) {
-			throw new ObjectActionConditionExpressionException();
+			try {
+				_ddmExpressionFactory.createExpression(
+					CreateExpressionRequest.Builder.newBuilder(
+						conditionExpression
+					).build());
+			}
+			catch (Exception exception) {
+				jsonArray.put(
+					JSONUtil.put(
+						"fieldName", "conditionExpression"
+					).put(
+						"message", "syntax-error"
+					));
+			}
+		}
+
+		Map<String, Object> parameters = ObjectActionUtil.toParameters(
+			parametersUnicodeProperties);
+
+		if (Objects.equals(
+				objectActionExecutorKey,
+				ObjectActionExecutorConstants.KEY_ADD_OBJECT_ENTRY)) {
+
+			JSONArray predefinedValuesErrorMessages =
+				_jsonFactory.createJSONArray();
+
+			JSONArray predefinedValuesJSONArray = _jsonFactory.createJSONArray(
+				parametersUnicodeProperties.get("predefinedValues"));
+
+			for (int i = 0; i < predefinedValuesJSONArray.length(); i++) {
+				JSONObject jsonObject = predefinedValuesJSONArray.getJSONObject(
+					i);
+
+				ObjectField objectField =
+					_objectFieldLocalService.fetchObjectField(
+						objectDefinitionId, jsonObject.getString("name"));
+
+				if (objectField == null) {
+
+					// TODO
+
+					predefinedValuesErrorMessages.put(
+						JSONUtil.put(
+							"fieldName", objectField.getName()
+						).put(
+							"message", "invalid object field"
+						));
+				}
+
+				String value = jsonObject.getString("value");
+
+				if (objectField.isRequired() && Validator.isNull(value)) {
+					predefinedValuesErrorMessages.put(
+						JSONUtil.put(
+							"fieldName", objectField.getName()
+						).put(
+							"message", "required"
+						));
+				}
+
+				if (Validator.isNull(value) ||
+					jsonObject.getBoolean("inputAsValue")) {
+
+					continue;
+				}
+
+				try {
+					_ddmExpressionFactory.createExpression(
+						CreateExpressionRequest.Builder.newBuilder(
+							value
+						).build());
+				}
+				catch (Exception exception) {
+					predefinedValuesErrorMessages.put(
+						JSONUtil.put(
+							"fieldName", objectField.getName()
+						).put(
+							"message", "syntax-error"
+						));
+				}
+			}
+
+			if (!JSONUtil.isEmpty(predefinedValuesErrorMessages)) {
+				jsonArray.put(
+					JSONUtil.put(
+						"fieldName", "predefinedValues"
+					).put(
+						"messages", predefinedValuesErrorMessages
+					));
+			}
+		}
+		else if (Objects.equals(
+					objectActionExecutorKey,
+					ObjectActionExecutorConstants.KEY_GROOVY)) {
+
+			String script = GetterUtil.getString(parameters.get("script"));
+
+			if (Validator.isNull(script)) {
+				return;
+			}
+
+			try {
+				GroovyShell groovyShell = new GroovyShell();
+
+				groovyShell.parse(script);
+			}
+			catch (Exception exception) {
+				jsonArray.put(
+					JSONUtil.put(
+						"fieldName", "script"
+					).put(
+						"message", "syntax-error"
+					));
+			}
+		}
+		else if (Objects.equals(
+					objectActionExecutorKey,
+					ObjectActionExecutorConstants.KEY_WEBHOOK)) {
+
+			if (Validator.isNull(GetterUtil.getString(parameters.get("url")))) {
+				jsonArray.put(
+					JSONUtil.put(
+						"fieldName", "url"
+					).put(
+						"message", "required"
+					));
+			}
+		}
+
+		if (!JSONUtil.isEmpty(jsonArray)) {
+			throw new ObjectActionParametersException(jsonArray);
 		}
 	}
+
+	@Reference
+	private DDMExpressionFactory _ddmExpressionFactory;
+
+	@Reference
+	private JSONFactory _jsonFactory;
 
 	@Reference
 	private MessageBus _messageBus;
@@ -222,6 +382,9 @@ public class ObjectActionLocalServiceImpl
 
 	@Reference
 	private ObjectDefinitionPersistence _objectDefinitionPersistence;
+
+	@Reference
+	private ObjectFieldLocalService _objectFieldLocalService;
 
 	@Reference
 	private UserLocalService _userLocalService;
