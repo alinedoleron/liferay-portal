@@ -67,7 +67,10 @@ export default function Action({
 
 		const {
 			title = Liferay.Language.get('an-error-occurred'),
-		} = (await response.json()) as {title?: string};
+			detail,
+		} = (await response.json()) as {detail: string, title?: string};
+
+		console.log(JSON.parse(detail));
 
 		openToast({message: title, type: 'danger'});
 	};
