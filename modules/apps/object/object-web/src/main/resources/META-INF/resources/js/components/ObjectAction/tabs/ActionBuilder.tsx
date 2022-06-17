@@ -58,6 +58,7 @@ export default function ActionBuilder({
 	objectActionExecutors,
 	objectActionTriggers,
 	objectDefinitionsRelationshipsURL,
+	predefinedValuesErrors,
 	setValues,
 	validateExpressionBuilderContentURL,
 	values,
@@ -73,6 +74,8 @@ export default function ActionBuilder({
 				values.parameters?.notificationTemplateId
 		)?.label;
 	}, [notificationTemplates, values.parameters]);
+
+	const [showErrorAlert, setShowErrorAlert] = useState<boolean>(false);
 
 	const [relationships, setRelationships] = useState<
 		ObjectDefinitionsRelationship[]
@@ -294,6 +297,17 @@ export default function ActionBuilder({
 				</ClayAlert>
 			)}
 
+			{showErrorAlert && (
+				<ClayAlert
+					className="lfr-objects__side-panel-content-container"
+					displayType="danger"
+					onClose={showErrorAlert ? () => setShowErrorAlert(false) : undefined}
+					title={`${Liferay.Language.get('error')}:`}
+				>
+					{Liferay.Language.get('syntax-error')}
+				</ClayAlert>
+			)}
+
 			<Card title={Liferay.Language.get('trigger')}>
 				<Card
 					title={Liferay.Language.get('when[object]')}
@@ -478,7 +492,9 @@ export default function ActionBuilder({
 							currentObjectDefinitionFields={
 								currentObjectDefinitionFields
 							}
+							errors={predefinedValuesErrors}
 							objectFieldsMap={objectFieldsMap}
+							setShowErrorAlert={setShowErrorAlert}
 							setValues={setValues}
 							values={values}
 						/>
@@ -544,6 +560,7 @@ interface IProps {
 	objectActionExecutors: CustomItem[];
 	objectActionTriggers: CustomItem[];
 	objectDefinitionsRelationshipsURL: string;
+	predefinedValuesErrors: Array<{fieldName: string; message: string}>;
 	setValues: (values: Partial<ObjectAction>) => void;
 	validateExpressionBuilderContentURL: string;
 	values: Partial<ObjectAction>;
