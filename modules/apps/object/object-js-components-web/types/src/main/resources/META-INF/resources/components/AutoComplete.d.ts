@@ -21,9 +21,11 @@ interface IAutoCompleteProps extends React.HTMLAttributes<HTMLElement> {
 	error?: string;
 	feedbackMessage?: string;
 	items: any[];
+	hasEmptyItem?: boolean;
 	label: string;
 	onChangeQuery: (value: string) => void;
 	onSelectItem: (item: any) => void;
+	placeholder?: string;
 	query: string;
 	required?: boolean;
 	value?: string;
@@ -36,10 +38,12 @@ export declare function AutoComplete({
 	error,
 	feedbackMessage,
 	id,
-	items,
+	items: initialItems,
+	hasEmptyItem,
 	label,
 	onChangeQuery,
 	onSelectItem,
+	placeholder,
 	query,
 	required,
 	value,
