@@ -251,7 +251,7 @@ function useObjectActionForm({initialValues, onSubmit}: IUseObjectActionForm) {
 						invalidateRequired(value)
 					) {
 						if (!errors.predefinedValues) {
-							errors.predefinedValues = {} as any;
+							errors.predefinedValues = undefined;
 						}
 						errors.predefinedValues![name] = REQUIRED_MSG;
 					}

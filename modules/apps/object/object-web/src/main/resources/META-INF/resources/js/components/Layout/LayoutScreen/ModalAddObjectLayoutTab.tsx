@@ -16,6 +16,7 @@ import ClayButton from '@clayui/button';
 import ClayForm from '@clayui/form';
 import ClayLabel from '@clayui/label';
 import ClayModal from '@clayui/modal';
+import {Observer} from '@clayui/modal/lib/types';
 import {ClayTooltipProvider} from '@clayui/tooltip';
 import {AutoComplete, Input, useForm} from '@liferay/object-js-components-web';
 import classNames from 'classnames';
@@ -58,7 +59,7 @@ const types: TTabTypes = {
 
 interface IModalAddObjectLayoutTabProps
 	extends React.HTMLAttributes<HTMLElement> {
-	observer: any;
+	observer: Observer;
 	onClose: () => void;
 }
 
@@ -138,7 +139,7 @@ const ModalAddObjectLayoutTab: React.FC<IModalAddObjectLayoutTabProps> = ({
 		});
 	}, [objectRelationships, query]);
 
-	const onSubmit = (values: any) => {
+	const onSubmit = (values: {name: string; objectRelationshipId: number}) => {
 		dispatch({
 			payload: {
 				name: {
@@ -152,8 +153,11 @@ const ModalAddObjectLayoutTab: React.FC<IModalAddObjectLayoutTabProps> = ({
 		onClose();
 	};
 
-	const onValidate = (values: any) => {
-		const errors: any = {};
+	const onValidate = (values: {
+		name: string;
+		objectRelationshipId: number;
+	}) => {
+		const errors: {name?: string; objectRelationshipId?: string} = {};
 
 		if (!values.name) {
 			errors.name = Liferay.Language.get('required');

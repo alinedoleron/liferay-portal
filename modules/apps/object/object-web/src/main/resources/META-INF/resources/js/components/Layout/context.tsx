@@ -19,8 +19,13 @@ import {
 	findObjectLayoutRowIndex,
 } from '../../utils/layout';
 import {BoxesVisitor, RowsVisitor} from '../../utils/visitor';
-import {TObjectField, TObjectLayout, TObjectRelationship} from './types';
-
+import {
+	BoxType,
+	TName,
+	TObjectField,
+	TObjectLayout,
+	TObjectRelationship,
+} from './types';
 type TState = {
 	isViewOnly: boolean;
 	objectFieldTypes: ObjectFieldType[];
@@ -30,10 +35,97 @@ type TState = {
 	objectRelationships: TObjectRelationship[];
 };
 
-type TAction = {
-	payload: {[key: string]: any};
-	type: keyof typeof TYPES;
+type TObjectLayoutBoxAttribute = {
+	key: keyof {collapsable: boolean};
+	value: boolean;
 };
+
+type TAction =
+	| {
+			payload: {
+				objectLayout: TObjectLayout;
+			};
+			type: TYPES.ADD_OBJECT_LAYOUT;
+	  }
+	| {
+			payload: {
+				objectRelationships: TObjectRelationship[];
+			};
+			type: TYPES.ADD_OBJECT_RELATIONSHIPS;
+	  }
+	| {
+			payload: {
+				name: TName;
+				objectRelationshipId: number;
+			};
+			type: TYPES.ADD_OBJECT_LAYOUT_TAB;
+	  }
+	| {
+			payload: {
+				name: TName;
+				tabIndex?: number;
+				type: BoxType;
+			};
+			type: TYPES.ADD_OBJECT_LAYOUT_BOX;
+	  }
+	| {
+			payload: {
+				objectFields: TObjectField[];
+			};
+			type: TYPES.ADD_OBJECT_FIELDS;
+	  }
+	| {
+			payload: {
+				boxIndex: number;
+				objectFieldId: number;
+				objectFieldSize: number;
+				tabIndex: number;
+			};
+			type: TYPES.ADD_OBJECT_LAYOUT_FIELD;
+	  }
+	| {
+			payload: {
+				name: TName;
+			};
+			type: TYPES.CHANGE_OBJECT_LAYOUT_NAME;
+	  }
+	| {
+			payload: {
+				checked: boolean;
+			};
+			type: TYPES.SET_OBJECT_LAYOUT_AS_DEFAULT;
+	  }
+	| {
+			payload: {
+				attribute: TObjectLayoutBoxAttribute;
+				boxIndex: number;
+				tabIndex: number;
+			};
+			type: TYPES.CHANGE_OBJECT_LAYOUT_BOX_ATTRIBUTE;
+	  }
+	| {
+			payload: {
+				boxIndex: number;
+				tabIndex: number;
+			};
+			type: TYPES.DELETE_OBJECT_LAYOUT_BOX;
+	  }
+	| {
+			payload: {
+				boxIndex: number;
+				columnIndex: number;
+				objectFieldId: number;
+				rowIndex: number;
+				tabIndex: number;
+			};
+			type: TYPES.DELETE_OBJECT_LAYOUT_FIELD;
+	  }
+	| {
+			payload: {
+				tabIndex: number;
+			};
+			type: TYPES.DELETE_OBJECT_LAYOUT_TAB;
+	  };
 
 interface ILayoutContextProps extends Array<TState | Function> {
 	0: typeof initialState;
@@ -129,7 +221,7 @@ const layoutReducer = (state: TState, action: TAction) => {
 			const newState = {...state};
 
 			const objectLayoutBoxes =
-				newState.objectLayout.objectLayoutTabs[tabIndex]
+				newState.objectLayout.objectLayoutTabs[tabIndex as number]
 					.objectLayoutBoxes;
 
 			const newBox = {
@@ -227,11 +319,6 @@ const layoutReducer = (state: TState, action: TAction) => {
 			};
 		}
 		case TYPES.CHANGE_OBJECT_LAYOUT_BOX_ATTRIBUTE: {
-			type TObjectLayoutBoxAttribute = {
-				key: keyof {collapsable: boolean};
-				value: any;
-			};
-
 			const {attribute, boxIndex, tabIndex} = action.payload;
 			const {key, value}: TObjectLayoutBoxAttribute = attribute;
 

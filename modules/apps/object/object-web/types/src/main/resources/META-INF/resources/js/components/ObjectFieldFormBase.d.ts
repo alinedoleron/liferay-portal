@@ -11,77 +11,52 @@
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
  */
-
-import {FormError} from '@liferay/object-js-components-web';
-import React, {ChangeEventHandler, ReactNode} from 'react';
+import { FormError } from '@liferay/object-js-components-web';
+import React, { ChangeEventHandler, ReactNode } from 'react';
 import './ObjectFieldFormBase.scss';
-export default function ObjectFieldFormBase({
-	children,
-	disabled,
-	editingField,
-	errors,
-	handleChange,
-	objectDefinitionId,
-	objectField: values,
-	objectFieldTypes,
-	objectName,
-	onAggregationFilterChange,
-	onRelationshipChange,
-	setValues,
-}: IProps): JSX.Element;
-export declare function useObjectFieldForm({
-	forbiddenChars,
-	forbiddenLastChars,
-	forbiddenNames,
-	initialValues,
-	onSubmit,
-}: IUseObjectFieldForm): {
-	errors: FormError<
-		ObjectField & {
-			function: any;
-			maxLength: any;
-			acceptedFileExtensions: any;
-			fileSource: any;
-			maximumFileSize: any;
-			showCounter: any;
-			showFilesInDocumentsAndMedia: any;
-			storageDLFolderPath: any;
-			relationship: any;
-			summarizeField: any;
-			filters: any;
-			stateFlow: any;
-		}
-	>;
-	handleChange: React.ChangeEventHandler<HTMLInputElement>;
-	handleSubmit: React.FormEventHandler<HTMLFormElement>;
-	setValues: (values: Partial<ObjectField>) => void;
-	values: Partial<ObjectField>;
+export default function ObjectFieldFormBase({ children, disabled, editingField, errors, handleChange, objectDefinitionId, objectField: values, objectFieldTypes, objectName, onAggregationFilterChange, onRelationshipChange, setValues, }: IProps): JSX.Element;
+export declare function useObjectFieldForm({ forbiddenChars, forbiddenLastChars, forbiddenNames, initialValues, onSubmit, }: IUseObjectFieldForm): {
+    errors: FormError<ObjectField & {
+        function: unknown;
+        maxLength: unknown;
+        acceptedFileExtensions: unknown;
+        fileSource: unknown;
+        maximumFileSize: unknown;
+        showCounter: unknown;
+        showFilesInDocumentsAndMedia: unknown;
+        storageDLFolderPath: unknown;
+        relationship: unknown;
+        summarizeField: unknown;
+        filters: unknown;
+        stateFlow: unknown;
+    }>;
+    handleChange: React.ChangeEventHandler<HTMLInputElement>;
+    handleSubmit: React.FormEventHandler<HTMLFormElement>;
+    setValues: (values: Partial<ObjectField>) => void;
+    values: Partial<ObjectField>;
 };
 interface IUseObjectFieldForm {
-	forbiddenChars?: string[];
-	forbiddenLastChars?: string[];
-	forbiddenNames?: string[];
-	initialValues: Partial<ObjectField>;
-	onSubmit: (field: ObjectField) => void;
+    forbiddenChars?: string[];
+    forbiddenLastChars?: string[];
+    forbiddenNames?: string[];
+    initialValues: Partial<ObjectField>;
+    onSubmit: (field: ObjectField) => void;
 }
 interface IProps {
-	children?: ReactNode;
-	disabled?: boolean;
-	editingField?: boolean;
-	errors: ObjectFieldErrors;
-	handleChange: ChangeEventHandler<HTMLInputElement>;
-	objectDefinitionId: number;
-	objectField: Partial<ObjectField>;
-	objectFieldTypes: ObjectFieldType[];
-	objectName: string;
-	onAggregationFilterChange?: (aggregationFilterArray: []) => void;
-	onRelationshipChange?: (objectDefinitionId2: number) => void;
-	setValues: (values: Partial<ObjectField>) => void;
+    children?: ReactNode;
+    disabled?: boolean;
+    editingField?: boolean;
+    errors: ObjectFieldErrors;
+    handleChange: ChangeEventHandler<HTMLInputElement>;
+    objectDefinitionId: number;
+    objectField: Partial<ObjectField>;
+    objectFieldTypes: ObjectFieldType[];
+    objectName: string;
+    onAggregationFilterChange?: (aggregationFilterArray: []) => void;
+    onRelationshipChange?: (objectDefinitionId2: number) => void;
+    setValues: (values: Partial<ObjectField>) => void;
 }
-export declare type ObjectFieldErrors = FormError<
-	ObjectField &
-		{
-			[key in ObjectFieldSettingName]: any;
-		}
->;
+export declare type ObjectFieldErrors = FormError<ObjectField & {
+    [key in ObjectFieldSettingName]: unknown;
+}>;
 export {};

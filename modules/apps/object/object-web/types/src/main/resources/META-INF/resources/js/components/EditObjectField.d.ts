@@ -11,32 +11,19 @@
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
  */
-
 /// <reference types="react" />
-
 import './EditObjectField.scss';
-export default function EditObjectField({
-	forbiddenChars,
-	forbiddenLastChars,
-	forbiddenNames,
-	isApproved,
-	isDefaultStorageType,
-	objectDefinitionId,
-	objectField: initialValues,
-	objectFieldTypes,
-	objectName,
-	readOnly,
-}: IProps): JSX.Element;
+export default function EditObjectField({ forbiddenChars, forbiddenLastChars, forbiddenNames, isApproved, isDefaultStorageType, objectDefinitionId, objectField: initialValues, objectFieldTypes, objectName, readOnly, }: IProps): JSX.Element;
 interface IProps {
-	forbiddenChars: string[];
-	forbiddenLastChars: string[];
-	forbiddenNames: string[];
-	isApproved: boolean;
-	isDefaultStorageType: boolean;
-	objectDefinitionId: number;
-	objectField: ObjectField;
-	objectFieldTypes: ObjectFieldType[];
-	objectName: string;
-	readOnly: boolean;
+    forbiddenChars: string[];
+    forbiddenLastChars: string[];
+    forbiddenNames: string[];
+    isApproved: boolean;
+    isDefaultStorageType: boolean;
+    objectDefinitionId: number;
+    objectField: ObjectField;
+    objectFieldTypes: ObjectFieldType[];
+    objectName: string;
+    readOnly: boolean;
 }
 export {};

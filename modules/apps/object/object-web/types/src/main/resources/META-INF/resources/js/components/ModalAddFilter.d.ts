@@ -11,63 +11,43 @@
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
  */
-
 /// <reference types="react" />
-
+import { Observer } from '@clayui/modal/lib/types';
 import './ModalAddFilter.scss';
-export declare function ModalAddFilter({
-	currentFilters,
-	disableDateValues,
-	editingFilter,
-	editingObjectFieldName,
-	header,
-	objectFields,
-	observer,
-	onClose,
-	onSave,
-	workflowStatusJSONArray,
-}: IProps): JSX.Element;
+export declare function ModalAddFilter({ currentFilters, disableDateValues, editingFilter, editingObjectFieldName, header, objectFields, observer, onClose, onSave, workflowStatusJSONArray, }: IProps): JSX.Element;
 interface IProps {
-	currentFilters: TCurrentFilter[];
-	disableDateValues?: boolean;
-	editingFilter: boolean;
-	editingObjectFieldName: string;
-	header: string;
-	objectFields: ObjectField[];
-	observer: any;
-	onClose: () => void;
-	onSave: (
-		filterBy?: string,
-		fieldLabel?: LocalizedValue<string>,
-		objectFieldBusinessType?: string,
-		filterType?: string,
-		objectFieldName?: string,
-		valueList?: IItem[],
-		value?: string
-	) => void;
-	workflowStatusJSONArray: TWorkflowStatus[];
+    currentFilters: TCurrentFilter[];
+    disableDateValues?: boolean;
+    editingFilter: boolean;
+    editingObjectFieldName: string;
+    header: string;
+    objectFields: ObjectField[];
+    observer: Observer;
+    onClose: () => void;
+    onSave: (filterBy?: string, fieldLabel?: LocalizedValue<string>, objectFieldBusinessType?: string, filterType?: string, objectFieldName?: string, valueList?: IItem[], value?: string) => void;
+    workflowStatusJSONArray: TWorkflowStatus[];
 }
 interface IItem extends LabelValueObject {
-	checked?: boolean;
+    checked?: boolean;
 }
 declare type TCurrentFilter = {
-	definition: {
-		[key: string]: string[];
-	} | null;
-	fieldLabel: string;
-	filterBy: string;
-	filterType: string | null;
-	label: TName;
-	objectFieldBusinessType?: string;
-	objectFieldName: string;
-	value?: string;
-	valueList?: LabelValueObject[];
+    definition: {
+        [key: string]: string[];
+    } | null;
+    fieldLabel: string;
+    filterBy: string;
+    filterType: string | null;
+    label: TName;
+    objectFieldBusinessType?: string;
+    objectFieldName: string;
+    value?: string;
+    valueList?: LabelValueObject[];
 };
 declare type TWorkflowStatus = {
-	label: string;
-	value: string;
+    label: string;
+    value: string;
 };
 declare type TName = {
-	[key: string]: string;
+    [key: string]: string;
 };
 export {};

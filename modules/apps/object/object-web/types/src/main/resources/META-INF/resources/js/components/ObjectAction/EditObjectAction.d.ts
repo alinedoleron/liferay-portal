@@ -11,24 +11,15 @@
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
  */
-
 /// <reference types="react" />
-
-import {CustomItem} from '@liferay/object-js-components-web';
-export default function EditObjectAction({
-	objectAction: {id, ...values},
-	objectActionExecutors,
-	objectActionTriggers,
-	objectDefinitionsRelationshipsURL,
-	readOnly,
-	validateExpressionURL,
-}: IProps): JSX.Element;
+import { CustomItem } from '@liferay/object-js-components-web';
+export default function EditObjectAction({ objectAction: { id, ...values }, objectActionExecutors, objectActionTriggers, objectDefinitionsRelationshipsURL, readOnly, validateExpressionURL, }: IProps): JSX.Element;
 interface IProps {
-	objectAction: ObjectAction;
-	objectActionExecutors: CustomItem[];
-	objectActionTriggers: CustomItem[];
-	objectDefinitionsRelationshipsURL: string;
-	readOnly?: boolean;
-	validateExpressionURL: string;
+    objectAction: ObjectAction;
+    objectActionExecutors: CustomItem[];
+    objectActionTriggers: CustomItem[];
+    objectDefinitionsRelationshipsURL: string;
+    readOnly?: boolean;
+    validateExpressionURL: string;
 }
 export {};

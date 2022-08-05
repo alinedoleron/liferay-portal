@@ -15,6 +15,7 @@
 import ClayButton from '@clayui/button';
 import ClayForm from '@clayui/form';
 import ClayModal from '@clayui/modal';
+import {Observer} from '@clayui/modal/lib/types';
 import {AutoComplete, useForm} from '@liferay/object-js-components-web';
 import classNames from 'classnames';
 import React, {useContext, useMemo, useState} from 'react';
@@ -32,7 +33,7 @@ type TInitialValues = {
 };
 
 interface IBoxBtnColumnsProps extends React.HTMLAttributes<HTMLElement> {
-	handleChange: any;
+	handleChange: React.ChangeEventHandler<HTMLInputElement>;
 }
 
 const BoxBtnColumns: React.FC<IBoxBtnColumnsProps> = ({handleChange}) => {
@@ -54,7 +55,7 @@ const BoxBtnColumns: React.FC<IBoxBtnColumnsProps> = ({handleChange}) => {
 						name: 'objectFieldSize',
 						value: String(objectFieldSize),
 					},
-				} as any;
+				} as React.ChangeEvent<HTMLInputElement>;
 
 				return (
 					<button
@@ -81,7 +82,7 @@ const BoxBtnColumns: React.FC<IBoxBtnColumnsProps> = ({handleChange}) => {
 interface IModalAddObjectLayoutFieldProps
 	extends React.HTMLAttributes<HTMLElement> {
 	boxIndex: number;
-	observer: any;
+	observer: Observer;
 	onClose: () => void;
 	tabIndex: number;
 }
@@ -108,7 +109,7 @@ const ModalAddObjectLayoutField: React.FC<IModalAddObjectLayoutFieldProps> = ({
 		});
 	}, [objectFields, query]);
 
-	const onSubmit = (values: any) => {
+	const onSubmit = (values: TInitialValues) => {
 		dispatch({
 			payload: {
 				boxIndex,
@@ -122,8 +123,8 @@ const ModalAddObjectLayoutField: React.FC<IModalAddObjectLayoutFieldProps> = ({
 		onClose();
 	};
 
-	const onValidate = (values: any) => {
-		const errors: any = {};
+	const onValidate = (values: TInitialValues) => {
+		const errors: {objectFieldId?: string} = {};
 
 		if (!values.objectFieldId) {
 			errors.objectFieldId = Liferay.Language.get('required');
@@ -166,12 +167,12 @@ const ModalAddObjectLayoutField: React.FC<IModalAddObjectLayoutFieldProps> = ({
 						label={Liferay.Language.get('field')}
 						onChangeQuery={setQuery}
 						onSelectItem={(item) => {
-							const syntheticEvent: any = {
+							const syntheticEvent = {
 								target: {
 									name: 'objectFieldId',
 									value: item.id,
 								},
-							};
+							} as React.ChangeEvent<HTMLInputElement>;
 
 							setSelectedObjectField(item);
 							handleChange(syntheticEvent);

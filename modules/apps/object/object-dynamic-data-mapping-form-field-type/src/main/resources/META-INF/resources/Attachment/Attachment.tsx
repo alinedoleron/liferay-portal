@@ -151,7 +151,7 @@ export default function Attachment({
 	const [error, setError] = useState({});
 	const [isLoading, setLoading] = useState(false);
 
-	const handleSelectedItem = (selectedItem: any) => {
+	const handleSelectedItem = (selectedItem) => {
 		if (!selectedItem) {
 			return;
 		}

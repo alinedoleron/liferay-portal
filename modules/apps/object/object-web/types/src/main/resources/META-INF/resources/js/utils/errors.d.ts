@@ -11,9 +11,8 @@
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
  */
-
 interface IErrorMessage {
-	[key: string]: string;
+    [key: string]: string;
 }
 export declare const ERRORS: IErrorMessage;
 export {};

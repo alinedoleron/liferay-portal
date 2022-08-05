@@ -64,7 +64,7 @@ export async function getPickListItems(pickListId: number) {
 
 export async function save(
 	url: string,
-	item: any,
+	item: unknown,
 	method: 'PUT' | 'POST' = 'PUT'
 ) {
 	const response = await fetch(url, {

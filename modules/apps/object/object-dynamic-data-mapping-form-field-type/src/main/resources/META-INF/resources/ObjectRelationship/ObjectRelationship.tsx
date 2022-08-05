@@ -347,7 +347,7 @@ interface IProps {
 	onBlur?: React.FocusEventHandler<HTMLInputElement>;
 	onChange: (event: {target: {value: unknown}}) => void;
 	onFocus?: React.FocusEventHandler<HTMLInputElement>;
-	parameterObjectFieldName?: string;
+	parameterObjectFieldName: string;
 	placeholder?: string;
 	readOnly?: boolean;
 	required?: boolean;

@@ -401,7 +401,7 @@ export default function EditObjectField({
 								label: objectField.label,
 								objectFieldBusinessType:
 									objectField.businessType,
-								objectFieldName: objectField.name,
+								objectFieldName: objectField.name as string,
 								value:
 									objectField.businessType === 'Integer' ||
 									objectField.businessType === 'LongInteger'
@@ -701,8 +701,8 @@ function SearchableContainer({
 					disabled={disabled}
 					label={Liferay.Language.get('language')}
 					name="indexedLanguageId"
-					onChange={({target: {value}}: any) => {
-						const selectedLabel = languageLabels[value];
+					onChange={({target: {value}}) => {
+						const selectedLabel = languageLabels[Number(value)];
 						const [indexedLanguageId] = Object.entries(
 							languages
 						).find(([, label]) => selectedLabel === label) as [
@@ -735,7 +735,7 @@ function MaxLengthProperties({
 	const settings = normalizeFieldSettings(objectFieldSettings);
 
 	const inputRef = useRef(null);
-	const maskRef = useRef();
+	const maskRef = useRef<any>();
 
 	useEffect(() => {
 		if (settings.showCounter) {
@@ -800,9 +800,11 @@ function MaxLengthProperties({
 								value: value && Number(value),
 							})
 						}
-						onInput={({target: {value}}: any) =>
-							(maskRef.current as any).update(value)
-						}
+						onInput={({target}) => {
+							maskRef.current.update(
+								(target as HTMLInputElement).value
+							);
+						}}
 						ref={inputRef}
 						required
 						value={`${settings.maxLength}`}

@@ -160,7 +160,7 @@ export default function ActionBuilder({
 					}
 				);
 
-				const {items} = (await response.json()) as any;
+				const {items} = await response.json();
 
 				const notificationsArray = items.map(
 					(item: TNotificationTemplate) => {
@@ -380,7 +380,7 @@ export default function ActionBuilder({
 							)}
 							label={Liferay.Language.get('expression-builder')}
 							name="conditionExpression"
-							onChange={({target: {value}}: any) =>
+							onChange={({target: {value}}) =>
 								setValues({conditionExpression: value})
 							}
 							onOpenModal={() => {
@@ -513,7 +513,11 @@ export default function ActionBuilder({
 							currentObjectDefinitionFields={
 								currentObjectDefinitionFields
 							}
-							errors={errors.predefinedValues as any}
+							errors={
+								errors.predefinedValues as {
+									[key: string]: string;
+								}
+							}
 							objectFieldsMap={objectFieldsMap}
 							setValues={setValues}
 							validateExpressionURL={validateExpressionURL}

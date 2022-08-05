@@ -65,7 +65,7 @@ export const Input = React.forwardRef<HTMLInputElement, IProps>(
 );
 
 interface IProps
-	extends React.InputHTMLAttributes<HTMLInputElement | HTMLTextAreaElement> {
+	extends React.InputHTMLAttributes<HTMLInputElement> {
 	component?: 'input' | 'textarea' | React.ForwardRefExoticComponent<any>;
 	disabled?: boolean;
 	error?: string;

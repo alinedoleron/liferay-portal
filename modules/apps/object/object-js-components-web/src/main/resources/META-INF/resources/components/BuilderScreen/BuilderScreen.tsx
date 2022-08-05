@@ -213,7 +213,7 @@ type TBuilderScreenColumn = {
 	filterBy?: string;
 	label: TName;
 	objectFieldBusinessType?: string;
-	objectFieldName: string;
+	objectFieldName?: string;
 	priority?: number;
 	sortOrder?: string;
 	type?: string;

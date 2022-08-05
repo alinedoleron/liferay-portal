@@ -11,30 +11,19 @@
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
  */
-
 /// <reference types="react" />
-
-import {CustomItem} from '@liferay/object-js-components-web';
+import { CustomItem } from '@liferay/object-js-components-web';
 import './ActionBuilder.scss';
-import {ActionError} from '../index';
-export default function ActionBuilder({
-	errors,
-	objectActionExecutors,
-	objectActionTriggers,
-	objectDefinitionsRelationshipsURL,
-	setValues,
-	setWarningAlert,
-	validateExpressionURL,
-	values,
-}: IProps): JSX.Element;
+import { ActionError } from '../index';
+export default function ActionBuilder({ errors, objectActionExecutors, objectActionTriggers, objectDefinitionsRelationshipsURL, setValues, setWarningAlert, validateExpressionURL, values, }: IProps): JSX.Element;
 interface IProps {
-	errors: ActionError;
-	objectActionExecutors: CustomItem[];
-	objectActionTriggers: CustomItem[];
-	objectDefinitionsRelationshipsURL: string;
-	setValues: (values: Partial<ObjectAction>) => void;
-	setWarningAlert: (value: boolean) => void;
-	validateExpressionURL: string;
-	values: Partial<ObjectAction>;
+    errors: ActionError;
+    objectActionExecutors: CustomItem[];
+    objectActionTriggers: CustomItem[];
+    objectDefinitionsRelationshipsURL: string;
+    setValues: (values: Partial<ObjectAction>) => void;
+    setWarningAlert: (value: boolean) => void;
+    validateExpressionURL: string;
+    values: Partial<ObjectAction>;
 }
 export {};

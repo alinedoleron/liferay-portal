@@ -27,7 +27,7 @@ interface IProps {
 	hasDragAndDrop?: boolean;
 	index: number;
 	label?: string;
-	objectFieldName: string;
+	objectFieldName?: string;
 	onChangeColumnOrder?: (draggedIndex: number, targetIndex: number) => void;
 	onDeleteColumn: (objectFieldName: string) => void;
 	onEditing?: (boolean: boolean) => void;
@@ -120,8 +120,8 @@ const BuilderListItem: React.FC<IProps> = ({
 
 	dragRef(dropRef(ref));
 
-	const handleEnableEditModal = (objectFieldName: string) => {
-		onEditingObjectFieldName && onEditingObjectFieldName(objectFieldName);
+	const handleEnableEditModal = (objectFieldName?: string) => {
+		onEditingObjectFieldName && onEditingObjectFieldName(objectFieldName as string);
 		onEditing && onEditing(true);
 		onVisibleEditModal && onVisibleEditModal(true);
 	};
@@ -214,7 +214,7 @@ const BuilderListItem: React.FC<IProps> = ({
 					)}
 
 					<ClayDropDown.Item
-						onClick={() => onDeleteColumn(objectFieldName)}
+						onClick={() => onDeleteColumn(objectFieldName as string)}
 					>
 						<ClayIcon
 							className="lfr-object__object-custom-view-builder-item-icon"

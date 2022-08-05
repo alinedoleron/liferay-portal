@@ -19,7 +19,7 @@ type TState = {
 };
 
 type TAction = {
-	payload: {[key: string]: any};
+	payload: {[key: string]: boolean};
 	type: keyof typeof TYPES;
 };
 

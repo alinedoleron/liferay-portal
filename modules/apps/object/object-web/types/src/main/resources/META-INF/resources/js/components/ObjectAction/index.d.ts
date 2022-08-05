@@ -11,40 +11,27 @@
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
  */
-
 /// <reference types="react" />
-
 import 'codemirror/mode/groovy/groovy';
-import {CustomItem, FormError} from '@liferay/object-js-components-web';
-export default function Action({
-	objectAction: initialValues,
-	objectActionExecutors,
-	objectActionTriggers,
-	objectDefinitionsRelationshipsURL,
-	readOnly,
-	requestParams: {method, url},
-	successMessage,
-	validateExpressionURL,
-}: IProps): JSX.Element;
+import { CustomItem, FormError } from '@liferay/object-js-components-web';
+export default function Action({ objectAction: initialValues, objectActionExecutors, objectActionTriggers, objectDefinitionsRelationshipsURL, readOnly, requestParams: { method, url }, successMessage, validateExpressionURL, }: IProps): JSX.Element;
 interface IProps {
-	objectAction: Partial<ObjectAction>;
-	objectActionExecutors: CustomItem[];
-	objectActionTriggers: CustomItem[];
-	objectDefinitionsRelationshipsURL: string;
-	readOnly?: boolean;
-	requestParams: {
-		method: 'GET' | 'POST' | 'DELETE' | 'PUT';
-		url: string;
-	};
-	successMessage: string;
-	title: string;
-	validateExpressionURL: string;
+    objectAction: Partial<ObjectAction>;
+    objectActionExecutors: CustomItem[];
+    objectActionTriggers: CustomItem[];
+    objectDefinitionsRelationshipsURL: string;
+    readOnly?: boolean;
+    requestParams: {
+        method: 'GET' | 'POST' | 'DELETE' | 'PUT';
+        url: string;
+    };
+    successMessage: string;
+    title: string;
+    validateExpressionURL: string;
 }
-export declare type ActionError = FormError<
-	ObjectAction & ObjectActionParameters
-> & {
-	predefinedValues?: {
-		[key: string]: string;
-	};
+export declare type ActionError = FormError<ObjectAction & ObjectActionParameters> & {
+    predefinedValues?: {
+        [key: string]: string;
+    };
 };
 export {};

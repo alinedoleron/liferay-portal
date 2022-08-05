@@ -224,7 +224,7 @@ const Layout: React.FC<React.HTMLAttributes<HTMLElement>> = () => {
 		else {
 			const {
 				title = Liferay.Language.get('an-error-occurred'),
-			} = (await response.json()) as {title: any};
+			} = (await response.json()) as {title: string};
 
 			openToast({
 				message: title,

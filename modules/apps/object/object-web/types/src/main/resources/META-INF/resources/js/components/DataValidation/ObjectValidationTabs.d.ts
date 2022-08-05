@@ -11,45 +11,28 @@
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
  */
-
 import 'codemirror/mode/groovy/groovy';
-import {SidebarCategory} from '@liferay/object-js-components-web';
-import {ChangeEventHandler} from 'react';
-import {ObjectValidationErrors} from '../ObjectValidationFormBase';
-declare function BasicInfo({
-	componentLabel,
-	defaultLocale,
-	disabled,
-	errors,
-	locales,
-	setValues,
-	values,
-}: IBasicInfo): JSX.Element;
-declare function Conditions({
-	defaultLocale,
-	disabled,
-	errors,
-	locales,
-	objectValidationRuleElements,
-	setValues,
-	values,
-}: IConditions): JSX.Element;
+import { SidebarCategory } from '@liferay/object-js-components-web';
+import { ChangeEventHandler } from 'react';
+import { ObjectValidationErrors } from '../ObjectValidationFormBase';
+declare function BasicInfo({ componentLabel, defaultLocale, disabled, errors, locales, setValues, values, }: IBasicInfo): JSX.Element;
+declare function Conditions({ defaultLocale, disabled, errors, locales, objectValidationRuleElements, setValues, values, }: IConditions): JSX.Element;
 interface ITabs {
-	defaultLocale: {
-		label: string;
-		symbol: string;
-	};
-	disabled: boolean;
-	errors: ObjectValidationErrors;
-	handleChange: ChangeEventHandler<HTMLInputElement>;
-	locales: Array<any>;
-	setValues: (values: Partial<ObjectValidation>) => void;
-	values: Partial<ObjectValidation>;
+    defaultLocale: {
+        label: string;
+        symbol: string;
+    };
+    disabled: boolean;
+    errors: ObjectValidationErrors;
+    handleChange: ChangeEventHandler<HTMLInputElement>;
+    locales: Array<any>;
+    setValues: (values: Partial<ObjectValidation>) => void;
+    values: Partial<ObjectValidation>;
 }
 interface IBasicInfo extends ITabs {
-	componentLabel: string;
+    componentLabel: string;
 }
 interface IConditions extends ITabs {
-	objectValidationRuleElements: SidebarCategory[];
+    objectValidationRuleElements: SidebarCategory[];
 }
-export {BasicInfo, Conditions};
+export { BasicInfo, Conditions };

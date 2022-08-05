@@ -11,28 +11,11 @@
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
  */
-
-export declare function fetchJSON<T>(
-	input: RequestInfo,
-	init?: RequestInit
-): Promise<T>;
+export declare function fetchJSON<T>(input: RequestInfo, init?: RequestInit): Promise<T>;
 export declare function getObjectDefinitions(): Promise<ObjectDefinition[]>;
-export declare function getObjectFields(
-	objectDefinitionId: number
-): Promise<ObjectField[]>;
-export declare function getObjectRelationships(
-	objectDefinitionId: number
-): Promise<ObjectRelationship[]>;
+export declare function getObjectFields(objectDefinitionId: number): Promise<ObjectField[]>;
+export declare function getObjectRelationships(objectDefinitionId: number): Promise<ObjectRelationship[]>;
 export declare function getPickLists(): Promise<PickList[]>;
-export declare function getPickListItems(
-	pickListId: number
-): Promise<PickListItem[]>;
-export declare function save(
-	url: string,
-	item: any,
-	method?: 'PUT' | 'POST'
-): Promise<void>;
-export declare function updateRelationship({
-	objectRelationshipId,
-	...others
-}: ObjectRelationship): Promise<void>;
+export declare function getPickListItems(pickListId: number): Promise<PickListItem[]>;
+export declare function save(url: string, item: unknown, method?: 'PUT' | 'POST'): Promise<void>;
+export declare function updateRelationship({ objectRelationshipId, ...others }: ObjectRelationship): Promise<void>;

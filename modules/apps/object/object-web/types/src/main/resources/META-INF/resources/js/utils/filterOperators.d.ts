@@ -11,7 +11,6 @@
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
  */
-
 export declare const PICKLIST_OPERATORS: LabelValueObject[];
 export declare const DATE_OPERATORS: LabelValueObject[];
 export declare const NUMERIC_OPERATORS: LabelValueObject[];

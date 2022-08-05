@@ -15,6 +15,7 @@
 import ClayButton from '@clayui/button';
 import ClayForm from '@clayui/form';
 import ClayModal from '@clayui/modal';
+import {Observer} from '@clayui/modal/lib/types';
 import {Input, useForm} from '@liferay/object-js-components-web';
 import React, {useContext} from 'react';
 
@@ -27,7 +28,7 @@ type TInitialValues = {
 
 interface IModalAddObjectLayoutBoxProps
 	extends React.HTMLAttributes<HTMLElement> {
-	observer: any;
+	observer: Observer;
 	onClose: () => void;
 }
 
@@ -42,7 +43,7 @@ const ModalAddObjectLayoutBox: React.FC<IModalAddObjectLayoutBoxProps> = ({
 		name: '',
 	};
 
-	const onSubmit = (values: any) => {
+	const onSubmit = (values: TInitialValues) => {
 		dispatch({
 			payload: {
 				name: {
@@ -58,7 +59,7 @@ const ModalAddObjectLayoutBox: React.FC<IModalAddObjectLayoutBoxProps> = ({
 	};
 
 	const onValidate = (values: TInitialValues) => {
-		const errors: any = {};
+		const errors: {name?: string} = {};
 
 		if (!values.name) {
 			errors.name = Liferay.Language.get('required');

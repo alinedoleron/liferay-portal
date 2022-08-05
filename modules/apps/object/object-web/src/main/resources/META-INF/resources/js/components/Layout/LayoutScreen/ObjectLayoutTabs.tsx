@@ -163,7 +163,7 @@ const ObjectLayoutTabs: React.FC<React.HTMLAttributes<HTMLElement>> = () => {
 				<ModalAddObjectLayoutBox
 					observer={observer}
 					onClose={onClose}
-					tabIndex={selectedTabIndex}
+					tabIndex={selectedTabIndex as number}
 				/>
 			)}
 		</>

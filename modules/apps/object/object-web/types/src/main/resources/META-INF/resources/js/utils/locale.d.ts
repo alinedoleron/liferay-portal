@@ -11,18 +11,17 @@
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
  */
-
 export declare const availableLocales: {
-	label: string;
-	symbol: string;
+    label: string;
+    symbol: string;
 }[];
 export declare const defaultLanguageId: Liferay.Language.Locale;
 export declare const defaultLocale: {
-	label: string;
-	symbol: string;
+    label: string;
+    symbol: string;
 };
 export declare const languageId: Liferay.Language.Locale;
 export declare const locale: {
-	label: string;
-	symbol: string;
+    label: string;
+    symbol: string;
 };

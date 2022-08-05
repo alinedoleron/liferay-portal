@@ -11,14 +11,13 @@
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
  */
-
+import { Observer } from '@clayui/modal/lib/types';
 import React from 'react';
-interface IModalAddObjectLayoutFieldProps
-	extends React.HTMLAttributes<HTMLElement> {
-	boxIndex: number;
-	observer: any;
-	onClose: () => void;
-	tabIndex: number;
+interface IModalAddObjectLayoutFieldProps extends React.HTMLAttributes<HTMLElement> {
+    boxIndex: number;
+    observer: Observer;
+    onClose: () => void;
+    tabIndex: number;
 }
 declare const ModalAddObjectLayoutField: React.FC<IModalAddObjectLayoutFieldProps>;
 export default ModalAddObjectLayoutField;

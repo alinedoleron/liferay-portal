@@ -16,23 +16,18 @@ import React, {createContext, useReducer} from 'react';
 
 import {defaultLanguageId} from '../../utils/locale';
 import {
-	TAction,
 	TName,
 	TObjectView,
 	TObjectViewColumn,
 	TObjectViewFilterColumn,
 	TObjectViewSortColumn,
+	TSortOptions,
 	TState,
 	TWorkflowStatus,
 } from './types';
 interface IViewContextProps extends Array<TState | Function> {
 	0: typeof initialState;
 	1: React.Dispatch<React.ReducerAction<React.Reducer<TState, TAction>>>;
-}
-
-interface TInitialFilterColumn extends TObjectViewFilterColumn {
-	json: string;
-	valueSummary: string;
 }
 
 const ViewContext = createContext({} as IViewContextProps);
@@ -56,6 +51,110 @@ export enum TYPES {
 	EDIT_OBJECT_VIEW_SORT_COLUMN_SORT_ORDER = 'EDIT_OBJECT_VIEW_SORT_COLUMN_SORT_ORDER',
 	SET_OBJECT_VIEW_AS_DEFAULT = 'SET_OBJECT_VIEW_AS_DEFAULT',
 }
+
+type TAction =
+	| {
+			payload: {
+				objectView: TObjectView;
+			};
+			type: TYPES.ADD_OBJECT_VIEW;
+	  }
+	| {
+			payload: {
+				selectedObjectFields: ObjectField[];
+			};
+			type: TYPES.ADD_OBJECT_VIEW_COLUMN;
+	  }
+	| {
+			payload: {
+				filterType?: string | null;
+				objectFieldName?: string;
+				valueList?: IItem[];
+			};
+			type: TYPES.ADD_OBJECT_VIEW_FILTER_COLUMN;
+	  }
+	| {
+			payload: {
+				objectFieldName?: string;
+				objectFields: ObjectField[];
+				objectViewSortColumns: TObjectViewSortColumn[];
+				selectedObjectSort: TSortOptions;
+			};
+			type: TYPES.ADD_OBJECT_VIEW_SORT_COLUMN;
+	  }
+	| {
+			payload: {
+				objectFields: ObjectField[];
+				objectView: TObjectView;
+			};
+			type: TYPES.ADD_OBJECT_FIELDS;
+	  }
+	| {
+			payload: {
+				newName: string;
+			};
+			type: TYPES.CHANGE_OBJECT_VIEW_NAME;
+	  }
+	| {
+			payload: {
+				draggedIndex: number;
+				targetIndex: number;
+			};
+			type: TYPES.CHANGE_OBJECT_VIEW_COLUMN_ORDER;
+	  }
+	| {
+			payload: {
+				draggedIndex: number;
+				targetIndex: number;
+			};
+			type: TYPES.CHANGE_OBJECT_VIEW_SORT_COLUMN_ORDER;
+	  }
+	| {
+			payload: {
+				objectFieldName: string;
+			};
+			type: TYPES.DELETE_OBJECT_VIEW_COLUMN;
+	  }
+	| {
+			payload: {
+				objectFieldName: string;
+			};
+			type: TYPES.DELETE_OBJECT_VIEW_FILTER_COLUMN;
+	  }
+	| {
+			payload: {
+				objectFieldName: string;
+			};
+			type: TYPES.DELETE_OBJECT_VIEW_SORT_COLUMN;
+	  }
+	| {
+			payload: {
+				editingObjectFieldName: string;
+				translations: LocalizedValue<string>;
+			};
+			type: TYPES.EDIT_OBJECT_VIEW_COLUMN_LABEL;
+	  }
+	| {
+			payload: {
+				filterType?: string;
+				objectFieldName?: string;
+				valueList?: IItem[];
+			};
+			type: TYPES.EDIT_OBJECT_VIEW_FILTER_COLUMN;
+	  }
+	| {
+			payload: {
+				editingObjectFieldName: string;
+				selectedObjectSort: string;
+			};
+			type: TYPES.EDIT_OBJECT_VIEW_SORT_COLUMN_SORT_ORDER;
+	  }
+	| {
+			payload: {
+				checked: boolean;
+			};
+			type: TYPES.SET_OBJECT_VIEW_AS_DEFAULT;
+	  };
 
 const initialState = {
 	objectFields: [] as ObjectField[],
@@ -145,11 +244,14 @@ const viewReducer = (state: TState, action: TAction) => {
 			}
 
 			const newFilterColumnItem: TObjectViewFilterColumn = {
-				definition: filterTypeValue && {
-					[filterTypeValue]: valueList.map(
-						(item: {label: string; value: string}) => item.value
-					),
-				},
+				definition: filterTypeValue
+					? {
+							[filterTypeValue]: valueList.map(
+								(item: {label: string; value: string}) =>
+									item.value
+							),
+					  }
+					: null,
 				fieldLabel: label[defaultLanguageId],
 				filterBy: label[defaultLanguageId],
 				filterType: filterTypeValue,
@@ -195,7 +297,7 @@ const viewReducer = (state: TState, action: TAction) => {
 				objectFieldName,
 				objectFields,
 				objectViewSortColumns,
-				selectedObjetSort,
+				selectedObjectSort,
 			} = action.payload;
 
 			const objectView = {...state.objectView};
@@ -219,7 +321,7 @@ const viewReducer = (state: TState, action: TAction) => {
 				fieldLabel: label[defaultLanguageId],
 				label,
 				objectFieldName,
-				sortOrder: selectedObjetSort.value,
+				sortOrder: selectedObjectSort.value,
 			};
 
 			if (!objectViewSortColumns) {
@@ -293,7 +395,7 @@ const viewReducer = (state: TState, action: TAction) => {
 
 			newObjectFields.forEach((field) => {
 				objectViewColumns.forEach(
-					(column: {objectFieldName: string}) => {
+					(column: {objectFieldName?: string}) => {
 						if (column.objectFieldName === field.name) {
 							field.checked = true;
 						}
@@ -301,14 +403,14 @@ const viewReducer = (state: TState, action: TAction) => {
 				);
 
 				const existingFilter = objectViewFilterColumns.find(
-					(filter: {objectFieldName: string}) => {
+					(filter: {objectFieldName?: string}) => {
 						if (filter.objectFieldName === field.name) {
 							return filter;
 						}
 					}
 				);
 
-				field.hasFilter = existingFilter;
+				field.hasFilter = existingFilter ? true : false;
 			});
 
 			const newObjectViewColumns: TObjectViewColumn[] = [];
@@ -330,18 +432,20 @@ const viewReducer = (state: TState, action: TAction) => {
 				});
 			});
 
-			objectViewSortColumns.forEach((sortColumn: TObjectViewColumn) => {
-				newObjectFields.forEach((objectField: ObjectField) => {
-					if (objectField.name === sortColumn.objectFieldName) {
-						newObjectViewSortColumns.push({
-							...sortColumn,
-							fieldLabel: objectField.label[
-								defaultLanguageId
-							] as string,
-						});
-					}
-				});
-			});
+			objectViewSortColumns.forEach(
+				(sortColumn: TObjectViewSortColumn) => {
+					newObjectFields.forEach((objectField: ObjectField) => {
+						if (objectField.name === sortColumn.objectFieldName) {
+							newObjectViewSortColumns.push({
+								...sortColumn,
+								fieldLabel: objectField.label[
+									defaultLanguageId
+								] as string,
+							});
+						}
+					});
+				}
+			);
 
 			newObjectViewSortColumns.forEach(
 				(sortColumn: TObjectViewSortColumn) => {
@@ -359,7 +463,7 @@ const viewReducer = (state: TState, action: TAction) => {
 			);
 
 			const newObjectViewFilterColumns = objectViewFilterColumns.map(
-				(filterColumn: TInitialFilterColumn) => {
+				(filterColumn: TObjectViewFilterColumn) => {
 					const definition =
 						filterColumn.json && JSON.parse(filterColumn.json);
 					const filterType = filterColumn.filterType;
@@ -615,11 +719,11 @@ const viewReducer = (state: TState, action: TAction) => {
 					if (filterColumn.objectFieldName === objectFieldName) {
 						return {
 							...filterColumn,
-							definition: filterTypeValue && {
+							definition: filterTypeValue ? {
 								[filterTypeValue]: valueList.map(
 									(item: LabelValueObject) => item.value
 								),
-							},
+							} : null,
 							filterType: filterTypeValue,
 							valueList: filterTypeValue ? valueList : [],
 						};

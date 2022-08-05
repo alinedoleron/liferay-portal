@@ -14,6 +14,7 @@
 
 import ClayButton from '@clayui/button';
 import ClayModal from '@clayui/modal';
+import {Observer} from '@clayui/modal/lib/types';
 import {
 	AutoComplete,
 	DatePicker,
@@ -332,7 +333,7 @@ export function ModalAddFilter({
 				selectedFilterBy?.label,
 				selectedFilterBy?.businessType,
 				selectedFilterType?.value,
-				selectedFilterBy?.name,
+				selectedFilterBy?.name as string,
 				selectedFilterBy?.name === 'status' ||
 					selectedFilterBy?.businessType === 'Picklist'
 					? checkedItems
@@ -516,7 +517,7 @@ interface IProps {
 	editingObjectFieldName: string;
 	header: string;
 	objectFields: ObjectField[];
-	observer: any;
+	observer: Observer;
 	onClose: () => void;
 	onSave: (
 		filterBy?: string,

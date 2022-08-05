@@ -11,132 +11,54 @@
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
  */
-
-export declare function normalizeFieldSettings(
-	objectFieldSettings: ObjectFieldSetting[] | undefined
-): {
-	function?:
-		| string
-		| number
-		| boolean
-		| ObjectFieldFilterSetting[]
-		| {
-				id: number;
-				objectStates: ObjectState[];
-		  }
-		| undefined;
-	maxLength?:
-		| string
-		| number
-		| boolean
-		| ObjectFieldFilterSetting[]
-		| {
-				id: number;
-				objectStates: ObjectState[];
-		  }
-		| undefined;
-	acceptedFileExtensions?:
-		| string
-		| number
-		| boolean
-		| ObjectFieldFilterSetting[]
-		| {
-				id: number;
-				objectStates: ObjectState[];
-		  }
-		| undefined;
-	fileSource?:
-		| string
-		| number
-		| boolean
-		| ObjectFieldFilterSetting[]
-		| {
-				id: number;
-				objectStates: ObjectState[];
-		  }
-		| undefined;
-	maximumFileSize?:
-		| string
-		| number
-		| boolean
-		| ObjectFieldFilterSetting[]
-		| {
-				id: number;
-				objectStates: ObjectState[];
-		  }
-		| undefined;
-	showCounter?:
-		| string
-		| number
-		| boolean
-		| ObjectFieldFilterSetting[]
-		| {
-				id: number;
-				objectStates: ObjectState[];
-		  }
-		| undefined;
-	showFilesInDocumentsAndMedia?:
-		| string
-		| number
-		| boolean
-		| ObjectFieldFilterSetting[]
-		| {
-				id: number;
-				objectStates: ObjectState[];
-		  }
-		| undefined;
-	storageDLFolderPath?:
-		| string
-		| number
-		| boolean
-		| ObjectFieldFilterSetting[]
-		| {
-				id: number;
-				objectStates: ObjectState[];
-		  }
-		| undefined;
-	relationship?:
-		| string
-		| number
-		| boolean
-		| ObjectFieldFilterSetting[]
-		| {
-				id: number;
-				objectStates: ObjectState[];
-		  }
-		| undefined;
-	summarizeField?:
-		| string
-		| number
-		| boolean
-		| ObjectFieldFilterSetting[]
-		| {
-				id: number;
-				objectStates: ObjectState[];
-		  }
-		| undefined;
-	filters?:
-		| string
-		| number
-		| boolean
-		| ObjectFieldFilterSetting[]
-		| {
-				id: number;
-				objectStates: ObjectState[];
-		  }
-		| undefined;
-	stateFlow?:
-		| string
-		| number
-		| boolean
-		| ObjectFieldFilterSetting[]
-		| {
-				id: number;
-				objectStates: ObjectState[];
-		  }
-		| undefined;
+export declare function normalizeFieldSettings(objectFieldSettings: ObjectFieldSetting[] | undefined): {
+    function?: string | number | boolean | ObjectFieldFilterSetting[] | {
+        id: number;
+        objectStates: ObjectState[];
+    } | undefined;
+    acceptedFileExtensions?: string | number | boolean | ObjectFieldFilterSetting[] | {
+        id: number;
+        objectStates: ObjectState[];
+    } | undefined;
+    fileSource?: string | number | boolean | ObjectFieldFilterSetting[] | {
+        id: number;
+        objectStates: ObjectState[];
+    } | undefined;
+    maximumFileSize?: string | number | boolean | ObjectFieldFilterSetting[] | {
+        id: number;
+        objectStates: ObjectState[];
+    } | undefined;
+    maxLength?: string | number | boolean | ObjectFieldFilterSetting[] | {
+        id: number;
+        objectStates: ObjectState[];
+    } | undefined;
+    showCounter?: string | number | boolean | ObjectFieldFilterSetting[] | {
+        id: number;
+        objectStates: ObjectState[];
+    } | undefined;
+    showFilesInDocumentsAndMedia?: string | number | boolean | ObjectFieldFilterSetting[] | {
+        id: number;
+        objectStates: ObjectState[];
+    } | undefined;
+    storageDLFolderPath?: string | number | boolean | ObjectFieldFilterSetting[] | {
+        id: number;
+        objectStates: ObjectState[];
+    } | undefined;
+    relationship?: string | number | boolean | ObjectFieldFilterSetting[] | {
+        id: number;
+        objectStates: ObjectState[];
+    } | undefined;
+    summarizeField?: string | number | boolean | ObjectFieldFilterSetting[] | {
+        id: number;
+        objectStates: ObjectState[];
+    } | undefined;
+    filters?: string | number | boolean | ObjectFieldFilterSetting[] | {
+        id: number;
+        objectStates: ObjectState[];
+    } | undefined;
+    stateFlow?: string | number | boolean | ObjectFieldFilterSetting[] | {
+        id: number;
+        objectStates: ObjectState[];
+    } | undefined;
 };
-export declare function updateFieldSettings(
-	objectFieldSettings: ObjectFieldSetting[] | undefined,
-	{name, value}: ObjectFieldSetting
-): ObjectFieldSetting[];
+export declare function updateFieldSettings(objectFieldSettings: ObjectFieldSetting[] | undefined, { name, value }: ObjectFieldSetting): ObjectFieldSetting[];

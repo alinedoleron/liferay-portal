@@ -15,6 +15,7 @@
 import ClayButton from '@clayui/button';
 import ClayForm from '@clayui/form';
 import ClayModal from '@clayui/modal';
+import {Observer} from '@clayui/modal/lib/types';
 import {
 	AutoComplete,
 	FormCustomSelect,
@@ -28,20 +29,15 @@ import React, {
 } from 'react';
 
 import ViewContext, {TYPES} from '../context';
-import {TObjectViewColumn, TObjectViewSortColumn} from '../types';
+import {TObjectViewColumn, TObjectViewSortColumn, TSortOptions} from '../types';
 
 interface IProps extends React.HTMLAttributes<HTMLElement> {
 	editingObjectFieldName: string;
 	header: string;
 	isEditingSort: boolean;
-	observer: any;
+	observer: Observer;
 	onClose: () => void;
 }
-
-type TSortOptions = {
-	label: string;
-	value: string;
-};
 
 const SORT_OPTIONS: TSortOptions[] = [
 	{
@@ -87,7 +83,9 @@ export function ModalAddDefaultSortColumn({
 	const [selectedObjectSortColumn, setSelectedObjectSortColumn] = useState<
 		TObjectViewSortColumn
 	>();
-	const [selectedObjetSort, setSelectedObjetSort] = useState(SORT_OPTIONS[0]);
+	const [selectedObjectSort, setSelectedObjectSort] = useState(
+		SORT_OPTIONS[0]
+	);
 	const [query, setQuery] = useState<string>('');
 
 	const filtredObjectSortColumn = useMemo(() => {
@@ -99,7 +97,7 @@ export function ModalAddDefaultSortColumn({
 	const onSubmit = (event: FormEvent) => {
 		event.preventDefault();
 
-		let objectFieldName = selectedObjectSortColumn?.objectFieldName;
+		let objectFieldName = selectedObjectSortColumn?.objectFieldName as string;
 
 		if (!objectFieldName && !!filtredObjectSortColumn.length) {
 			objectFieldName = filtredObjectSortColumn[0].objectFieldName;
@@ -109,7 +107,7 @@ export function ModalAddDefaultSortColumn({
 			dispatch({
 				payload: {
 					editingObjectFieldName,
-					selectedObjectSort: selectedObjetSort.value,
+					selectedObjectSort: selectedObjectSort.value,
 				},
 				type: TYPES.EDIT_OBJECT_VIEW_SORT_COLUMN_SORT_ORDER,
 			});
@@ -120,7 +118,7 @@ export function ModalAddDefaultSortColumn({
 					objectFieldName,
 					objectFields,
 					objectViewSortColumns,
-					selectedObjetSort,
+					selectedObjectSort,
 				},
 				type: TYPES.ADD_OBJECT_VIEW_SORT_COLUMN,
 			});
@@ -161,10 +159,10 @@ export function ModalAddDefaultSortColumn({
 					<FormCustomSelect
 						label={Liferay.Language.get('sorting')}
 						onChange={(item: TSortOptions) => {
-							setSelectedObjetSort(item);
+							setSelectedObjectSort(item);
 						}}
 						options={SORT_OPTIONS}
-						value={selectedObjetSort.label}
+						value={selectedObjectSort.label}
 					/>
 				</ClayModal.Body>
 

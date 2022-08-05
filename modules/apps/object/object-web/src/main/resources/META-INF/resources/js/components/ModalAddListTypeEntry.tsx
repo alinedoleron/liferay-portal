@@ -16,6 +16,7 @@ import ClayAlert from '@clayui/alert';
 import ClayButton from '@clayui/button';
 import ClayForm from '@clayui/form';
 import ClayModal, {ClayModalProvider, useModal} from '@clayui/modal';
+import {Observer} from '@clayui/modal/lib/types';
 import {
 	Input,
 	InputLocalized,
@@ -77,7 +78,7 @@ const ModalAddListTypeEntry: React.FC<IProps> = ({
 	};
 
 	const validate = (values: TInitialValues) => {
-		const errors: any = {};
+		const errors: {key?: string; name_i18n?: string} = {};
 
 		if (!values.name_i18n[selectedLocale.label]) {
 			errors.name_i18n = Liferay.Language.get('required');
@@ -166,7 +167,7 @@ type TTranslations = {
 
 interface IProps extends React.HTMLAttributes<HTMLElement> {
 	apiURL: string;
-	observer: any;
+	observer: Observer;
 	onClose: () => void;
 }
 

@@ -263,12 +263,12 @@ export default function ObjectFieldFormBase({
 					disabled={disabled}
 					error={errors.listTypeDefinitionId}
 					label={Liferay.Language.get('picklist')}
-					onChange={({target: {value}}: any) => {
+					onChange={({target: {value}}) => {
 						if (Liferay.FeatureFlags['LPS-152677']) {
 							setValues({
 								defaultValue: '',
 								listTypeDefinitionId: Number(
-									pickLists[value].id
+									pickLists[Number(value)].id
 								),
 								state: false,
 							});
@@ -276,7 +276,7 @@ export default function ObjectFieldFormBase({
 						else {
 							setValues({
 								listTypeDefinitionId: Number(
-									pickLists[value].id
+									pickLists[Number(value)].id
 								),
 							});
 						}
@@ -338,9 +338,9 @@ export default function ObjectFieldFormBase({
 					disabled={disabled}
 					error={errors.defaultValue}
 					label={Liferay.Language.get('default-value')}
-					onChange={({target: {value}}: any) =>
+					onChange={({target: {value}}) =>
 						setValues({
-							defaultValue: pickListItems[value].key,
+							defaultValue: pickListItems[Number(value)].key,
 						})
 					}
 					options={pickListItems.map(({name}) => name)}
@@ -522,7 +522,7 @@ export function useObjectFieldForm({
 
 	const {errors, handleChange, handleSubmit, setValues, values} = useForm<
 		ObjectField,
-		{[key in ObjectFieldSettingName]: any}
+		{[key in ObjectFieldSettingName]: unknown}
 	>({
 		initialValues,
 		onSubmit,
@@ -954,5 +954,5 @@ type TObjectRelationship = {
 };
 
 export type ObjectFieldErrors = FormError<
-	ObjectField & {[key in ObjectFieldSettingName]: any}
+	ObjectField & {[key in ObjectFieldSettingName]: unknown}
 >;
