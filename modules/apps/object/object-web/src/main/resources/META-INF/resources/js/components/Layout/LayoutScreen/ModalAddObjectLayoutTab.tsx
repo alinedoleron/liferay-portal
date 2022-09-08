@@ -48,11 +48,19 @@ type TLabelInfo = {
 };
 
 const TYPES = {
+	ENTRY_HISTORY: 'entry-history',
 	FIELDS: 'fields',
 	RELATIONSHIPS: 'relationships',
 };
 
 const types: TTabTypes = {
+	[TYPES.ENTRY_HISTORY]: {
+		active: false,
+		description: Liferay.Language.get(
+			'display-the-history-of-changes-of-the-object-entry'
+		),
+		label: Liferay.Language.get('entry-history'),
+	},
 	[TYPES.FIELDS]: {
 		active: true,
 		description: Liferay.Language.get(

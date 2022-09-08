@@ -39,10 +39,10 @@ export declare function useObjectFieldForm({
 	errors: FormError<
 		ObjectField & {
 			function: unknown;
-			maxLength: unknown;
 			acceptedFileExtensions: unknown;
 			fileSource: unknown;
 			filters: unknown;
+			maxLength: unknown;
 			maximumFileSize: unknown;
 			objectFieldName: unknown;
 			objectRelationshipName: unknown;

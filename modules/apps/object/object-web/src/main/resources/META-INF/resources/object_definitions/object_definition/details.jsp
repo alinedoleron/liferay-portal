@@ -244,6 +244,10 @@ renderResponse.setTitle(LanguageUtil.format(request, "edit-x", objectDefinition.
 					<aui:field-wrapper cssClass="form-group lfr-input-text-container">
 						<aui:input disabled="<%= objectDefinition.isSystem() || !objectDefinitionsDetailsDisplayContext.hasUpdateObjectDefinitionPermission() %>" label="" labelOff='<%= LanguageUtil.get(request, "enable-comments") %>' labelOn='<%= LanguageUtil.get(request, "enable-comments") %>' name="enableComments" type="toggle-switch" value="<%= objectDefinition.isEnableComments() %>" />
 					</aui:field-wrapper>
+
+					<aui:field-wrapper cssClass="form-group lfr-input-text-container">
+						<aui:input disabled="<%= objectDefinition.isSystem() || !objectDefinitionsDetailsDisplayContext.hasUpdateObjectDefinitionPermission() %>" label="" labelOff='<%= LanguageUtil.get(request, "enable-entry-history") %>' labelOn='<%= LanguageUtil.get(request, "enable-entry-history") %>' name="enableEntryHistory" type="toggle-switch" value="" />
+					</aui:field-wrapper>
 				</c:if>
 			</clay:sheet-section>
 

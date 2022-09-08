@@ -34,6 +34,7 @@ const ObjectLayoutTabs: React.FC<React.HTMLAttributes<HTMLElement>> = () => {
 	const {observer, onClose} = useModal({
 		onClose: () => setVisibleModal(false),
 	});
+	const enableEntryHistory = true;
 
 	return (
 		<>
@@ -45,6 +46,15 @@ const ObjectLayoutTabs: React.FC<React.HTMLAttributes<HTMLElement>> = () => {
 						? 'warning'
 						: 'info';
 
+					let labelName = Liferay.Language.get('fields');
+
+					if (enableEntryHistory) {
+						labelName = Liferay.Language.get('entry-history');
+					}
+					else if (isRelationshipType) {
+						labelName = Liferay.Language.get('relationships');
+					}
+
 					return (
 						<Panel
 							className="layout-tab__tab"
@@ -53,16 +63,12 @@ const ObjectLayoutTabs: React.FC<React.HTMLAttributes<HTMLElement>> = () => {
 							<Panel.Header
 								contentLeft={
 									<ClayLabel displayType={labelDisplayType}>
-										{isRelationshipType
-											? Liferay.Language.get(
-													'relationships'
-											  )
-											: Liferay.Language.get('fields')}
+										{labelName}
 									</ClayLabel>
 								}
 								contentRight={
 									<>
-										{!isRelationshipType && (
+										{!isRelationshipType && !enableEntryHistory && (
 											<ClayButton
 												disabled={isViewOnly}
 												displayType="secondary"
@@ -85,7 +91,7 @@ const ObjectLayoutTabs: React.FC<React.HTMLAttributes<HTMLElement>> = () => {
 										)}
 
 										<HeaderDropdown
-											addCategorization={() => {
+											addCategorization={!enableEntryHistory ? () => {
 												dispatch({
 													payload: {
 														name: {
@@ -99,8 +105,8 @@ const ObjectLayoutTabs: React.FC<React.HTMLAttributes<HTMLElement>> = () => {
 													type:
 														TYPES.ADD_OBJECT_LAYOUT_BOX,
 												});
-											}}
-											addComments={() => {
+											} : undefined}
+											addComments={!enableEntryHistory ? () => {
 												dispatch({
 													payload: {
 														name: {
@@ -114,7 +120,7 @@ const ObjectLayoutTabs: React.FC<React.HTMLAttributes<HTMLElement>> = () => {
 													type:
 														TYPES.ADD_OBJECT_LAYOUT_BOX,
 												});
-											}}
+											} : undefined}
 											deleteElement={() => {
 												dispatch({
 													payload: {
@@ -125,6 +131,7 @@ const ObjectLayoutTabs: React.FC<React.HTMLAttributes<HTMLElement>> = () => {
 												});
 											}}
 										/>
+										
 									</>
 								}
 								title={name[defaultLanguageId]!}
