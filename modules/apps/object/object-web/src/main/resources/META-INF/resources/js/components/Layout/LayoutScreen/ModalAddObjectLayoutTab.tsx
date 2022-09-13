@@ -17,55 +17,63 @@ import ClayForm from '@clayui/form';
 import ClayLabel from '@clayui/label';
 import ClayModal from '@clayui/modal';
 import {Observer} from '@clayui/modal/lib/types';
-import {ClayTooltipProvider} from '@clayui/tooltip';
 import {
 	AutoComplete,
 	FormError,
 	Input,
+	SingleSelect,
 	stringIncludesQuery,
 	useForm,
 } from '@liferay/object-js-components-web';
-import classNames from 'classnames';
-import React, {useMemo, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 
 import {separateCamelCase} from '../../../utils/string';
 import {TYPES as EVENT_TYPES, useLayoutContext} from '../objectLayoutContext';
-import {TObjectLayoutTab, TObjectRelationship} from '../types';
+import {TabType, TObjectLayoutTab, TObjectRelationship} from '../types';
 
 import './ModalAddObjectLayoutTab.scss';
 
 type TTabTypes = {
-	[key: string]: {
-		active: boolean;
-		description: string;
-		label: string;
-	};
+	description: string;
+	disabled: boolean;
+	label: string;
+	type: TabType;
 };
-
 type TLabelInfo = {
 	displayType: 'info' | 'secondary' | 'success';
 	labelContent: string;
 };
 
 const TYPES = {
+	ENTRY_HISTORY: 'entry-history',
 	FIELDS: 'fields',
 	RELATIONSHIPS: 'relationships',
 };
 
-const types: TTabTypes = {
-	[TYPES.FIELDS]: {
-		active: true,
+const types: TTabTypes[] = [
+	{
 		description: Liferay.Language.get(
 			'display-fields-and-one-to-one-relationships'
 		),
+		disabled: false,
 		label: Liferay.Language.get('fields'),
+		type: 'fields',
 	},
-	[TYPES.RELATIONSHIPS]: {
-		active: false,
+	{
 		description: Liferay.Language.get('display-multiple-relationships'),
+		disabled: true,
 		label: Liferay.Language.get('relationships'),
+		type: 'relationship',
 	},
-};
+	{
+		description: Liferay.Language.get(
+			'display-the-history-of-changes-of-the-object-entry'
+		),
+		disabled: true,
+		label: Liferay.Language.get('entry-history'),
+		type: 'history',
+	},
+];
 
 interface IModalAddObjectLayoutTabProps
 	extends React.HTMLAttributes<HTMLElement> {
@@ -73,54 +81,7 @@ interface IModalAddObjectLayoutTabProps
 	onClose: () => void;
 }
 
-interface ITabTypeProps extends React.HTMLAttributes<HTMLElement> {
-	description: string;
-	disabled?: boolean;
-	disabledMessage?: string;
-	label: string;
-	onChangeType: (type: string) => void;
-	selected: string;
-	type: string;
-}
-
 const defaultLanguageId = Liferay.ThemeDisplay.getDefaultLanguageId();
-
-const TabType: React.FC<ITabTypeProps> = ({
-	description,
-	disabled = false,
-	label,
-	onChangeType,
-	selected,
-	type,
-}) => {
-	const tabProps = {
-		'data-tooltip-align': 'top',
-		'onClick': () => {},
-		'title': Liferay.Language.get(
-			'the-first-tab-in-the-layout-cannot-be-a-relationship-tab'
-		),
-	};
-
-	return (
-		<ClayTooltipProvider>
-			<div
-				className={classNames('layout-tab__tab-types', {
-					active: selected === type,
-					disabled,
-				})}
-				key={type}
-				onClick={() => onChangeType(type)}
-				{...(disabled && tabProps)}
-			>
-				<h4 className="layout-tab__tab-types__title">{label}</h4>
-
-				<span className="tab__tab-types__description">
-					{description}
-				</span>
-			</div>
-		</ClayTooltipProvider>
-	);
-};
 
 function getRelationshipInfo(reverse: boolean, type: string): TLabelInfo {
 	if (Liferay.FeatureFlags['LPS-158478']) {
@@ -145,6 +106,9 @@ const ModalAddObjectLayoutTab: React.FC<IModalAddObjectLayoutTabProps> = ({
 }) => {
 	const [
 		{
+
+			// enableEntryHistory,
+
 			objectLayout: {objectLayoutTabs},
 			objectRelationships,
 		},
@@ -168,6 +132,14 @@ const ModalAddObjectLayoutTab: React.FC<IModalAddObjectLayoutTabProps> = ({
 		);
 	}, [objectRelationships, query]);
 
+	useEffect(() => {
+		types.map((type, index) => {
+			if (index > 0) {
+				type.disabled = !objectLayoutTabs.length;
+			}
+		});
+	}, [objectLayoutTabs]);
+
 	const selectedRelationshipInfo: TLabelInfo = useMemo(() => {
 		return getRelationshipInfo(
 			selectedRelationship?.reverse ?? false,
@@ -182,6 +154,7 @@ const ModalAddObjectLayoutTab: React.FC<IModalAddObjectLayoutTabProps> = ({
 					[defaultLanguageId]: values.name[defaultLanguageId],
 				},
 				objectRelationshipId: values.objectRelationshipId,
+				type: values.type,
 			},
 			type: EVENT_TYPES.ADD_OBJECT_LAYOUT_TAB,
 		});
@@ -214,6 +187,13 @@ const ModalAddObjectLayoutTab: React.FC<IModalAddObjectLayoutTabProps> = ({
 		}
 	);
 
+	const handleTypeChange = async (option: TTabTypes) => {
+		setSelectedType(option.label.toLocaleLowerCase());
+		setValues({
+			type: option.type
+		})
+	};
+
 	return (
 		<ClayModal observer={observer}>
 			<ClayForm onSubmit={handleSubmit}>
@@ -239,28 +219,19 @@ const ModalAddObjectLayoutTab: React.FC<IModalAddObjectLayoutTabProps> = ({
 					/>
 
 					<ClayForm.Group>
-						<label className="mb-2">
-							{Liferay.Language.get('type')}
-						</label>
-
-						{Object.keys(types).map((key) => {
-							const {description, label} = types[key];
-
-							return (
-								<TabType
-									description={description}
-									disabled={
-										!objectLayoutTabs.length &&
-										key === TYPES.RELATIONSHIPS
-									}
-									key={key}
-									label={label}
-									onChangeType={setSelectedType}
-									selected={selectedType}
-									type={key}
-								/>
-							);
-						})}
+						<SingleSelect<TTabTypes>
+							label={Liferay.Language.get('type')}
+							onChange={handleTypeChange}
+							options={types}
+							required
+							value={
+								types.find(
+									({label}) =>
+										label.toLocaleLowerCase() ===
+										selectedType
+								)?.label
+							}
+						/>
 					</ClayForm.Group>
 
 					{selectedType === TYPES.RELATIONSHIPS && (

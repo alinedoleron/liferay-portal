@@ -15,6 +15,7 @@
 import React, {ReactNode} from 'react';
 import './index.scss';
 export interface CustomItem<T = string> {
+	disabled?: boolean;
 	checked?: boolean;
 	description?: string;
 	label: string;

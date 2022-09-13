@@ -38,6 +38,7 @@ export function SingleSelect<
 		>
 			{options.map((option, index) => (
 				<ClayDropDown.Item
+					disabled={option.disabled}
 					key={index}
 					onClick={() => {
 						setDropdownActive(false);
