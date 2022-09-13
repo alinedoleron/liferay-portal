@@ -15,6 +15,7 @@
 import React from 'react';
 import {
 	BoxType,
+	TabType,
 	TName,
 	TObjectField,
 	TObjectLayout,
@@ -52,6 +53,7 @@ declare type TAction =
 			payload: {
 				name: TName;
 				objectRelationshipId: number;
+				type: TabType;
 			};
 			type: TYPES.ADD_OBJECT_LAYOUT_TAB;
 	  }

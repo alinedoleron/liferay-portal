@@ -14,6 +14,8 @@
 
 export type BoxType = 'regular' | 'categorization' | 'comments';
 
+export type TabType = 'fields' | 'history' | 'relationship';
+
 export type TName = LocalizedValue<string>;
 
 export type TObjectLayout = {
@@ -28,6 +30,7 @@ export type TObjectLayoutTab = {
 	objectLayoutBoxes: TObjectLayoutBox[];
 	objectRelationshipId: number;
 	priority: number;
+	type: TabType;
 };
 
 export type TObjectLayoutBox = {

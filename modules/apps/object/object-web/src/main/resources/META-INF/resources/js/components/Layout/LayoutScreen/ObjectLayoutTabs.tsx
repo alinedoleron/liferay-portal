@@ -35,6 +35,8 @@ const ObjectLayoutTabs: React.FC<React.HTMLAttributes<HTMLElement>> = () => {
 		onClose: () => setVisibleModal(false),
 	});
 
+	const type = 'history';
+
 	return (
 		<>
 			{objectLayout?.objectLayoutTabs?.map(

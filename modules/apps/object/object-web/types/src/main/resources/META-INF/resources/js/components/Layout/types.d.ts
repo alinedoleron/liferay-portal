@@ -13,6 +13,7 @@
  */
 
 export declare type BoxType = 'regular' | 'categorization' | 'comments';
+export declare type TabType = 'fields' | 'history' | 'relationship';
 export declare type TName = LocalizedValue<string>;
 export declare type TObjectLayout = {
 	defaultObjectLayout: boolean;
@@ -25,6 +26,7 @@ export declare type TObjectLayoutTab = {
 	objectLayoutBoxes: TObjectLayoutBox[];
 	objectRelationshipId: number;
 	priority: number;
+	type: TabType;
 };
 export declare type TObjectLayoutBox = {
 	collapsable: boolean;

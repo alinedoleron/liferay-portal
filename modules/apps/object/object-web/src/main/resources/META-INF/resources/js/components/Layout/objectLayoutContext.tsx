@@ -21,6 +21,7 @@ import {
 import {BoxesVisitor, RowsVisitor} from '../../utils/visitor';
 import {
 	BoxType,
+	TabType,
 	TName,
 	TObjectField,
 	TObjectLayout,
@@ -54,6 +55,7 @@ type TAction =
 			payload: {
 				name: TName;
 				objectRelationshipId: number;
+				type: TabType;
 			};
 			type: TYPES.ADD_OBJECT_LAYOUT_TAB;
 	  }
@@ -173,7 +175,7 @@ const layoutReducer = (state: TState, action: TAction) => {
 			};
 		}
 		case TYPES.ADD_OBJECT_LAYOUT_TAB: {
-			const {name, objectRelationshipId} = action.payload;
+			const {name, objectRelationshipId, type} = action.payload;
 
 			const newState = {...state};
 
@@ -182,6 +184,7 @@ const layoutReducer = (state: TState, action: TAction) => {
 				objectLayoutBoxes: [],
 				objectRelationshipId,
 				priority: 0,
+				type,
 			};
 
 			if (objectRelationshipId) {
