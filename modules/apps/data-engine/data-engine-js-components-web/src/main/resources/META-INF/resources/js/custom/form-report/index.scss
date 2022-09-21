@@ -56,33 +56,87 @@
 		}
 	}
 
+	.lfr-de_vertical-nav {
+		top: 100px;
+		position: sticky;
+		z-index: 1;
+
+		.nav-item .show {
+			position: absolute;
+		}
+	}
+
 	.report-cards-shortcut {
 		display: none;
 	}
 }
 
 .col-md-12 {
-	.lfr-de__form-report {
-		.report-cards-area {
-			width: 100%;
+	.lfr-de_vertical-nav {
+		position: sticky;
+		top: 112px;
+		z-index: 1;
+
+		.menubar-transparent {
+			margin-top: 24px;
+			background-color: transparent;
+			margin-left: 0;
+		}
+	}
+
+	@media only screen and (min-width: 768px) and (max-width: 1060px) {
+		.lfr-de__form-report {
+			display: flex;
+		}
+
+		.lfr-de_vertical-nav {
+			position: sticky;
+			top: 112px;
+			z-index: 1;
+			width: 25%;
+		}
+
+		.lfr-ddm__form-report__cards {
+			width: 834px;
+		}
+
+
+		.lfr-de__form-report .report-cards-area {
+			width: 75%;
 		}
 
 		.report-cards-shortcut {
 			display: none;
 		}
+	}
+	@media only screen and (min-width: 1061px) {
+		.lfr-de__form-report {
+			display: flex;
+			width: 808px;
+		}
 
-		@media (min-width: 1280px) {
-			.report-cards-area {
-				width: auto;
+		.lfr-ddm__form-report__cards {
+			width: 808px;
 
-				.card-item {
-					width: 808px;
-				}
+			.lfr-de__form-report {
+				display: flex;
 			}
+		}
 
-			.report-cards-shortcut {
-				display: block;
-			}
+		.report-cards-shortcut {
+			display: block;
+		}
+
+		.lfr-de_vertical-nav {
+			display: none;
+		}
+
+		.lfr-de__form-report .report-cards-area {
+			width: 97%;
+		}
+
+		.report-cards-shortcut {
+			width: 3%;
 		}
 	}
 }
@@ -99,7 +153,6 @@
 }
 
 .lfr-de__form-report {
-	display: flex;
 	&-sidebar {
 		top: 56px;
 		transform: translateX(100%);
@@ -495,7 +548,6 @@
 
 	.report-cards-area {
 		transition: all 0.3s cubic-bezier(0.25, 0.11, 0.25, 1);
-		width: 806px;
 
 		.sheet {
 			margin-top: 24px;

@@ -14,6 +14,7 @@
 
 import React from 'react';
 
+import CardMenu from './components/card-menu/CardMenu';
 import CardShortcut from './components/card-shortcut/CardShortcut';
 import CardList from './components/card/CardList';
 import EmptyState from './components/empty-state/EmptyState';
@@ -46,6 +47,10 @@ export default function FormReport({
 			portletNamespace={portletNamespace}
 		>
 			<div className="lfr-de__form-report">
+				<div className="lfr-de_vertical-nav">
+					<CardMenu fields={newFields} />
+				</div>
+
 				<div className="report-cards-area">
 					<CardList data={newData} fields={newFields} />
 				</div>
