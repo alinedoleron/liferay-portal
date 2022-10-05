@@ -66,6 +66,13 @@ export default function EditNotificationTemplate({
 	notificationTemplateId = Number(notificationTemplateId);
 
 	const initialValues = {
+		...(Liferay.FeatureFlags['LPS-162133'] && {
+			recipientType:
+				notificationTemplateType === 'userNotification' ? 'term' : '',
+		}),
+		...(Liferay.FeatureFlags['LPS-162133'] && {
+			type: notificationTemplateType,
+		}),
 		bcc: '',
 		body: {
 			[defaultLanguageId]: '',
@@ -77,8 +84,6 @@ export default function EditNotificationTemplate({
 			[defaultLanguageId]: '',
 		},
 		name: '',
-		recipientType:
-			notificationTemplateType !== 'userNotification' ? 'term' : '',
 		subject: {
 			[defaultLanguageId]: '',
 		},

@@ -156,8 +156,9 @@ export default function ActionBuilder({
 	useEffect(() => {
 		if (values.objectActionExecutorKey === 'notification') {
 			API.getNotificationTemplates().then((items) => {
-				const notificationsArray = items.map(({id, name}) => ({
+				const notificationsArray = items.map(({id, name, type}) => ({
 					label: name,
+					type,
 					value: id,
 				}));
 
@@ -519,7 +520,6 @@ export default function ActionBuilder({
 							<SingleSelect<CustomItem<number>>
 								className="lfr-object__action-builder-notification-then"
 								error={errors.objectActionExecutorKey}
-								label={Liferay.Language.get('notification')}
 								onChange={({value}) => {
 									setValues({
 										parameters: {

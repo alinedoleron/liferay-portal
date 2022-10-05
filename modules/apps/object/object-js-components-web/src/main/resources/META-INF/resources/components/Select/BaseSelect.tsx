@@ -24,6 +24,7 @@ export interface CustomItem<T = string> {
 	checked?: boolean;
 	description?: string;
 	label: string;
+	type?: string;
 	value?: T;
 }
 

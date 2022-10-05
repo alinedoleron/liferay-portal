@@ -13,6 +13,7 @@
  */
 
 import ClayDropDown from '@clayui/drop-down';
+import ClayLabel from '@clayui/label';
 import React, {useState} from 'react';
 
 import {BaseSelect, CustomItem, SelectProps} from './BaseSelect';
@@ -38,6 +39,11 @@ export function SingleSelect<
 		>
 			{options.map((option, index) => (
 				<ClayDropDown.Item
+					className={
+						option.type
+							? 'lfr-object__single-select--with-label'
+							: ''
+					}
 					key={index}
 					onClick={() => {
 						setDropdownActive(false);
@@ -48,6 +54,18 @@ export function SingleSelect<
 
 					{option.description && (
 						<span className="text-small">{option.description}</span>
+					)}
+
+					{Liferay.FeatureFlags['LPS-162133'] && option.type && (
+						<ClayLabel
+							displayType={
+								option.type === 'email' ? 'success' : 'info'
+							}
+						>
+							{option.type === 'email'
+								? Liferay.Language.get('email')
+								: Liferay.Language.get('user-notification')}
+						</ClayLabel>
 					)}
 				</ClayDropDown.Item>
 			))}
