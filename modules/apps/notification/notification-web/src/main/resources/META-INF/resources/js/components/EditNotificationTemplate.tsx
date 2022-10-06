@@ -170,6 +170,8 @@ export default function EditNotificationTemplate({
 		validate,
 	});
 
+	const [notificationType, setNotificationType] = useState<string>();
+
 	const [templateTitle, setTemplateTitle] = useState<string>();
 
 	const [notificationType, setNotificationType] = useState<string>(
@@ -281,7 +283,6 @@ export default function EditNotificationTemplate({
 						to,
 						type,
 					});
-
 					setTemplateTitle(name);
 					setNotificationType(type);
 				}
@@ -377,7 +378,7 @@ export default function EditNotificationTemplate({
 						<div className="col-lg-6 lfr__notification-template-card">
 							<Card title={Liferay.Language.get('settings')}>
 								{Liferay.FeatureFlags['LPS-162133'] &&
-								notificationTemplateType !== 'email' ? (
+								values.type !== 'email' ? (
 									<>
 										<SingleSelect
 											label={Liferay.Language.get(
