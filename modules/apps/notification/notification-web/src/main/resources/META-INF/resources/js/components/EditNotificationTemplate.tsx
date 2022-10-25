@@ -68,18 +68,22 @@ interface User {
 
 export type TNotificationTemplate = {
 	attachmentObjectFieldIds: string[] | number[];
-	bcc: string;
 	body: LocalizedValue<string>;
-	cc: string;
 	description: string;
-	from: string;
-	fromName: LocalizedValue<string>;
 	name: string;
 	objectDefinitionId: number | null;
 	recipientType: string;
+	recipients: TRecipients[];
 	subject: LocalizedValue<string>;
-	to: LocalizedValue<string>;
 	type: string;
+};
+
+type TRecipients = {
+	bcc: string;
+	cc: string;
+	from: string;
+	fromName: LocalizedValue<string>;
+	to: LocalizedValue<string>;
 };
 
 const RECIPIENT_OPTIONS = [
@@ -108,26 +112,32 @@ export default function EditNotificationTemplate({
 	const initialValues = {
 		...(Liferay.FeatureFlags['LPS-162133'] && {
 			recipientType:
-				notificationTemplateType === 'userNotification' ? 'term' : '',
+				notificationTemplateType === 'userNotification'
+					? 'term'
+					: 'email',
 		}),
 		...(Liferay.FeatureFlags['LPS-162133'] && {
 			type: notificationTemplateType,
 		}),
-		bcc: '',
 		body: {
 			[defaultLanguageId]: '',
 		},
-		cc: '',
 		description: '',
-		from: '',
-		fromName: {
-			[defaultLanguageId]: '',
-		},
 		name: '',
+		recipients: [
+			{
+				bcc: '',
+				cc: '',
+				from: '',
+				fromName: {
+					[defaultLanguageId]: '',
+				},
+				to: {
+					[defaultLanguageId]: '',
+				},
+			},
+		],
 		subject: {
-			[defaultLanguageId]: '',
-		},
-		to: {
 			[defaultLanguageId]: '',
 		},
 	};
@@ -154,13 +164,16 @@ export default function EditNotificationTemplate({
 			errors.name = Liferay.Language.get('required');
 		}
 
-		if (notificationTemplateType === 'email' && !values.from) {
+		if (
+			notificationTemplateType === 'email' &&
+			!values.recipients[0].from
+		) {
 			errors.from = Liferay.Language.get('required');
 		}
 
 		if (
 			notificationTemplateType === 'email' &&
-			!values.fromName[defaultLanguageId]
+			!values.recipients[0].fromName[defaultLanguageId]
 		) {
 			errors.fromName = Liferay.Language.get('required');
 		}
@@ -279,9 +292,16 @@ export default function EditNotificationTemplate({
 	const handleMultiSelectItemsChange = (items: Item[]) => {
 		setValues({
 			...values,
-			to: {
-				[defaultLanguageId]: items.map((item) => item.value).toString(),
-			},
+			recipients: [
+				{
+					...values.recipients[0],
+					to: {
+						[defaultLanguageId]: items
+							.map((item) => item.value)
+							.toString(),
+					},
+				},
+			],
 		});
 		setMultiSelectItems(items);
 	};
@@ -291,33 +311,25 @@ export default function EditNotificationTemplate({
 			API.getNotificationTemplate(notificationTemplateId).then(
 				({
 					attachmentObjectFieldIds,
-					bcc,
 					body,
-					cc,
 					description,
-					from,
-					fromName,
 					name,
 					objectDefinitionId,
 					recipientType,
+					recipients,
 					subject,
-					to,
 					type,
 				}) => {
 					setValues({
 						...values,
 						attachmentObjectFieldIds,
-						bcc,
 						body,
-						cc,
 						description,
-						from,
-						fromName,
 						name,
 						objectDefinitionId,
 						recipientType,
+						recipients,
 						subject,
-						to,
 						type,
 					});
 
@@ -325,7 +337,7 @@ export default function EditNotificationTemplate({
 
 					if (recipientType === 'role' || recipientType === 'user') {
 						setMultiSelectItems(
-							(to[defaultLanguageId] as string)
+							(recipients[0].to[defaultLanguageId] as string)
 								.split(',')
 								.map((item: string) => {
 									return {label: item, value: item};
@@ -463,10 +475,16 @@ export default function EditNotificationTemplate({
 												onChange={({target}) =>
 													setValues({
 														...values,
-														to: {
-															[defaultLanguageId]:
-																target.value,
-														},
+														recipients: [
+															{
+																...values
+																	.recipients[0],
+																to: {
+																	[defaultLanguageId]:
+																		target.value,
+																},
+															},
+														],
 													})
 												}
 												placeholder={Liferay.Util.sub(
@@ -478,7 +496,9 @@ export default function EditNotificationTemplate({
 												)}
 												type="text"
 												value={
-													values.to[defaultLanguageId]
+													values.recipients[0].to[
+														defaultLanguageId
+													]
 												}
 											/>
 										)}
@@ -553,12 +573,20 @@ export default function EditNotificationTemplate({
 											onChange={(translation) => {
 												setValues({
 													...values,
-													to: translation,
+													recipients: [
+														{
+															...values
+																.recipients[0],
+															to: translation,
+														},
+													],
 												});
 											}}
 											placeholder=""
 											selectedLocale={selectedLocale}
-											translations={values.to}
+											translations={
+												values.recipients[0].to
+											}
 										/>
 
 										<div className="row">
@@ -571,10 +599,19 @@ export default function EditNotificationTemplate({
 													onChange={({target}) =>
 														setValues({
 															...values,
-															cc: target.value,
+															recipients: [
+																{
+																	...values
+																		.recipients[0],
+																	cc:
+																		target.value,
+																},
+															],
 														})
 													}
-													value={values.cc}
+													value={
+														values.recipients[0].cc
+													}
 												/>
 											</div>
 
@@ -587,10 +624,19 @@ export default function EditNotificationTemplate({
 													onChange={({target}) =>
 														setValues({
 															...values,
-															bcc: target.value,
+															recipients: [
+																{
+																	...values
+																		.recipients[0],
+																	bcc:
+																		target.value,
+																},
+															],
 														})
 													}
-													value={values.bcc}
+													value={
+														values.recipients[0].bcc
+													}
 												/>
 											</div>
 										</div>
@@ -606,11 +652,21 @@ export default function EditNotificationTemplate({
 													onChange={({target}) =>
 														setValues({
 															...values,
-															from: target.value,
+															recipients: [
+																{
+																	...values
+																		.recipients[0],
+																	from:
+																		target.value,
+																},
+															],
 														})
 													}
 													required
-													value={values.from}
+													value={
+														values.recipients[0]
+															.from
+													}
 												/>
 											</div>
 
@@ -624,7 +680,13 @@ export default function EditNotificationTemplate({
 													onChange={(translation) => {
 														setValues({
 															...values,
-															fromName: translation,
+															recipients: [
+																{
+																	...values
+																		.recipients[0],
+																	fromName: translation,
+																},
+															],
 														});
 													}}
 													placeholder=""
@@ -633,7 +695,8 @@ export default function EditNotificationTemplate({
 														selectedLocale
 													}
 													translations={
-														values.fromName
+														values.recipients[0]
+															.fromName
 													}
 												/>
 											</div>
