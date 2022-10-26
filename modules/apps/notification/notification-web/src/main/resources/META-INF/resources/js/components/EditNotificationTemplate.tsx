@@ -68,13 +68,18 @@ interface User {
 
 export type TNotificationTemplate = {
 	attachmentObjectFieldIds: string[] | number[];
+	bcc: string;
 	body: LocalizedValue<string>;
+	cc: string;
 	description: string;
+	from: string;
+	fromName: LocalizedValue<string>;
 	name: string;
 	objectDefinitionId: number | null;
 	recipientType: string;
 	recipients: TRecipients[];
 	subject: LocalizedValue<string>;
+	to: LocalizedValue<string>;
 	type: string;
 };
 
@@ -137,6 +142,17 @@ export default function EditNotificationTemplate({
 				},
 			},
 		],
+		...(!Liferay.FeatureFlags['LPS-162133'] && {
+			bcc: '',
+			cc: '',
+			from: '',
+			fromName: {
+				[defaultLanguageId]: '',
+			},
+			to: {
+				[defaultLanguageId]: '',
+			},
+		}),
 		subject: {
 			[defaultLanguageId]: '',
 		},
@@ -165,15 +181,18 @@ export default function EditNotificationTemplate({
 		}
 
 		if (
-			notificationTemplateType === 'email' &&
-			!values.recipients[0].from
+			(notificationTemplateType === 'email' &&
+				!values.recipients[0].from) ||
+			(!Liferay.FeatureFlags['LPS-162133'] && !values.from)
 		) {
 			errors.from = Liferay.Language.get('required');
 		}
 
 		if (
-			notificationTemplateType === 'email' &&
-			!values.recipients[0].fromName[defaultLanguageId]
+			(notificationTemplateType === 'email' &&
+				!values.recipients[0].fromName[defaultLanguageId]) ||
+			(!Liferay.FeatureFlags['LPS-162133'] &&
+				!values.fromName[defaultLanguageId])
 		) {
 			errors.fromName = Liferay.Language.get('required');
 		}
@@ -292,16 +311,26 @@ export default function EditNotificationTemplate({
 	const handleMultiSelectItemsChange = (items: Item[]) => {
 		setValues({
 			...values,
-			recipients: [
-				{
-					...values.recipients[0],
-					to: {
-						[defaultLanguageId]: items
-							.map((item) => item.value)
-							.toString(),
-					},
-				},
-			],
+			...(Liferay.FeatureFlags['LPS-162133']
+				? {
+						recipients: [
+							{
+								...values.recipients[0],
+								to: {
+									[defaultLanguageId]: items
+										.map((item) => item.value)
+										.toString(),
+								},
+							},
+						],
+				  }
+				: {
+						to: {
+							[defaultLanguageId]: items
+								.map((item) => item.value)
+								.toString(),
+						},
+				  }),
 		});
 		setMultiSelectItems(items);
 	};
@@ -475,16 +504,28 @@ export default function EditNotificationTemplate({
 												onChange={({target}) =>
 													setValues({
 														...values,
-														recipients: [
-															{
-																...values
-																	.recipients[0],
-																to: {
-																	[defaultLanguageId]:
-																		target.value,
-																},
-															},
-														],
+														...(Liferay
+															.FeatureFlags[
+															'LPS-162133'
+														]
+															? {
+																	recipients: [
+																		{
+																			...values
+																				.recipients[0],
+																			to: {
+																				[defaultLanguageId]:
+																					target.value,
+																			},
+																		},
+																	],
+															  }
+															: {
+																	to: {
+																		[defaultLanguageId]:
+																			target.value,
+																	},
+															  }),
 													})
 												}
 												placeholder={Liferay.Util.sub(
@@ -496,9 +537,16 @@ export default function EditNotificationTemplate({
 												)}
 												type="text"
 												value={
-													values.recipients[0].to[
-														defaultLanguageId
+													Liferay.FeatureFlags[
+														'LPS-162133'
 													]
+														? values.recipients[0]
+																.to[
+																defaultLanguageId
+														  ]
+														: values.to?.[
+																defaultLanguageId
+														  ]
 												}
 											/>
 										)}
@@ -573,19 +621,29 @@ export default function EditNotificationTemplate({
 											onChange={(translation) => {
 												setValues({
 													...values,
-													recipients: [
-														{
-															...values
-																.recipients[0],
-															to: translation,
-														},
-													],
+													...(Liferay.FeatureFlags[
+														'LPS-162133'
+													]
+														? {
+																recipients: [
+																	{
+																		...values
+																			.recipients[0],
+																		to: translation,
+																	},
+																],
+														  }
+														: {to: translation}),
 												});
 											}}
 											placeholder=""
 											selectedLocale={selectedLocale}
 											translations={
-												values.recipients[0].to
+												Liferay.FeatureFlags[
+													'LPS-162133'
+												]
+													? values.recipients[0].to
+													: values.to!
 											}
 										/>
 
@@ -599,18 +657,34 @@ export default function EditNotificationTemplate({
 													onChange={({target}) =>
 														setValues({
 															...values,
-															recipients: [
-																{
-																	...values
-																		.recipients[0],
-																	cc:
-																		target.value,
-																},
-															],
+															...(Liferay
+																.FeatureFlags[
+																'LPS-162133'
+															]
+																? {
+																		recipients: [
+																			{
+																				...values
+																					.recipients[0],
+																				cc:
+																					target.value,
+																			},
+																		],
+																  }
+																: {
+																		cc:
+																			target.value,
+																  }),
 														})
 													}
 													value={
-														values.recipients[0].cc
+														Liferay.FeatureFlags[
+															'LPS-162133'
+														]
+															? values
+																	.recipients[0]
+																	.cc
+															: values.cc
 													}
 												/>
 											</div>
@@ -624,18 +698,34 @@ export default function EditNotificationTemplate({
 													onChange={({target}) =>
 														setValues({
 															...values,
-															recipients: [
-																{
-																	...values
-																		.recipients[0],
-																	bcc:
-																		target.value,
-																},
-															],
+															...(Liferay
+																.FeatureFlags[
+																'LPS-162133'
+															]
+																? {
+																		recipients: [
+																			{
+																				...values
+																					.recipients[0],
+																				bcc:
+																					target.value,
+																			},
+																		],
+																  }
+																: {
+																		bcc:
+																			target.value,
+																  }),
 														})
 													}
 													value={
-														values.recipients[0].bcc
+														Liferay.FeatureFlags[
+															'LPS-162133'
+														]
+															? values
+																	.recipients[0]
+																	.bcc
+															: values.bcc
 													}
 												/>
 											</div>
@@ -652,20 +742,35 @@ export default function EditNotificationTemplate({
 													onChange={({target}) =>
 														setValues({
 															...values,
-															recipients: [
-																{
-																	...values
-																		.recipients[0],
-																	from:
-																		target.value,
-																},
-															],
+															...(Liferay
+																.FeatureFlags[
+																'LPS-162133'
+															]
+																? {
+																		recipients: [
+																			{
+																				...values
+																					.recipients[0],
+																				from:
+																					target.value,
+																			},
+																		],
+																  }
+																: {
+																		from:
+																			target.value,
+																  }),
 														})
 													}
 													required
 													value={
-														values.recipients[0]
-															.from
+														Liferay.FeatureFlags[
+															'LPS-162133'
+														]
+															? values
+																	.recipients[0]
+																	.from
+															: values.from
 													}
 												/>
 											</div>
@@ -680,13 +785,22 @@ export default function EditNotificationTemplate({
 													onChange={(translation) => {
 														setValues({
 															...values,
-															recipients: [
-																{
-																	...values
-																		.recipients[0],
-																	fromName: translation,
-																},
-															],
+															...(Liferay
+																.FeatureFlags[
+																'LPS-162133'
+															]
+																? {
+																		recipients: [
+																			{
+																				...values
+																					.recipients[0],
+																				fromName: translation,
+																			},
+																		],
+																  }
+																: {
+																		fromName: translation,
+																  }),
 														});
 													}}
 													placeholder=""
@@ -695,8 +809,13 @@ export default function EditNotificationTemplate({
 														selectedLocale
 													}
 													translations={
-														values.recipients[0]
-															.fromName
+														Liferay.FeatureFlags[
+															'LPS-162133'
+														]
+															? values
+																	.recipients[0]
+																	.fromName
+															: values.fromName!
 													}
 												/>
 											</div>
