@@ -1,0 +1,81 @@
+/**
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 2.1 of the License, or (at your option)
+ * any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ */
+
+package com.liferay.notification.internal.type.users.provider;
+
+import com.liferay.notification.constants.NotificationRecipientConstants;
+import com.liferay.notification.model.NotificationRecipient;
+import com.liferay.notification.model.NotificationRecipientSetting;
+import com.liferay.notification.model.NotificationTemplate;
+import com.liferay.notification.type.NotificationContext;
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.service.RoleLocalService;
+import com.liferay.portal.kernel.service.UserLocalService;
+import com.liferay.portal.kernel.util.GetterUtil;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+
+/**
+ * @author Feliphe Marinho
+ */
+@Component(
+	immediate = true,
+	property = "recipient.type=" + NotificationRecipientConstants.TYPE_ROLE,
+	service = UsersProvider.class
+)
+public class RoleUsersProvider implements UsersProvider {
+
+	@Override
+	public List<User> provide(NotificationContext notificationContext)
+		throws PortalException {
+
+		NotificationTemplate notificationTemplate =
+			notificationContext.getNotificationTemplate();
+
+		NotificationRecipient notificationRecipient =
+			notificationTemplate.getNotificationRecipient();
+
+		List<User> users = new ArrayList<>();
+
+		for (NotificationRecipientSetting notificationRecipientSetting :
+				notificationRecipient.getNotificationRecipientSettings()) {
+
+			long[] usersIds = _userLocalService.getRoleUserIds(
+				GetterUtil.getLong(notificationRecipientSetting.getValue()));
+
+			for (long userId : usersIds) {
+				users.add(_userLocalService.getUser(userId));
+			}
+		}
+
+		return users;
+	}
+
+	@Override
+	public String recipientType() {
+		return NotificationRecipientConstants.TYPE_ROLE;
+	}
+
+	@Reference
+	private RoleLocalService _roleLocalService;
+
+	@Reference
+	private UserLocalService _userLocalService;
+
+}

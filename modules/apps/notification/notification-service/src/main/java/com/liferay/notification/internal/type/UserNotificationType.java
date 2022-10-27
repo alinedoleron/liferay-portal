@@ -16,8 +16,10 @@ package com.liferay.notification.internal.type;
 
 import com.liferay.counter.kernel.service.CounterLocalService;
 import com.liferay.notification.constants.NotificationConstants;
+import com.liferay.notification.internal.type.users.provider.UsersProvider;
+import com.liferay.notification.internal.type.users.provider.UsersProviderServiceTracker;
 import com.liferay.notification.model.NotificationRecipientSetting;
-import com.liferay.notification.service.NotificationRecipientSettingLocalService;
+import com.liferay.notification.model.NotificationTemplate;
 import com.liferay.notification.type.BaseNotificationType;
 import com.liferay.notification.type.NotificationContext;
 import com.liferay.notification.type.NotificationType;
@@ -31,6 +33,7 @@ import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.vulcan.util.TransformUtil;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -60,7 +63,7 @@ public class UserNotificationType extends BaseNotificationType {
 
 			for (Map.Entry<String, Object> entry : recipientMap.entrySet()) {
 				NotificationRecipientSetting notificationRecipientSetting =
-					_notificationRecipientSettingLocalService.
+					notificationRecipientSettingLocalService.
 						createNotificationRecipientSetting(
 							_counterLocalService.increment());
 
@@ -92,21 +95,50 @@ public class UserNotificationType extends BaseNotificationType {
 
 		JSONObject jsonObject = _jsonFactory.createJSONObject();
 
-		_userNotificationEventLocalService.sendUserNotificationEvents(
-			notificationContext.getUserId(), notificationContext.getPortletId(),
-			UserNotificationDeliveryConstants.TYPE_WEBSITE,
-			jsonObject.put(
-				"className", notificationContext.getClassName()
-			).put(
-				"classPK", notificationContext.getClassPK()
-			).put(
-				"externalReferenceCode",
-				notificationContext.getExternalReferenceCode()
-			).put(
-				"notificationMessage", "test"
-			).put(
-				"portletId", notificationContext.getPortletId()
-			));
+		NotificationTemplate notificationTemplate =
+			notificationContext.getNotificationTemplate();
+
+		UsersProvider usersProvider =
+			_usersProviderServiceTracker.getUsersProvider(
+				notificationTemplate.getRecipientType());
+
+		Map<String, String> notificationRecipientSettingsEvaluatedMap =
+			new HashMap<>();
+
+		for (User user : usersProvider.provide(notificationContext)) {
+			siteDefaultLocale = portal.getSiteDefaultLocale(user.getGroupId());
+			userLocale = user.getLocale();
+
+			_userNotificationEventLocalService.sendUserNotificationEvents(
+				user.getUserId(), notificationContext.getPortletId(),
+				UserNotificationDeliveryConstants.TYPE_WEBSITE,
+				jsonObject.put(
+					"className", notificationContext.getClassName()
+				).put(
+					"classPK", notificationContext.getClassPK()
+				).put(
+					"externalReferenceCode",
+					notificationContext.getExternalReferenceCode()
+				).put(
+					"notificationMessage",
+					formatLocalizedContent(
+						notificationTemplate.getSubjectMap(),
+						notificationContext)
+				).put(
+					"portletId", notificationContext.getPortletId()
+				));
+
+			notificationRecipientSettingsEvaluatedMap.put(
+				"userFullName", user.getFullName());
+		}
+
+		prepareNotificationContext(
+			userLocalService.getUser(notificationContext.getUserId()), null,
+			notificationContext, notificationRecipientSettingsEvaluatedMap,
+			null);
+
+		notificationQueueEntryLocalService.addNotificationQueueEntry(
+			notificationContext);
 	}
 
 	@Override
@@ -129,11 +161,10 @@ public class UserNotificationType extends BaseNotificationType {
 	private JSONFactory _jsonFactory;
 
 	@Reference
-	private NotificationRecipientSettingLocalService
-		_notificationRecipientSettingLocalService;
-
-	@Reference
 	private UserNotificationEventLocalService
 		_userNotificationEventLocalService;
+
+	@Reference
+	private UsersProviderServiceTracker _usersProviderServiceTracker;
 
 }
