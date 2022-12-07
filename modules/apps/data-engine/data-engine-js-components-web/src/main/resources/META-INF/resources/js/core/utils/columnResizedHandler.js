@@ -154,7 +154,8 @@ export function handleResizeRight(props, state, indexes, columnTarget) {
 			};
 		}
 		else if (columnTarget > currentColumnPosition) {
-			if (nextColumn.size === 1 && !nextColumn.fields.length) {
+			if (nextColumn.size === 3 && !nextColumn.fields.length) {
+				console.log('remover a coluna');
 				newCurrentColumn = {
 					...currentColumn,
 					size: currentColumn.size + newSize,

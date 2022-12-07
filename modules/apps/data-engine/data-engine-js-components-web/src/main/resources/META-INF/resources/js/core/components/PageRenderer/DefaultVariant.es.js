@@ -58,7 +58,9 @@ export const Column = forwardRef(
 		},
 		ref
 	) => {
-		const {portletId} = useFormState();
+		const {pages, portletId} = useFormState();
+
+		// console.log('pages => ', pages.rows.length);
 
 		const addr = {
 			'data-ddm-field-column': index,
@@ -70,12 +72,14 @@ export const Column = forwardRef(
 		const isFieldSetOrGroup = firstField?.type === 'fieldset';
 		const isFieldSet = firstField?.ddmStructureId && isFieldSetOrGroup;
 
+		// console.log('column.size (DefaultVariant): ', column.size);
+
 		return (
 			<ClayLayout.Col
 				{...addr}
 				className={classnames('col-ddm', columnClassName)}
 				key={index}
-				md={column.size}
+				md={column.size < 3 ? 3 : column.size}
 				onClick={onClick}
 				onMouseLeave={onMouseLeave}
 				onMouseOver={onMouseOver}

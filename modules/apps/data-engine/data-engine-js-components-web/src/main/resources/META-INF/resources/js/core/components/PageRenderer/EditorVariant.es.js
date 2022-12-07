@@ -98,14 +98,47 @@ export function Column({
 
 	const handleResize = useCallback((resizing) => setResizing(resizing), []);
 
+	// console.log('rowRef.children: ', rowRef?.current?.children);
+
+	const totalColumnsSize = rowRef.current
+		? Array.from(rowRef.current.children)
+				.map((child) => child.className)
+				.map((className) => parseInt(className.split('col-md-')[1]))
+				.reduce((a, b) => a + b, 0)
+		: 100;
+
+	const columnsQuantity = rowRef.current
+		? Array.from(rowRef.current.children).length
+		: 0;
+
+	let maxSize = 0;
+
+	if (columnsQuantity === 1) {
+		maxSize = 12;
+	}
+	else if (columnsQuantity === 2) {
+		maxSize = 9;
+	}
+	else if (columnsQuantity === 3) {
+		maxSize = 6;
+	}
+	else if (columnsQuantity === 4) {
+		maxSize = 3;
+	}
+
+	// console.log('totalColumnsSize: ', totalColumnsSize);
+
 	if (!column.fields.length) {
+
+		// console.log('size 1: ', column.size);
+
 		return (
 			<Placeholder
 				columnIndex={columnIndex}
 				keyboardDNDPosition={{itemPath, position: 'middle'}}
 				pageIndex={pageIndex}
 				rowIndex={rowIndex}
-				size={column.size}
+				size={column.size > maxSize ? maxSize : column.size}
 			/>
 		);
 	}

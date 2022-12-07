@@ -68,6 +68,10 @@ const ResizableColumn = ({
 				);
 
 				if (column > MAX_COLUMNS - 1) {
+					console.log(
+						'if (column > MAX_COLUMNS - 1) .... column = ',
+						column
+					);
 					column = MAX_COLUMNS - 1;
 				}
 
@@ -80,8 +84,34 @@ const ResizableColumn = ({
 						lastColumnValue: column,
 					};
 
+					console.log('column = ', column);
+					console.log('lastColumnValue = ', resizeInfoRef.current.lastColumnValue);
+					console.log('loc = ', [...loc, currentLoc]);
+					console.log('direction = ', resizeInfoRef.current.direction);
+					console.log('rowRef =  ', rowRef);
+					
+
+					// let newColumn = 3;
+					
+					// if(resizeInfoRef.current.direction === 'right') {
+						// if(column >= 0 && column <=2) {
+						// 	newColumn = 2;
+						// } else if(column > 2 && column <=5) {
+						// 	newColumn = 5;
+						// } else if(column > 5 && column <=8) {
+						// 	newColumn = 8;
+						// } else if(column > 8) {
+						// 	newColumn = 11;
+						// }
+					// }
+					
+					// console.log('>>>>> new column = ', newColumn);
+					console.log('*******************************************************');
+
+
 					dispatch({
 						payload: {
+							// column: newColumn,
 							column,
 							direction: resizeInfoRef.current.direction,
 							loc: [...loc, currentLoc],
