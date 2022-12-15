@@ -32,11 +32,20 @@ export function FieldsSidebar({title}) {
 
 const FieldListSidebar = ({title}) => {
 	const [searchTerm, setSearchTerm] = useState('');
+	// const [screenReaderSearchResult, setScreenReaderSearchResult] = useState(
+	// 	''
+	// );
+
+	// className="sr-only"
 
 	return (
 		<Sidebar>
 			<Sidebar.Header>
 				<Sidebar.Title className="mb-3" title={title} />
+
+				<div aria-live="polite" id="screenReaderSearchResult">
+					{/* {screenReaderSearchResult} */}
+				</div>
 
 				<ClayForm onSubmit={(event) => event.preventDefault()}>
 					<Sidebar.SearchInput
@@ -50,6 +59,7 @@ const FieldListSidebar = ({title}) => {
 				<FieldsSidebarBody
 					keywords={searchTerm}
 					setKeywords={setSearchTerm}
+					// setScreenReaderSearchResult={setScreenReaderSearchResult}
 				/>
 			</Sidebar.Body>
 		</Sidebar>

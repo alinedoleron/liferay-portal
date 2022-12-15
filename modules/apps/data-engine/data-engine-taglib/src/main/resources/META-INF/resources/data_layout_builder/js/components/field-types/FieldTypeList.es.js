@@ -20,7 +20,7 @@ import {
 	useForm,
 	useFormState,
 } from 'data-engine-js-components-web';
-import React from 'react';
+import React, {useEffect} from 'react';
 
 import {sub} from '../../utils/lang.es';
 import {getSearchRegex} from '../../utils/search.es';
@@ -78,6 +78,7 @@ const FieldTypeList = ({
 	keywords,
 	onClick,
 	onDelete,
+	// setScreenReaderSearchResult,
 	showEmptyState = true,
 }) => {
 	const {fieldTypes} = useConfig();
@@ -96,13 +97,99 @@ const FieldTypeList = ({
 		})
 		.sort(({displayOrder: a}, {displayOrder: b}) => a - b);
 
+	// useEffect(() => {
+	// 	console.log(document.activeElement);
+
+	if (document.getElementById('screenReaderSearchResult')) {
+		if (
+			keywords !== ''
+
+			// &&
+			// document.getElementById('screenReaderSearchResult').id === 'searchInput'
+
+		) {
+			if (filteredFieldTypes.length) {
+				document.getElementById(
+					'screenReaderSearchResult'
+				).innerText = sub(
+					Liferay.Language.get(
+						'x-results-returned-for-the-search-term-x'
+					),
+					[filteredFieldTypes.length, keywords]
+				);
+
+				// setScreenReaderSearchResult(
+				// 	sub(
+				// 		Liferay.Language.get(
+				// 			'x-results-returned-for-the-search-term-x'
+				// 		),
+				// 		[filteredFieldTypes.length, keywords]
+				// 	)
+				// );
+
+			}
+			else {
+
+				// setScreenReaderSearchResult(
+				// `${sub(
+				// 	Liferay.Language.get(
+				// 		'there-are-no-results-for-the-search-term-x'
+				// 	),
+				// 	[keywords]
+				// )} ${Liferay.Language.get(
+				// 	'check-your-spelling-or-search-for-a-different-term'
+				// )}`
+				// );
+
+				document.getElementById(
+					'screenReaderSearchResult'
+				).innerText = sub(
+					Liferay.Language.get(
+						`${sub(
+							Liferay.Language.get(
+								'there-are-no-results-for-the-search-term-x'
+							),
+							[keywords]
+						)} ${Liferay.Language.get(
+							'check-your-spelling-or-search-for-a-different-term'
+						)}`
+					),
+					[filteredFieldTypes.length, keywords]
+				);
+			}
+		}
+		else if (document.activeElement.id === 'searchInput') {
+
+			// setScreenReaderSearchResult(
+			// 	Liferay.Language.get('search-field-is-empty')
+			// );
+
+			document.getElementById(
+				'screenReaderSearchResult'
+			).innerText = sub(Liferay.Language.get('search-field-is-empty'), [
+				filteredFieldTypes.length,
+				keywords,
+			]);
+		}
+		else {
+			document.getElementById(
+				'screenReaderSearchResult'
+			).innerText = Liferay.Language.get('');
+		}
+	}
+
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	// }, [keywords]);
+
 	if (showEmptyState && !filteredFieldTypes.length) {
 		return (
 			<ClayEmptyState
-				description={sub(
+				description={`${sub(
 					Liferay.Language.get('there-are-no-results-for-x'),
 					[keywords]
-				)}
+				)} ${Liferay.Language.get(
+					'check-your-spelling-or-search-for-a-different-term'
+				)}`}
 				imgSrc={`${themeDisplay.getPathThemeImages()}/states/search_state.gif`}
 				small
 				title={Liferay.Language.get('no-results-found')}
@@ -114,6 +201,10 @@ const FieldTypeList = ({
 		const {isFieldSet, nestedDataDefinitionFields = []} = fieldType;
 
 		const handleOnClick = (props) => {
+			document.getElementById(
+				'screenReaderSearchResult'
+			).innerText = Liferay.Language.get('');
+
 			if (fieldType.disabled || !onClick) {
 				return;
 			}

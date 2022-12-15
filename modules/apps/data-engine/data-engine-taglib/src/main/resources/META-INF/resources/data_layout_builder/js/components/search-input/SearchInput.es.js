@@ -53,6 +53,7 @@ const SearchInput = React.forwardRef(
 					<ClayInput
 						aria-label={Liferay.Language.get('search')}
 						className="input-group-inset input-group-inset-after"
+						id="searchInput"
 						onChange={({target: {value}}) => {
 							setValue(value);
 							onChange(value);
