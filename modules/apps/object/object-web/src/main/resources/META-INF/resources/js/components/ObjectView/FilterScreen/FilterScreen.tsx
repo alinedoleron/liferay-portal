@@ -31,7 +31,7 @@ export function FilterScreen() {
 		dispatch,
 	] = useViewContext();
 
-	const {objectViewFilterColumns} = objectView;
+	const {creationLanguageId, objectViewFilterColumns} = objectView;
 
 	const [editingObjectFieldName, setEditingObjectFieldName] = useState('');
 	const [editingFilter, setEditingFilter] = useState(false);
@@ -123,6 +123,7 @@ export function FilterScreen() {
 	return (
 		<>
 			<BuilderScreen
+				creationLanguageId={creationLanguageId}
 				emptyState={{
 					buttonText: Liferay.Language.get('new-filter'),
 					description: Liferay.Language.get(
@@ -160,6 +161,7 @@ export function FilterScreen() {
 
 			{visibleModal && (
 				<ModalAddFilter
+					creationLanguageId={creationLanguageId}
 					currentFilters={objectViewFilterColumns}
 					disableDateValues
 					editingFilter={editingFilter}

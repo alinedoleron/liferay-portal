@@ -101,21 +101,21 @@ export function AggregationFormBase({
 
 	const filteredObjectRelationships = useMemo(() => {
 		if (objectRelationships) {
-			return filterArrayByQuery(
-				objectRelationships,
-				'label',
-				relationshipsQuery
-			);
+			return filterArrayByQuery({
+				array: objectRelationships,
+				query: relationshipsQuery,
+				str: 'label',
+			});
 		}
 	}, [objectRelationships, relationshipsQuery]);
 
 	const filteredObjectRelationshipFields = useMemo(() => {
 		if (objectRelationshipFields) {
-			return filterArrayByQuery(
-				objectRelationshipFields,
-				'label',
-				relationshipFieldsQuery
-			);
+			return filterArrayByQuery({
+				array: objectRelationshipFields,
+				query: relationshipFieldsQuery,
+				str: 'label',
+			});
 		}
 	}, [objectRelationshipFields, relationshipFieldsQuery]);
 

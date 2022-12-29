@@ -18,7 +18,7 @@
 export declare function getLocalizableLabel(
 	labels: LocalizedValue<string>,
 	creationLanguageId: Locale,
-	fallback: string
+	fallback?: string
 ): string;
 
 /**

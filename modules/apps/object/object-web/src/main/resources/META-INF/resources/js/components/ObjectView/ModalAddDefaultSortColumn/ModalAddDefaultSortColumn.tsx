@@ -88,7 +88,11 @@ export function ModalAddDefaultSortColumn({
 	const [query, setQuery] = useState<string>('');
 
 	const filteredObjectSortColumn = useMemo(() => {
-		return filterArrayByQuery(availableViewColumns, 'fieldLabel', query);
+		return filterArrayByQuery({
+			array: availableViewColumns,
+			query,
+			str: 'fieldLabel',
+		});
 	}, [availableViewColumns, query]);
 
 	const onSubmit = (event: FormEvent) => {

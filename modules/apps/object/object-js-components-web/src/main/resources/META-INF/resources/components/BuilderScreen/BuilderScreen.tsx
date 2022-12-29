@@ -22,6 +22,7 @@ import {DndProvider} from 'react-dnd';
 import {HTML5Backend} from 'react-dnd-html5-backend';
 
 import {filterArrayByQuery} from '../../utils/array';
+import {getLocalizableLabel} from '../../utils/string';
 import {Card} from '../Card';
 import {ManagementToolbarSearch} from '../ManagementToolbar/ManagementToolbarSearch';
 import BuilderListItem from './BuilderListItem';
@@ -31,6 +32,7 @@ import './BuilderScreen.scss';
 const defaultLanguageId = Liferay.ThemeDisplay.getDefaultLanguageId();
 
 export function BuilderScreen({
+	creationLanguageId,
 	defaultSort,
 	disableEdit,
 	emptyState,
@@ -51,7 +53,11 @@ export function BuilderScreen({
 	const [query, setQuery] = useState('');
 
 	const filteredItems = useMemo(() => {
-		return filterArrayByQuery(objectColumns, 'fieldLabel', query);
+		return filterArrayByQuery({
+			array: objectColumns,
+			query,
+			str: 'fieldLabel',
+		});
 	}, [objectColumns, query]);
 
 	const tableItems = query ? filteredItems : objectColumns;
@@ -151,9 +157,10 @@ export function BuilderScreen({
 												  )
 											: filter
 											? viewColumn?.objectFieldBusinessType
-											: viewColumn?.label[
-													defaultLanguageId
-											  ]
+											: getLocalizableLabel(
+													viewColumn?.label,
+													creationLanguageId
+											  )
 									}
 									thirdColumnValues={
 										viewColumn?.valueList ??
@@ -210,6 +217,7 @@ type TBuilderScreenColumn = {
 };
 
 interface IProps {
+	creationLanguageId: Locale;
 	defaultSort?: boolean;
 	disableEdit?: boolean;
 	emptyState: {

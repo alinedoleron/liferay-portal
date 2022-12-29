@@ -59,6 +59,7 @@ export declare type TObjectViewFilterColumn = {
 	valueList?: LabelValueObject[];
 };
 export declare type TObjectView = {
+	creationLanguageId: Locale;
 	defaultObjectView: boolean;
 	name: LocalizedValue<string>;
 	objectDefinitionId: number;

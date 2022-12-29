@@ -62,6 +62,7 @@ export type TObjectViewFilterColumn = {
 };
 
 export type TObjectView = {
+	creationLanguageId: Locale;
 	defaultObjectView: boolean;
 	name: LocalizedValue<string>;
 	objectDefinitionId: number;
