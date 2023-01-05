@@ -21,8 +21,7 @@ import {
 } from '@liferay/object-js-components-web';
 import {createResourceURL, fetch} from 'frontend-js-web';
 import React, {useMemo, useState} from 'react';
-
-import {defaultLanguageId} from '../../util/constants';
+import {TNotificationTemplate} from './EditNotificationTemplate';
 
 interface FreeMarkerTemplateEditorProps {
 	baseResourceURL: string;
@@ -97,11 +96,21 @@ export function FreeMarkerTemplateEditor({
 						getEntityFields(item.id);
 					}}
 					query={query}
-					value={selectedEntity?.label[defaultLanguageId]}
+					value={getLocalizableLabel(
+						selectedEntity?.defaultLanguageId as Locale,
+						selectedEntity?.label,
+						selectedEntity?.name as string
+					)}
 				>
 					{({label, name}) => (
 						<div className="d-flex justify-content-between">
-							<div>{label[defaultLanguageId] ?? name}</div>
+							<div>
+								{getLocalizableLabel(
+									selectedEntity?.defaultLanguageId as Locale,
+									label,
+									name
+								)}
+							</div>
 						</div>
 					)}
 				</AutoComplete>
