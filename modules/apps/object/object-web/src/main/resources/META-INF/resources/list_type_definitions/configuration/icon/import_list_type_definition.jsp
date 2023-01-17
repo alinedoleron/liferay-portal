@@ -25,7 +25,7 @@
 				PortletURLBuilder.createActionURL(
 					renderResponse
 				).setActionName(
-					"/object_definitions/import_object_definition"
+					"/list_type_definitions/import_list_type_definition"
 				).setRedirect(
 					currentURL
 				).buildString()
