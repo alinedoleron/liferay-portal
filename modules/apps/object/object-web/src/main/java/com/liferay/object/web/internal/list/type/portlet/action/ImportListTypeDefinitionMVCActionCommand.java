@@ -117,7 +117,7 @@ public class ImportListTypeDefinitionMVCActionCommand
 			actionRequest);
 
 		String listTypeDefinitionJSON = FileUtil.read(
-			uploadPortletRequest.getFile("objectListTypeJSON"));
+			uploadPortletRequest.getFile("listTypeDefinitionJSON"));
 
 		JSONObject listTypeDefinitionJSONObject = _jsonFactory.createJSONObject(
 			listTypeDefinitionJSON);
