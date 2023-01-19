@@ -12,11 +12,16 @@
  * details.
  */
 
-import React from 'react';
-interface IProps {
+/// <reference types="react" />
+
+interface ModalImportObjectDefinitionProps {
 	importListTypeDefinitionURL: string;
 	nameMaxLength: string;
 	portletNamespace: string;
 }
-declare const ModalImportListTypeDefinition: React.FC<IProps>;
-export default ModalImportListTypeDefinition;
+export default function ModalImportObjectDefinition({
+	importListTypeDefinitionURL,
+	nameMaxLength,
+	portletNamespace,
+}: ModalImportObjectDefinitionProps): JSX.Element | null;
+export {};

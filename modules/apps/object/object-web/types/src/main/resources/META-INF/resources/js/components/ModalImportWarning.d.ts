@@ -15,11 +15,15 @@
 /// <reference types="react" />
 
 interface ModalImportWarningProps {
+	bodyText: string[];
 	handleImport: () => void;
+	headerText: string;
 	onClose: (value: boolean) => void;
 }
 export declare function ModalImportWarning({
+	bodyText,
 	handleImport,
+	headerText,
 	onClose,
 }: ModalImportWarningProps): JSX.Element;
 export {};

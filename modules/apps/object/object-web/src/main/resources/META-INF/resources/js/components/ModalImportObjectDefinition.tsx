@@ -272,7 +272,13 @@ export default function ModalImportObjectDefinition({
 		</ClayModal>
 	) : warningModalVisible ? (
 		<ModalImportWarning
+			bodyText={[
+				'there-is-an-object-definition-with-the-same-external-reference-code-as-the-imported-one',
+				'before-importing-the-new-object-definition-you-may-want-to-back-up-its-entries-to-prevent-data-loss',
+				'do-you-want-to-proceed-with-the-import-process',
+			]}
 			handleImport={() => handleImport(importFormData as FormData)}
+			headerText={Liferay.Language.get('update-existing-picklist')}
 			onClose={() => {
 				setWarningModalVisible(false);
 				setImportFormData(undefined);
