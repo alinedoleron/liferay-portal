@@ -28,10 +28,10 @@ import com.liferay.portal.kernel.portlet.url.builder.ResourceURLBuilder;
 import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
 import com.liferay.portal.kernel.security.permission.resource.PortletResourcePermission;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.PropsUtil;
 
-import java.util.Arrays;
 import java.util.List;
 
 import javax.portlet.ActionRequest;
@@ -83,7 +83,7 @@ public class ViewListTypeDefinitionsDisplayContext {
 	public List<FDSActionDropdownItem> getFDSActionDropdownItems()
 		throws Exception {
 
-		List<FDSActionDropdownItem> fdsActionDropdownItems = Arrays.asList(
+		List<FDSActionDropdownItem> fdsActionDropdownItems = ListUtil.fromArray(
 			new FDSActionDropdownItem(
 				PortletURLBuilder.create(
 					getPortletURL()
