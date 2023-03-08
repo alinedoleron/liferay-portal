@@ -1,0 +1,210 @@
+.get-app-modal {
+    &-header {
+        &-container {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            //padding: 24px;
+        }
+
+        &-title {
+            font-family: 'Source Sans Pro', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            line-height: 40px;
+        }
+
+        &-description {
+            color: #6C6C75;
+            font-family: 'Source Sans Pro', sans-serif;
+            font-size: 13px;
+            font-weight: 400;
+            line-height: 16px;
+        }
+    }
+
+    &-body {
+        &-container {
+            width: 552px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            padding: 17px;
+        }
+
+        &-content {
+            &-container {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            &-left {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 16px;
+            }
+
+            &-right {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+
+                &-price {
+                    color: #282934;
+                    font-family: 'Source Sans Pro', sans-serif;
+                    font-size: 12px;
+                    font-weight: 600;
+                    line-height: 16px;   
+                }
+
+                &-value {
+                    color: #282934;
+                    font-family: 'Source Sans Pro', sans-serif;
+                    font-size: 18px;
+                    font-weight: 600;
+                    line-height: 20px;   
+                }
+            }
+
+            &-image {
+                width: 56px;
+                height: 56px;
+            }
+
+            &-app-info {
+                &-container {
+                    display: flex;
+                    flex-direction: column;
+                }
+
+                &-name {
+                    color: #282934;
+                    font-family: 'Source Sans Pro', sans-serif;
+                    font-size: 16px;
+                    font-weight: 600;
+                    line-height: 24px;   
+                } 
+
+                &-version {
+                    color: #54555F;
+                    font-family: 'Source Sans Pro', sans-serif;
+                    font-size: 16px;
+                    font-weight: 400;
+                    line-height: 24px;   
+                }
+            }
+
+            &-alert {
+                &-icon {
+                    width: 16px;
+                    height: 16px; 
+                    margin-right: 12px;
+                    filter: invert(31%) sepia(51%) saturate(769%) hue-rotate(179deg) brightness(100%) contrast(98%);
+                }
+
+               &-message {
+                    color: #54555F;
+                    font-family: 'Source Sans Pro', sans-serif;
+                    font-size: 13px;
+                    font-weight: 400;
+                    line-height: 16px; 
+               }
+            }
+        }
+    } 
+
+    &-button {
+        &-cancel {
+            width: 78px;
+            background: none;
+            height: 40px;
+            border-radius: 8px;
+            border: solid 2px #2B3A4B;
+            color: #2B3A4B;
+            font-family: 'Source Sans Pro', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 24px;   
+        }
+
+        &-get-this-app {
+            width: 118px;
+            background-color: #0053F0;
+            height: 40px;
+            border: none;
+            border-radius: 8px;
+            color: #FFFFFF;
+            font-family: 'Source Sans Pro', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 24px;   
+        }
+    }
+
+    &-body {
+        &-card-container {
+            width: 552px;
+            height: 179px;
+            border: 1px solid #E2E2E4;
+            border-radius: 10px;
+        }
+
+        &-card-header {
+            width: 552px;
+            height: 56px;
+            padding: 20px 16px;
+            background-color: #E2E2E4;
+            border-radius: 8px 8px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            &-left-content {
+                color: #54555F;
+                font-family: 'Source Sans Pro', sans-serif;
+                font-size: 14px;
+                font-weight: 600;
+                line-height: 16px;   
+            }
+
+            &-right-content {
+                &-container {
+                    display: flex;
+                    gap: 8px;
+                    align-items: center;
+                    justify-content: center;
+                }
+
+                &-account-info {
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: end;
+
+                    &-name {
+                        color: #282934;
+                        font-family: 'Source Sans Pro', sans-serif;
+                        font-size: 14px;
+                        font-weight: 600;
+                        line-height: 16px;   
+                    }
+
+                    &-email {
+                        color: #54555F;
+                        font-family: 'Source Sans Pro', sans-serif;
+                        font-size: 11px;
+                        font-weight: 400;
+                        line-height: 16px; 
+                    }
+
+                    &-icon {
+                        width: 24px;
+                        height: 24px;
+                    }
+                }
+            }
+        }
+    }
+}
