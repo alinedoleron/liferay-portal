@@ -4,7 +4,7 @@
             display: flex;
             flex-direction: column;
             gap: 4px;
-            //padding: 24px;
+            // padding: 24px;
         }
 
         &-title {
@@ -28,7 +28,6 @@
             width: 552px;
             display: flex;
             flex-direction: column;
-            gap: 16px;
             padding: 17px;
         }
 
@@ -206,5 +205,55 @@
                 }
             }
         }
+    }
+
+    &-double-input {
+        display: flex;
+        justify-content: space-between;
+
+        .form-group {
+            width: 260px;
+        }
+    }
+
+    &-info-icon {
+        filter: invert(65%) sepia(4%) saturate(515%) hue-rotate(196deg)
+				brightness(95%) contrast(84%);
+        height: 16px;
+        margin-right: 12px;
+        width: 16px;
+        vertical-align: sub;
+    }
+
+    &-use-terms {
+        color: #54555F;
+        font-size: 13px;
+    }
+
+    &-text-divider {
+        display: flex;
+        align-items: center;
+        margin: 40px 0;
+        color: #54555F;
+
+        &::before, &::after {
+            content: '';
+            height: 1px;
+            background-color: #E2E2E4;;
+            flex-grow: 1;
+            margin-right: 24px;
+          }
+
+          &::before {
+            margin-right: 24px;
+          }
+          &::after {
+            margin-left: 24px;
+          }
+    }
+    &-payment-methods {
+        display: flex;
+        gap: 16px;
+        margin-bottom: 32px;
     }
 }

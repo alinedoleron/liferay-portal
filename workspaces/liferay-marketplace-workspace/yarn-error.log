@@ -1,0 +1,34 @@
+Arguments: 
+  /home/me/dev/projects/liferay-portal/workspaces/liferay-marketplace-workspace/build/node/bin/node /home/me/dev/projects/liferay-portal/workspaces/liferay-marketplace-workspace/build/node/lib/node_modules/yarn/yarn-1.13.0.js --production false install --ignore-engines
+
+PATH: 
+  /home/me/dev/projects/liferay-portal/workspaces/liferay-marketplace-workspace/build/node/bin:/opt/java/ant/bin:/opt/java/jdk/bin:/home/me/.npm-global/bin:/opt/java/maven/bin:/home/me/node_modules/.bin:/opt/java/ant/bin:/opt/java/jdk/bin:/home/me/.npm-global/bin:/opt/java/maven/bin:/home/me/node_modules/.bin:/opt/java/ant/bin:/opt/java/jdk/bin:/home/me/.npm-global/bin:/opt/java/maven/bin:/home/me/.local/bin:/home/me/bin:/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/var/lib/snapd/snap/bin
+
+Yarn version: 
+  1.13.0
+
+Node version: 
+  16.13.0
+
+Platform: 
+  linux x64
+
+Trace: 
+  Error: EACCES: permission denied, unlink '/home/me/dev/projects/liferay-portal/workspaces/liferay-marketplace-workspace/client-extensions/liferay-marketplace-custom-element/node_modules/.bin/sass'
+
+npm manifest: 
+  {
+      "private": true,
+      "workspaces": {
+          "packages": [
+              "client-extensions/liferay-marketplace-custom-element",
+              "client-extensions/liferay-marketplace-theme-css"
+          ]
+      }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile

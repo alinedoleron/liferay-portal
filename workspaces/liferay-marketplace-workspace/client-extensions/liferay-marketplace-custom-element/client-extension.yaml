@@ -12,5 +12,6 @@ liferay-marketplace-custom-element:
     portletCategoryName: category.client-extensions
     type: customElement
     urls:
-        - .*.js
+        - http://localhost:5173/@vite/client
+        - http://localhost:5173/src/main.tsx
     useESM: true
