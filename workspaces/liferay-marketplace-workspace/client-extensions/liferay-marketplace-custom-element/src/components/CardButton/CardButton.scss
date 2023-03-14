@@ -1,32 +1,42 @@
 .get-app-modal-payment-method-container {
-    border: 1px solid #C9C9CF;
-    border-radius: 8px;
-    width: 173.33px;
-    height: 76px;
-    font-family: "Source Sans Pro", sans-serif;
+	border: 1px solid #c9c9cf;
+	border-radius: 8px;
+	width: 173.33px;
+	height: 76px;
+	font-family: 'Source Sans Pro', sans-serif;
+	cursor: pointer;
 
-    &-button-icon {
-        height: 16px;
-        width: 16px;
-        filter: invert(21%) sepia(91%) saturate(3572%) hue-rotate(220deg)
-				brightness(100%) contrast(101%);
-    }
+	&--selected {
+		border: 1px solid #004ad7;
+		background-color: #e6edfb;
 
-    &-button {
-        display: flex;
-        padding: 18px 16px;
-    }
+		.get-app-modal-payment-method-container-button-text {
+			color: #0b5fff;
+		}
+	}
 
-    &-button-description {
-        color: #54555F;
-        font-size: 13px;
-    }
+	&-button-icon {
+		height: 16px;
+		width: 16px;
+		filter: invert(21%) sepia(91%) saturate(3572%) hue-rotate(220deg)
+			brightness(100%) contrast(101%);
+	}
 
-    &-button-text {
-        font-weight: 600;
-    }
+	&-button {
+		display: flex;
+		padding: 18px 16px;
+	}
 
-    &-button-title {
-        padding-left: 8px;
-    }
+	&-button-description {
+		color: #54555f;
+		font-size: 13px;
+	}
+
+	&-button-text {
+		font-weight: 600;
+	}
+
+	&-button-title {
+		padding-left: 8px;
+	}
 }
