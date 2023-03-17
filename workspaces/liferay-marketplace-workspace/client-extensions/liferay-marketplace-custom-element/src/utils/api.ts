@@ -375,6 +375,18 @@ export async function getOrders(
 	};
 }
 
+export async function getAccountByAccountId({accountId}: {accountId: number}) {
+	const accountResponse = await fetch(
+		`/o/headless-admin-user/v1.0/accounts/${accountId}?nestedFields=accountUserAccounts`,
+		{
+			headers,
+			method: 'GET',
+		}
+	);
+
+	return await accountResponse.json();
+}
+
 export async function getProduct({appERC}: {appERC: string}) {
 	const response = await fetch(
 		`/o/headless-commerce-admin-catalog/v1.0/products/by-externalReferenceCode/${appERC}

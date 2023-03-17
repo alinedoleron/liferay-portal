@@ -6,6 +6,7 @@ import {Liferay} from '../../liferay/liferay';
 
 import {getCompanyId} from '../../liferay/constants';
 import {
+	getAccountByAccountId,
 	getAccountInfo,
 	getAccountInfoFromCommerce,
 	getAccounts,
@@ -115,7 +116,7 @@ export function GetAppModal({handleClose}: GetAppModalProps) {
 				) || channels[0];
 
 			setChannel(channel);
-
+			
 			const currentUser = await getUserAccount();
 
 			setCurrentUser(currentUser);
@@ -149,14 +150,18 @@ export function GetAppModal({handleClose}: GetAppModalProps) {
 
 			const app = await getDeliveryProduct({
 				accountId,
-				appId: Liferay.MarketplaceCustomerFlow.appId,
+				// appId: Liferay.MarketplaceCustomerFlow.appId,
+				appId: 47232, // App Paid Perpetual Trial
 				channelId: channel.id,
 			});
 
 			setApp(app);
 
 			const skuResponse = await getProductSKU({
-				appProductId: Liferay.MarketplaceCustomerFlow.appId,
+
+				// appProductId: Liferay.MarketplaceCustomerFlow.appId,
+				// appProductId: 47299, // App Paind Perpetual Not Trial
+				appProductId: 47232, // App Paid Perpetual Trial
 			});
 
 			let sku;
