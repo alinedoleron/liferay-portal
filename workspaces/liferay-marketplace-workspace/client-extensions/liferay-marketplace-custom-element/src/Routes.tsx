@@ -6,6 +6,7 @@ import {PurchasedAppsDashboardPage} from './pages/PurchasedAppsDashboardPage/Pur
 interface AppRoutesProps {
 	route: string;
 }
+
 export default function AppRoutes({route}: AppRoutesProps) {
 	if (route === 'create-new-app') {
 		return <AppCreationFlow />;
