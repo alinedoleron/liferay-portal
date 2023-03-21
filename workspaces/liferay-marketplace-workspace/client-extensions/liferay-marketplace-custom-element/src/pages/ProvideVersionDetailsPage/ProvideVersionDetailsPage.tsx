@@ -5,6 +5,8 @@ import {Section} from '../../components/Section/Section';
 import {useAppContext} from '../../manage-app-state/AppManageState';
 import {TYPES} from '../../manage-app-state/actionTypes';
 import {saveSpecification} from '../../utils/util';
+import {createAppVersionSKU, add_sku_expando_value} from '../../utils/api';
+import {getCompanyId} from '../../liferay/constants';
 
 import './ProvideVersionDetailsPage.scss';
 
@@ -70,59 +72,19 @@ export function ProvideVersionDetailsPage({
 				disableContinueButton={!appVersion || !appNotes}
 				onClickBack={() => onClickBack()}
 				onClickContinue={async () => {
-					const versionSpecificationId = await saveSpecification(
-						appId,
-						appProductId,
-						appVersion?.id,
-						'version',
-						'Version',
-						appVersion?.value
-					);
-
-					if (versionSpecificationId !== -1) {
-						dispatch({
-							payload: {
-								id: versionSpecificationId,
-								value: appVersion.value,
+						const {id} = await createAppVersionSKU({
+							appProductId,
+							body: {
+								version: parseFloat(appVersion?.value),
+								sku: appVersion?.value,
 							},
-							type: TYPES.UPDATE_APP_VERSION,
 						});
-					}
-					else {
-						dispatch({
-							payload: {
-								id: appVersion?.id,
-								value: appVersion.value,
-							},
-							type: TYPES.UPDATE_APP_VERSION,
-						});
-					}
 
-					const noteSpecificationId = await saveSpecification(
-						appId,
-						appProductId,
-						appNotes?.id,
-						'notes',
-						'Notes',
-						appNotes?.value
-					);
-
-					if (noteSpecificationId !== -1) {
-						dispatch({
-							payload: {
-								id: noteSpecificationId,
-								value: appNotes.value,
-							},
-							type: TYPES.UPDATE_APP_NOTES,
-						});
-					}
-					else {
-						dispatch({
-							payload: {id: appNotes?.id, value: appNotes.value},
-							type: TYPES.UPDATE_APP_NOTES,
-						});
-					}
-					onClickContinue();
+						add_sku_expando_value({
+							companyId: getCompanyId(),
+							skuId: id
+						})
+					
 				}}
 			/>
 		</div>

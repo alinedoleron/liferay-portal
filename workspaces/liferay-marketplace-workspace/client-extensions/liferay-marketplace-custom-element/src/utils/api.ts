@@ -79,6 +79,52 @@ export async function createAppLicensePrice({
 	return await response.json();
 }
 
+export async function createAppVersionSKU({
+	appProductId,
+	body,
+}: {
+	appProductId: number;
+	body: Object;
+}) {
+	const response = await fetch(
+		`/o/headless-commerce-admin-catalog/v1.0/products/${appProductId}/skus
+	  `,
+		{
+			body: JSON.stringify(body),
+			headers,
+			method: 'POST',
+		}
+	);
+
+	return await response.json();
+}
+
+export function add_sku_expando_value({companyId, skuId}: {
+	companyId: number; skuId: number;
+}) {
+
+	// body: JSON.stringify({
+	// 	"companyId": companyId,
+	// 	"className": "com.liferay.commerce.product.model.CPInstance",
+	// 	"tableName": "CUSTOM_FIELDS",
+	// 	"columnName": "Change Log",
+	// 	"classPK": skuId,
+	// 	"data": "Change Log Value",
+	// }),
+
+	return fetch(
+		`/api/jsonws/expandovalue/add-value/${companyId}/com.liferay.commerce.product.model.CPInstance/CUSTOM_FIELDS/Change Log/${skuId}/Change Log Value`,
+		{
+			headers: {
+				    "Accept": "application/json",
+				    "Authorization":  Liferay.authToken,
+				    "Content-Type": "application/json",
+				},
+			method: 'POST',
+		}
+	);
+}
+
 export function createAttachment({
 	body,
 	externalReferenceCode,
