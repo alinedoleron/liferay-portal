@@ -91,12 +91,12 @@ export function ProvideAppBuildPage({
 			/>
 
 			<Section
-				label="LXC SaaS Compatible?"
+				label="Cloud Compatible?"
 				required
 				tooltip="More Info"
 				tooltipText="MoreInfo"
 			>
-				<div className="provide-app-build-page-saas-compatible-container">
+				<div className="provide-app-build-page-cloud-compatible-container">
 					<RadioCard
 						description="Lorem ipsum dolor sit amet consectetur."
 						icon={taskCheckedIcon}
