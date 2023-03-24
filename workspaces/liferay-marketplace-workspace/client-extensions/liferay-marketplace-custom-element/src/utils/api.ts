@@ -67,28 +67,6 @@ export function createApp({
 	});
 }
 
-export function updateApp({
-	appDescription,
-	appERC,
-	appName,
-}: {
-	appDescription: string;
-	appERC: string;
-	appName: string;
-}) {
-	return fetch(
-		`o/headless-commerce-admin-catalog/v1.0/products/by-externalReferenceCode/${appERC}`,
-		{
-			body: JSON.stringify({
-				description: {en_US: appDescription},
-				name: {en_US: appName},
-			}),
-			headers,
-			method: 'PATCH',
-		}
-	);
-}
-
 export async function createAppLicensePrice({
 	appProductId,
 	body,
@@ -176,25 +154,6 @@ export async function createProductSpecification({
 			body: JSON.stringify(body),
 			headers,
 			method: 'POST',
-		}
-	);
-
-	return await response.json();
-}
-
-export async function updateProductSpecification({
-	body,
-	id,
-}: {
-	body: Object;
-	id: number;
-}) {
-	const response = await fetch(
-		`o/headless-commerce-admin-catalog/v1.0/productSpecifications/${id}`,
-		{
-			body: JSON.stringify(body),
-			headers,
-			method: 'PATCH',
 		}
 	);
 
@@ -475,4 +434,45 @@ export async function postCheckoutCart({
 	);
 
 	return (await await response.json()) as PostCheckoutCartResponse;
+}
+
+export function updateApp({
+	appDescription,
+	appERC,
+	appName,
+}: {
+	appDescription: string;
+	appERC: string;
+	appName: string;
+}) {
+	return fetch(
+		`o/headless-commerce-admin-catalog/v1.0/products/by-externalReferenceCode/${appERC}`,
+		{
+			body: JSON.stringify({
+				description: {en_US: appDescription},
+				name: {en_US: appName},
+			}),
+			headers,
+			method: 'PATCH',
+		}
+	);
+}
+
+export async function updateProductSpecification({
+	body,
+	id,
+}: {
+	body: Object;
+	id: number;
+}) {
+	const response = await fetch(
+		`o/headless-commerce-admin-catalog/v1.0/productSpecifications/${id}`,
+		{
+			body: JSON.stringify(body),
+			headers,
+			method: 'PATCH',
+		}
+	);
+
+	return await response.json();
 }
