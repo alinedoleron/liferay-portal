@@ -1,14 +1,14 @@
-declare let Liferay: {authToken: string, ThemeDisplay: any};
+declare let Liferay: {authToken: string; ThemeDisplay: any; Service: any};
 const headers = {
 	'Content-Type': 'application/json',
 	'X-CSRF-Token': Liferay.authToken,
 };
 
 type Categories = {
-	externalReferenceCode: string,
-	id: number,
-	name: string,
-	vocabulary: string
+	externalReferenceCode: string;
+	id: number;
+	name: string;
+	vocabulary: string;
 };
 
 export function createApp({
@@ -77,6 +77,52 @@ export async function createAppLicensePrice({
 	);
 
 	return await response.json();
+}
+
+export async function createAppSKU({
+	appProductId,
+	body,
+}: {
+	appProductId: number;
+	body: Object;
+}) {
+	const response = await fetch(
+		`/o/headless-commerce-admin-catalog/v1.0/products/${appProductId}/skus
+	  `,
+		{
+			body: JSON.stringify(body),
+			headers,
+			method: 'POST',
+		}
+	);
+
+	return await response.json();
+}
+
+export async function addSkuExpandoValue({
+	companyId,
+	notesValue,
+	skuId,
+	versionValue,
+}: {
+	companyId: number;
+	notesValue: string;
+	skuId: number;
+	versionValue: string;
+}) {
+	await Liferay.Service(
+		'/expandovalue/add-values',
+		{
+			companyId,
+			className: 'com.liferay.commerce.product.model.CPInstance',
+			tableName: 'CUSTOM_FIELDS',
+			classPK: skuId,
+			attributeValues: {version: versionValue, notes: notesValue},
+		},
+		(obj: any) => {
+			console.log(obj);
+		}
+	);
 }
 
 export function createAttachment({
@@ -211,7 +257,7 @@ export async function getCategories({vocabId}: {vocabId: number}) {
 		`/o/headless-admin-taxonomy/v1.0/taxonomy-vocabularies/${vocabId}/taxonomy-categories`,
 		{
 			headers,
-			method: 'GET'
+			method: 'GET',
 		}
 	);
 
@@ -283,12 +329,24 @@ export async function getProductSpecifications({
 	return await response.json();
 }
 
+export async function getSpecifications() {
+	const response = await fetch(
+		`/o/headless-commerce-admin-catalog/v1.0/specifications`,
+		{
+			headers,
+			method: 'GET',
+		}
+	);
+
+	return await response.json();
+}
+
 export async function getVocabularies() {
 	const response = await fetch(
 		`/o/headless-admin-taxonomy/v1.0/sites/${Liferay.ThemeDisplay.getCompanyGroupId()}/taxonomy-vocabularies`,
 		{
 			headers,
-			method: 'GET'
+			method: 'GET',
 		}
 	);
 
