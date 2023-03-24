@@ -67,28 +67,6 @@ export function createApp({
 	});
 }
 
-export function updateApp({
-	appDescription,
-	appERC,
-	appName,
-}: {
-	appDescription: string;
-	appERC: string;
-	appName: string;
-}) {
-	return fetch(
-		`o/headless-commerce-admin-catalog/v1.0/products/by-externalReferenceCode/${appERC}`,
-		{
-			body: JSON.stringify({
-				description: {en_US: appDescription},
-				name: {en_US: appName},
-			}),
-			headers,
-			method: 'PATCH',
-		}
-	);
-}
-
 export async function createAppLicensePrice({
 	appProductId,
 	body,
@@ -182,25 +160,6 @@ export async function createProductSpecification({
 	return await response.json();
 }
 
-export async function updateProductSpecification({
-	body,
-	id,
-}: {
-	body: Object;
-	id: number;
-}) {
-	const response = await fetch(
-		`o/headless-commerce-admin-catalog/v1.0/productSpecifications/${id}`,
-		{
-			body: JSON.stringify(body),
-			headers,
-			method: 'PATCH',
-		}
-	);
-
-	return await response.json();
-}
-
 export async function createProductSubscriptionConfiguration({
 	body,
 	externalReferenceCode,
@@ -240,8 +199,16 @@ export async function getCatalogs() {
 	return response.json();
 }
 
-export async function getOrders() {
-	return [];
+export async function getCategories({vocabId}: {vocabId: number}) {
+	const response = await fetch(
+		`/o/headless-admin-taxonomy/v1.0/taxonomy-vocabularies/${vocabId}/taxonomy-categories`,
+		{
+			headers,
+			method: 'GET',
+		}
+	);
+
+	return response.json();
 }
 
 export async function getChannelById(channelId: number) {
@@ -256,16 +223,8 @@ export async function getChannelById(channelId: number) {
 	return (await channelResponse.json()) as Channel;
 }
 
-export async function getCategories({vocabId}: {vocabId: number}) {
-	const response = await fetch(
-		`/o/headless-admin-taxonomy/v1.0/taxonomy-vocabularies/${vocabId}/taxonomy-categories`,
-		{
-			headers,
-			method: 'GET',
-		}
-	);
-
-	return response.json();
+export async function getOrders() {
+	return [];
 }
 
 export async function getProduct({appERC}: {appERC: string}) {
@@ -423,4 +382,45 @@ export async function postCheckoutCart({
 	);
 
 	return (await await response.json()) as PostCheckoutCartResponse;
+}
+
+export function updateApp({
+	appDescription,
+	appERC,
+	appName,
+}: {
+	appDescription: string;
+	appERC: string;
+	appName: string;
+}) {
+	return fetch(
+		`o/headless-commerce-admin-catalog/v1.0/products/by-externalReferenceCode/${appERC}`,
+		{
+			body: JSON.stringify({
+				description: {en_US: appDescription},
+				name: {en_US: appName},
+			}),
+			headers,
+			method: 'PATCH',
+		}
+	);
+}
+
+export async function updateProductSpecification({
+	body,
+	id,
+}: {
+	body: Object;
+	id: number;
+}) {
+	const response = await fetch(
+		`o/headless-commerce-admin-catalog/v1.0/productSpecifications/${id}`,
+		{
+			body: JSON.stringify(body),
+			headers,
+			method: 'PATCH',
+		}
+	);
+
+	return await response.json();
 }
