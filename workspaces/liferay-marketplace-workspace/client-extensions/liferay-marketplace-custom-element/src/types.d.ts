@@ -47,8 +47,10 @@ interface PlacedOrder {
 interface PlacedOrderItems {
 	id: number;
 	name: string;
+	skuId: number;
 	subscription: boolean;
 	thumbnail: string;
+	version: string;
 }
 
 interface PostCartResponse {

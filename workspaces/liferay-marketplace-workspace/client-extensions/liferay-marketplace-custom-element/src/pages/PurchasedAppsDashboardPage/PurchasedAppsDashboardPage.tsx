@@ -4,10 +4,12 @@ import {useEffect, useState} from 'react';
 import accountLogo from '../../assets/icons/mainAppLogo.svg';
 import {DashboardTable} from '../../components/DashboardTable/DashboardTable';
 import {PurchasedAppsDashboardTableRow} from '../../components/DashboardTable/PurchasedAppsDashboardTableRow';
+import {getCompanyId} from '../../liferay/constants';
 import {
 	getAccount,
 	getChannels,
 	getOrders,
+	getSkuCustomFieldExpandoValue,
 	getUserAccountsById,
 } from '../../utils/api';
 import {DashboardPage} from '../DashBoardPage/DashboardPage';
@@ -21,7 +23,7 @@ export interface PurchasedAppProps {
 	purchasedBy: string;
 	purchasedDate: string;
 	type: string;
-	version?: string;
+	version: string;
 }
 
 interface PurchasedAppTable {
@@ -95,29 +97,41 @@ export function PurchasedAppsDashboardPage() {
 				purchasedAppTable.pageSize
 			);
 
-			const newOrderItems = placedOrders.items.map((order) => {
-				const [placeOrderItem] = order.placedOrderItems;
+			const newOrderItems = await Promise.all(
+				placedOrders.items.map(async (order) => {
+					const [placeOrderItem] = order.placedOrderItems;
 
-				const date = new Date(order.createDate);
-				const options: Intl.DateTimeFormatOptions = {
-					day: 'numeric',
-					month: 'short',
-					year: 'numeric',
-				};
-				const formattedDate = date.toLocaleDateString('en-US', options);
+					const date = new Date(order.createDate);
+					const options: Intl.DateTimeFormatOptions = {
+						day: 'numeric',
+						month: 'short',
+						year: 'numeric',
+					};
+					const formattedDate = date.toLocaleDateString(
+						'en-US',
+						options
+					);
 
-				return {
-					image: placeOrderItem.thumbnail,
-					name: placeOrderItem.name,
-					orderId: order.id,
-					provisioning: order.orderStatusInfo.label_i18n,
-					purchasedBy: order.author,
-					purchasedDate: formattedDate,
-					type: placeOrderItem.subscription
-						? 'Subscription'
-						: 'Perpetual',
-				};
-			});
+					const version = await getSkuCustomFieldExpandoValue({
+						companyId: parseInt(getCompanyId()),
+						customFieldName: 'version',
+						skuId: placeOrderItem.skuId,
+					});
+
+					return {
+						image: placeOrderItem.thumbnail,
+						name: placeOrderItem.name,
+						orderId: order.id,
+						provisioning: order.orderStatusInfo.label_i18n,
+						purchasedBy: order.author,
+						purchasedDate: formattedDate,
+						type: placeOrderItem.subscription
+							? 'Subscription'
+							: 'Perpetual',
+						version: version ?? '',
+					};
+				})
+			);
 
 			setPurchasedAppTable({
 				...purchasedAppTable,

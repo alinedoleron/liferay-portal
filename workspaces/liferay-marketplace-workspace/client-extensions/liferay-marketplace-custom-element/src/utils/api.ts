@@ -34,12 +34,35 @@ export async function addSkuExpandoValue({
 			companyId,
 			tableName: 'CUSTOM_FIELDS',
 		},
+		(obj: any) => {}
+	);
+}
+
+export async function getSkuCustomFieldExpandoValue({
+	companyId,
+	customFieldName,
+	skuId,
+}: {
+	companyId: number;
+	customFieldName: string;
+	skuId: number;
+}) {
+	let response = '';
+	await Liferay.Service(
+		'/expandovalue/get-data',
+		{
+			columnName: customFieldName,
+			className: 'com.liferay.commerce.product.model.CPInstance',
+			classPK: skuId,
+			companyId,
+			tableName: 'CUSTOM_FIELDS',
+		},
 		(obj: any) => {
-
-			// console.log(obj);
-
+			response = obj;
 		}
 	);
+
+	return response as string;
 }
 
 export function createApp({
