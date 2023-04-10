@@ -186,6 +186,21 @@ export function appReducer(state: InitialStateProps, action: TAction) {
 			return {...state, optionValuesId};
 		}
 
+		case TYPES.UPDATE_PRODUCT_OPTION_ID: {
+			const productOptionId = action.payload.value;
+
+			return {...state, productOptionId};
+		}
+
+		case TYPES.UPDATE_PRODUCT_OPTION_VALUES_ID: {
+			const noOptionId = action.payload.noOptionId;
+			const yesOptionId = action.payload.yesOptionId;
+
+			const optionValuesId = {noOptionId, yesOptionId};
+
+			return {...state, optionValuesId};
+		}
+
 		case TYPES.UPDATE_SKU_TRIAL_ID: {
 			const skuTrialId = action.payload.value;
 
