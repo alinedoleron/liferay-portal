@@ -9,7 +9,6 @@ import './NextStepPage.scss';
 
 export function NextStepPage() {
 	const queryString = window.location.search;
-
 	const urlParams = new URLSearchParams(queryString);
 
 	const accountLogo = urlParams.get('logoURL') as string;

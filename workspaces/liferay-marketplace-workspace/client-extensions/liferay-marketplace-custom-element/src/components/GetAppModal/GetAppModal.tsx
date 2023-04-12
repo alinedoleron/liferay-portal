@@ -158,10 +158,7 @@ export function GetAppModal({handleClose}: GetAppModalProps) {
 			setApp(app);
 
 			const skuResponse = await getProductSKU({
-
-				// appProductId: Liferay.MarketplaceCustomerFlow.appId,
-				// appProductId: 47299, // App Paind Perpetual Not Trial
-				appProductId: 47232, // App Paid Perpetual Trial
+				appProductId: Liferay.MarketplaceCustomerFlow.appId,
 			});
 
 			let sku;
@@ -414,6 +411,7 @@ export function GetAppModal({handleClose}: GetAppModalProps) {
 
 										<span className="get-app-modal-body-content-app-info-version">
 											{appVersion} by{' '}
+											{accountPublisher?.name}
 											{accountPublisher?.name}
 										</span>
 									</div>
