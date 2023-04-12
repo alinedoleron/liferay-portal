@@ -3,6 +3,7 @@ import {useEffect, useState} from 'react';
 import {GetAppModal} from './components/GetAppModal/GetAppModal';
 import {AppCreationFlow} from './pages/AppCreationFlow/AppCreationFlow';
 import GetAppPage from './pages/GetAppPage/GetAppPage';
+import {NextStepPage} from './pages/NextStepPage/NextStepPage';
 import {PublishedAppsDashboardPage} from './pages/PublishedAppsDashboardPage/PublishedAppsDashboardPage';
 import {PublisherGatePage} from './pages/PublisherGatePage/PublisherGatePage';
 import {PurchasedAppsDashboardPage} from './pages/PurchasedAppsDashboardPage/PurchasedAppsDashboardPage';
@@ -54,5 +55,8 @@ export default function AppRoutes({route}: AppRoutesProps) {
 	}
 	else if (route === 'open-modal') {
 		return <GetAppModal handleClose={() => {}} />;
+	}
+	else if (route === 'next-steps') {
+		return <NextStepPage />;
 	}
 }

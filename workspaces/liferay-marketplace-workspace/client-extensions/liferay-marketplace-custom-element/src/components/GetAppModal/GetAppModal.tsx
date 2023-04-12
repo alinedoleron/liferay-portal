@@ -2,6 +2,7 @@ import ClayButton from '@clayui/button';
 import ClayIcon from '@clayui/icon';
 import ClayModal, {useModal} from '@clayui/modal';
 import {useEffect, useState} from 'react';
+import {Liferay} from '../../liferay/liferay';
 
 import {getCompanyId} from '../../liferay/constants';
 import {
@@ -117,10 +118,7 @@ export function GetAppModal({handleClose}: GetAppModalProps) {
 			setChannel(channel);
 
 			const app = await getDeliveryProduct({
-
-				// appId: Liferay.MarketplaceCustomerFlow.appId,
-				// appId: 47299, // App Paid Perpetual Not Trial
-				appId: 47232, // App Paid Perpetual Trial
+				appId: Liferay.MarketplaceCustomerFlow.appId,
 				channelId: channel.id,
 			});
 
@@ -158,10 +156,7 @@ export function GetAppModal({handleClose}: GetAppModalProps) {
 			});
 
 			const skuResponse = await getProductSKU({
-
-				// appProductId: Liferay.MarketplaceCustomerFlow.appId,
-				// appProductId: 47299, // App Paind Perpetual Not Trial
-				appProductId: 47232, // App Paid Perpetual Trial
+				appProductId: Liferay.MarketplaceCustomerFlow.appId,
 			});
 
 			let sku;
@@ -298,14 +293,16 @@ export function GetAppModal({handleClose}: GetAppModalProps) {
 				newCart = {
 					...cart,
 					billingAddress,
-					shippingAddress: billingAddress,
 					purchaseOrderNumber,
 					author: email,
 				};
 			}
 
 			if (selectedPaymentMethod === 'trial') {
-				newCart = {...cart};
+				newCart = {
+					...cart,
+					billingAddress,
+				};
 			}
 
 			const cartResponse = await postCartByChannelId({
@@ -315,18 +312,23 @@ export function GetAppModal({handleClose}: GetAppModalProps) {
 
 			await postCheckoutCart({cartId: cartResponse.id});
 
+			const origin = window.location.origin;
+
+			const url = `${origin}/next-steps?orderId=${
+				cartResponse.id
+			}&logoURL=${account?.logoURL}&appLogoURL=${
+				app?.urlImage
+			}&accountName=${account?.name}&accountLogo=${
+				account?.logoURL
+			}&appCategory=${'appCategory'}&appName=${app.name}`;
+
 			const paymentMethodURL = await getPaymentMethodURL(
 				cartResponse.id,
-				`http://localhost:8080/next-steps?orderId=${
-					cartResponse.id
-				}&logoURL=${account?.logoURL}&appLogoURL=${
-					app?.urlImage
-				}&accountName=${account?.name}&accountLogo=${
-					account?.logoURL
-				}&appCategory=${'appCategory'}&appName=${app.name}`
+				url
 			);
 
-			window.location.href = paymentMethodURL;
+			window.location.href =
+				selectedPaymentMethod === 'pay' ? paymentMethodURL : url;
 		}
 
 		onClose();
