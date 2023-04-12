@@ -2,6 +2,7 @@ import ClayButton from '@clayui/button';
 import ClayIcon from '@clayui/icon';
 import ClayModal, {useModal} from '@clayui/modal';
 import {useEffect, useState} from 'react';
+import {Liferay} from '../../liferay/liferay';
 
 import {getCompanyId} from '../../liferay/constants';
 import {
@@ -103,7 +104,7 @@ export function GetAppModal({handleClose}: GetAppModalProps) {
 	const [purchaseOrderNumber, setPurchaseOrderNumber] = useState<string>('');
 	const [email, setEmail] = useState<string>('');
 
-	const [freeApp, setFreeApp] = useState<boolean>(true);
+	const [freeApp, setFreeApp] = useState<boolean>(false);
 
 	useEffect(() => {
 		const getModalInfo = async () => {
@@ -117,10 +118,7 @@ export function GetAppModal({handleClose}: GetAppModalProps) {
 			setChannel(channel);
 
 			const app = await getDeliveryProduct({
-
-				// appId: Liferay.MarketplaceCustomerFlow.appId,
-				// appId: 47299, // App Paid Perpetual Not Trial
-				appId: 47232, // App Paid Perpetual Trial
+				appId: Liferay.MarketplaceCustomerFlow.appId,
 				channelId: channel.id,
 			});
 
@@ -158,10 +156,7 @@ export function GetAppModal({handleClose}: GetAppModalProps) {
 			});
 
 			const skuResponse = await getProductSKU({
-
-				// appProductId: Liferay.MarketplaceCustomerFlow.appId,
-				// appProductId: 47299, // App Paind Perpetual Not Trial
-				appProductId: 47232, // App Paid Perpetual Trial
+				appProductId: Liferay.MarketplaceCustomerFlow.appId,
 			});
 
 			let sku;
@@ -180,7 +175,10 @@ export function GetAppModal({handleClose}: GetAppModalProps) {
 			}
 			setSku(sku as SKU);
 
-			setFreeApp(sku?.price === 0 && sku.skuOptions[0].value === 'no');
+			if (sku?.price === 0 && sku.skuOptions[0].value === 'no') {
+				setFreeApp(true);
+				setSelectedPaymentMethod(null);
+			}
 
 			const account = await getAccountByAccountId({accountId});
 
@@ -261,12 +259,18 @@ export function GetAppModal({handleClose}: GetAppModalProps) {
 			currencyCode: channel.currencyCode,
 		};
 
+		const origin = window.location.origin;
+
+		let newCart: Partial<Cart> = {};
+
+		let cartResponse;
+
 		if (freeApp) {
-			const newCart: Partial<Cart> = {
+			newCart = {
 				...cart,
 			};
 
-			const cartResponse = await postCartByChannelId({
+			cartResponse = await postCartByChannelId({
 				cartBody: newCart,
 				channelId: channel.id,
 			});
@@ -285,7 +289,7 @@ export function GetAppModal({handleClose}: GetAppModalProps) {
 			);
 		}
 		else {
-			let newCart: Partial<Cart> = {};
+			newCart = {};
 			if (selectedPaymentMethod === 'pay') {
 				newCart = {
 					...cart,
@@ -298,36 +302,41 @@ export function GetAppModal({handleClose}: GetAppModalProps) {
 				newCart = {
 					...cart,
 					billingAddress,
-					shippingAddress: billingAddress,
 					purchaseOrderNumber,
 					author: email,
 				};
 			}
 
 			if (selectedPaymentMethod === 'trial') {
-				newCart = {...cart};
+				newCart = {
+					...cart,
+					billingAddress,
+				};
 			}
 
-			const cartResponse = await postCartByChannelId({
+			cartResponse = await postCartByChannelId({
 				cartBody: newCart,
 				channelId: channel.id,
 			});
 
 			await postCheckoutCart({cartId: cartResponse.id});
-
-			const paymentMethodURL = await getPaymentMethodURL(
-				cartResponse.id,
-				`http://localhost:8080/next-steps?orderId=${
-					cartResponse.id
-				}&logoURL=${account?.logoURL}&appLogoURL=${
-					app?.urlImage
-				}&accountName=${account?.name}&accountLogo=${
-					account?.logoURL
-				}&appCategory=${'appCategory'}&appName=${app.name}`
-			);
-
-			window.location.href = paymentMethodURL;
 		}
+
+		const url = `${origin}/next-steps?orderId=${cartResponse.id}&logoURL=${
+			account?.logoURL
+		}&appLogoURL=${app?.urlImage}&accountName=${
+			account?.name
+		}&accountLogo=${
+			account?.logoURL
+		}&appCategory=${'appCategory'}&appName=${app.name}`;
+
+		const paymentMethodURL = await getPaymentMethodURL(
+			cartResponse.id,
+			url
+		);
+
+		window.location.href =
+			selectedPaymentMethod === 'pay' ? paymentMethodURL : url;
 
 		onClose();
 	}
@@ -397,6 +406,7 @@ export function GetAppModal({handleClose}: GetAppModalProps) {
 
 										<span className="get-app-modal-body-content-app-info-version">
 											{appVersion} by{' '}
+											{accountPublisher?.name}
 											{accountPublisher?.name}
 										</span>
 									</div>
