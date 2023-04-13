@@ -2,6 +2,7 @@ import {ClayPaginationBarWithBasicItems} from '@clayui/pagination-bar';
 import {useEffect, useState} from 'react';
 
 import accountLogo from '../../assets/icons/mainAppLogo.svg';
+import {DashboardNavigation} from '../../components/DashboardNavigation/DashboardNavigation';
 import {DashboardMemberTableRow} from '../../components/DashboardTable/DashboardMemberTableRow';
 import {
 	AppProps,
@@ -11,15 +12,17 @@ import {PublishedAppsDashboardTableRow} from '../../components/DashboardTable/Pu
 import {MemberProfile} from '../../components/MemberProfile/MemberProfile';
 import {
 	getAccounts,
-	getCatalogByExternalReferenceCode,
+	getCatalog,
 	getProductSpecifications,
 	getProducts,
 	getUserAccounts,
 } from '../../utils/api';
+import {AccountDetailsPage} from '../AccountDetailsPage/AccountDetailsPage';
 import {
 	DashboardListItems,
 	DashboardPage,
 } from '../DashBoardPage/DashboardPage';
+
 import {
 	AccountBriefProps,
 	MemberProps,
@@ -29,6 +32,8 @@ import {
 	UserAccountProps,
 	initialDashboardNavigationItems,
 } from './PublishedDashboardPageUtil';
+
+import './PublishedAppsDashboardPage.scss';
 
 declare let Liferay: {
 	ThemeDisplay: {getLanguageId: () => string};
@@ -69,6 +74,7 @@ const memberTableHeaders = [
 
 const initialAccountsState: Account[] = [
 	{
+		customFields: {CatalogId: 0},
 		externalReferenceCode: '',
 		id: 0,
 		name: '',
@@ -84,6 +90,7 @@ interface PublishedAppTable {
 export function PublishedAppsDashboardPage() {
 	const [accounts, setAccounts] = useState<Account[]>(initialAccountsState);
 	const [apps, setApps] = useState<AppProps[]>(Array<AppProps>());
+	const [selectedApp, setSelectedApp] = useState<AppProps>();
 	const [dashboardNavigationItems, setDashboardNavigationItems] = useState(
 		initialDashboardNavigationItems
 	);
@@ -95,6 +102,7 @@ export function PublishedAppsDashboardPage() {
 	const [members, setMembers] = useState<MemberProps[]>(Array<MemberProps>());
 	const [selectedMember, setSelectedMember] = useState<MemberProps>();
 	const [selectedAccount, setSelectedAccount] = useState<Account>({
+		customFields: {CatalogId: 0},
 		externalReferenceCode: '',
 		id: 0,
 		name: '',
@@ -213,6 +221,7 @@ export function PublishedAppsDashboardPage() {
 			const accountsList = accountsResponse.items.map(
 				(account: Account) => {
 					return {
+						customFields: account.customFields,
 						externalReferenceCode: account.externalReferenceCode,
 						id: account.id,
 						name: account.name,
@@ -227,16 +236,10 @@ export function PublishedAppsDashboardPage() {
 
 	useEffect(() => {
 		(async () => {
-			const accountERC = selectedAccount.externalReferenceCode;
+			const accountCatalogId = selectedAccount.customFields.CatalogId;
 
-			if (accountERC) {
-				const currentCatalog = await getCatalogByExternalReferenceCode(
-					selectedAccount.externalReferenceCode
-				);
-
-				const currentCatalogId = currentCatalog.id;
-
-				if (currentCatalogId !== 0) {
+			if (accountCatalogId) {
+				if (accountCatalogId !== 0) {
 					const appList = await getProducts();
 
 					const appListProductIds: number[] =
@@ -251,7 +254,7 @@ export function PublishedAppsDashboardPage() {
 
 					appList.items.forEach(
 						(product: ProductResponseProps, index: number) => {
-							if (product.catalogId === currentCatalogId) {
+							if (product.catalogId === accountCatalogId) {
 								newAppList.push({
 									catalogId: product.catalogId,
 									externalReferenceCode:
@@ -317,15 +320,13 @@ export function PublishedAppsDashboardPage() {
 	}, [apps]);
 
 	useEffect(() => {
-		(() => {
-			const clickedNavigationItem =
-				dashboardNavigationItems.find(
-					(dashboardNavigationItem) =>
-						dashboardNavigationItem.itemSelected
-				) || dashboardNavigationItems[0];
+		const clickedNavigationItem =
+			dashboardNavigationItems.find(
+				(dashboardNavigationItem) =>
+					dashboardNavigationItem.itemSelected
+			) || dashboardNavigationItems[0];
 
-			setSelectedNavigationItem(clickedNavigationItem.itemTitle);
-		})();
+		setSelectedNavigationItem(clickedNavigationItem?.itemTitle as string);
 	}, [dashboardNavigationItems]);
 
 	useEffect(() => {
@@ -372,100 +373,87 @@ export function PublishedAppsDashboardPage() {
 	}, [selectedNavigationItem, selectedAccount]);
 
 	return (
-		<div>
-			{(() => {
-				if (selectedNavigationItem === 'Apps') {
-					return (
-						<DashboardPage
-							accountAppsNumber={apps.length.toString()}
-							accountLogo={accountLogo}
-							accounts={accounts}
-							buttonMessage="+ New App"
-							currentAccount={selectedAccount}
-							dashboardNavigationItems={dashboardNavigationItems}
-							messages={appMessages}
-							setDashboardNavigationItems={
-								setDashboardNavigationItems
-							}
-							setSelectedAccount={setSelectedAccount}
-						>
-							<DashboardTable<AppProps>
-								emptyStateMessage={
-									appMessages.emptyStateMessage
-								}
-								items={publishedAppTable.items}
-								tableHeaders={appTableHeaders}
-							>
-								{(item) => (
-									<PublishedAppsDashboardTableRow
-										item={item}
-										key={item.name}
-									/>
-								)}
-							</DashboardTable>
+		<div className="published-apps-dashboard-page-container">
+			<DashboardNavigation
+				accountAppsNumber={apps.length.toString()}
+				accountIcon={accountLogo}
+				accounts={accounts}
+				currentAccount={selectedAccount}
+				dashboardNavigationItems={dashboardNavigationItems}
+				onSelectAppChange={setSelectedApp}
+				selectedApp={selectedApp}
+				setDashboardNavigationItems={setDashboardNavigationItems}
+				setSelectedAccount={setSelectedAccount}
+			/>
 
-							{publishedAppTable.items.length ? (
-								<ClayPaginationBarWithBasicItems
-									active={page}
-									activeDelta={publishedAppTable.pageSize}
-									defaultActive={1}
-									ellipsisBuffer={3}
-									ellipsisProps={{
-										'aria-label': 'More',
-										'title': 'More',
-									}}
-									onActiveChange={setPage}
-									showDeltasDropDown={false}
-									totalItems={publishedAppTable.totalCount}
-								/>
-							) : (
-								<></>
-							)}
-						</DashboardPage>
-					);
-				}
-				else if (selectedNavigationItem === 'Members') {
-					return (
-						<DashboardPage
-							accountAppsNumber={apps.length.toString()}
-							accountLogo={accountLogo}
-							accounts={accounts}
-							currentAccount={selectedAccount}
-							dashboardNavigationItems={dashboardNavigationItems}
-							messages={memberMessages}
-							setDashboardNavigationItems={
-								setDashboardNavigationItems
-							}
-							setSelectedAccount={setSelectedAccount}
+			{selectedNavigationItem === 'Apps' && (
+				<DashboardPage
+					buttonMessage="+ New App"
+					dashboardNavigationItems={dashboardNavigationItems}
+					messages={appMessages}
+				>
+					<DashboardTable<AppProps>
+						emptyStateMessage={appMessages.emptyStateMessage}
+						items={publishedAppTable.items}
+						tableHeaders={appTableHeaders}
+					>
+						{(item) => (
+							<PublishedAppsDashboardTableRow
+								item={item}
+								key={item.name}
+							/>
+						)}
+					</DashboardTable>
+
+					{publishedAppTable.items.length ? (
+						<ClayPaginationBarWithBasicItems
+							active={page}
+							activeDelta={publishedAppTable.pageSize}
+							defaultActive={1}
+							ellipsisBuffer={3}
+							ellipsisProps={{
+								'aria-label': 'More',
+								'title': 'More',
+							}}
+							onActiveChange={setPage}
+							showDeltasDropDown={false}
+							totalItems={publishedAppTable.totalCount}
+						/>
+					) : (
+						<></>
+					)}
+				</DashboardPage>
+			)}
+
+			{selectedNavigationItem === 'Members' && (
+				<DashboardPage
+					dashboardNavigationItems={dashboardNavigationItems}
+					messages={memberMessages}
+				>
+					{selectedMember ? (
+						<MemberProfile
+							member={selectedMember}
+							setSelectedMember={setSelectedMember}
+						></MemberProfile>
+					) : (
+						<DashboardTable<MemberProps>
+							emptyStateMessage={memberMessages.emptyStateMessage}
+							items={members}
+							tableHeaders={memberTableHeaders}
 						>
-							{selectedMember ? (
-								<MemberProfile
-									member={selectedMember}
-									setSelectedMember={setSelectedMember}
-								></MemberProfile>
-							) : (
-								<DashboardTable<MemberProps>
-									emptyStateMessage={
-										memberMessages.emptyStateMessage
-									}
-									items={members}
-									tableHeaders={memberTableHeaders}
-								>
-									{(item) => (
-										<DashboardMemberTableRow
-											item={item}
-											key={item.name}
-											onSelectedMemberChange={
-												setSelectedMember
-											}
-										/>
-									)}
-								</DashboardTable>
+							{(item) => (
+								<DashboardMemberTableRow
+									item={item}
+									key={item.name}
+									onSelectedMemberChange={setSelectedMember}
+								/>
 							)}
-						</DashboardPage>
-					);
-				}
-			})()}
+						</DashboardTable>
+					)}
+				</DashboardPage>
+			)}
+
+			{selectedNavigationItem === 'Account' && <AccountDetailsPage />}
 		</div>
 	);
 }

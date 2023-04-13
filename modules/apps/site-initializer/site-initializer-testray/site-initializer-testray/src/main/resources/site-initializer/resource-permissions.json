@@ -101,6 +101,17 @@
 	},
 	{
 		"actionIds": [
+			"DELETE",
+			"UPDATE",
+			"VIEW"
+		],
+		"primKey": "0",
+		"resourceName": "com.liferay.object.model.ObjectDefinition#[$OBJECT_DEFINITION_ID:Factor$]",
+		"roleName": "Testray Administrator",
+		"scope": 1
+	},
+	{
+		"actionIds": [
 			"ADD_OBJECT_ENTRY"
 		],
 		"primKey": "0",
@@ -114,10 +125,10 @@
 			"UPDATE",
 			"VIEW"
 		],
-		"primKey": "0",
-		"resourceName": "com.liferay.object.model.ObjectDefinition#[$OBJECT_DEFINITION_ID:FactorCategory$]",
+		"primKey": "[$OBJECT_DEFINITION_ID:FactorCategory$]",
+		"resourceName": "com.liferay.object.model.ObjectDefinition",
 		"roleName": "Testray Administrator",
-		"scope": 1
+		"scope": 4
 	},
 	{
 		"actionIds": [
@@ -331,10 +342,10 @@
 	},
 	{
 		"actionIds": [
-			"ADD_OBJECT_ENTRY"
+			"ADD_USER"
 		],
 		"primKey": "0",
-		"resourceName": "com.liferay.portal.kernel.model.User",
+		"resourceName": "90",
 		"roleName": "Testray Administrator",
 		"scope": 1
 	},
@@ -393,6 +404,42 @@
 		],
 		"primKey": "0",
 		"resourceName": "com.liferay.object.model.ObjectDefinition#[$OBJECT_DEFINITION_ID:Component$]",
+		"roleName": "Testray Analyst",
+		"scope": 1
+	},
+	{
+		"actionIds": [
+			"VIEW"
+		],
+		"primKey": "0",
+		"resourceName": "com.liferay.object.model.ObjectDefinition#[$OBJECT_DEFINITION_ID:Factor$]",
+		"roleName": "Testray Analyst",
+		"scope": 1
+	},
+	{
+		"actionIds": [
+			"VIEW"
+		],
+		"primKey": "0",
+		"resourceName": "com.liferay.object.model.ObjectDefinition#[$OBJECT_DEFINITION_ID:FactorCategory$]",
+		"roleName": "Testray Analyst",
+		"scope": 1
+	},
+	{
+		"actionIds": [
+			"VIEW"
+		],
+		"primKey": "[$OBJECT_DEFINITION_ID:FactorCategory$]",
+		"resourceName": "com.liferay.object.model.ObjectDefinition",
+		"roleName": "Testray Analyst",
+		"scope": 4
+	},
+	{
+		"actionIds": [
+			"VIEW"
+		],
+		"primKey": "0",
+		"resourceName": "com.liferay.object.model.ObjectDefinition#[$OBJECT_DEFINITION_ID:FactorOption$]",
 		"roleName": "Testray Analyst",
 		"scope": 1
 	},
@@ -492,6 +539,15 @@
 	},
 	{
 		"actionIds": [
+			"VIEW"
+		],
+		"primKey": "0",
+		"resourceName": "com.liferay.object.model.ObjectDefinition#[$OBJECT_DEFINITION_ID:Team$]",
+		"roleName": "Testray Analyst",
+		"scope": 1
+	},
+	{
+		"actionIds": [
 			"DELETE",
 			"UPDATE",
 			"VIEW"
@@ -572,6 +628,15 @@
 	},
 	{
 		"actionIds": [
+			"VIEW"
+		],
+		"primKey": "0",
+		"resourceName": "com.liferay.object.model.ObjectDefinition#[$OBJECT_DEFINITION_ID:Factor$]",
+		"roleName": "Testray Lead",
+		"scope": 1
+	},
+	{
+		"actionIds": [
 			"ADD_OBJECT_ENTRY"
 		],
 		"primKey": "0",
@@ -581,13 +646,21 @@
 	},
 	{
 		"actionIds": [
-			"UPDATE",
 			"VIEW"
 		],
 		"primKey": "0",
 		"resourceName": "com.liferay.object.model.ObjectDefinition#[$OBJECT_DEFINITION_ID:FactorCategory$]",
 		"roleName": "Testray Lead",
 		"scope": 1
+	},
+	{
+		"actionIds": [
+			"VIEW"
+		],
+		"primKey": "[$OBJECT_DEFINITION_ID:FactorCategory$]",
+		"resourceName": "com.liferay.object.model.ObjectDefinition",
+		"roleName": "Testray Lead",
+		"scope": 4
 	},
 	{
 		"actionIds": [
@@ -739,21 +812,10 @@
 	},
 	{
 		"actionIds": [
-			"DELETE",
-			"UPDATE",
 			"VIEW"
 		],
 		"primKey": "0",
 		"resourceName": "com.liferay.object.model.ObjectDefinition#[$OBJECT_DEFINITION_ID:Team$]",
-		"roleName": "Testray Lead",
-		"scope": 1
-	},
-	{
-		"actionIds": [
-			"ADD_OBJECT_ENTRY"
-		],
-		"primKey": "0",
-		"resourceName": "com.liferay.object#[$OBJECT_DEFINITION_ID:Team$]",
 		"roleName": "Testray Lead",
 		"scope": 1
 	},
@@ -807,6 +869,42 @@
 			"VIEW"
 		],
 		"primKey": "0",
+		"resourceName": "com.liferay.object.model.ObjectDefinition#[$OBJECT_DEFINITION_ID:Factor$]",
+		"roleName": "Testray User",
+		"scope": 1
+	},
+	{
+		"actionIds": [
+			"VIEW"
+		],
+		"primKey": "0",
+		"resourceName": "com.liferay.object.model.ObjectDefinition#[$OBJECT_DEFINITION_ID:FactorCategory$]",
+		"roleName": "Testray User",
+		"scope": 1
+	},
+	{
+		"actionIds": [
+			"VIEW"
+		],
+		"primKey": "0",
+		"resourceName": "com.liferay.object.model.ObjectDefinition#[$OBJECT_DEFINITION_ID:FactorOption$]",
+		"roleName": "Testray User",
+		"scope": 1
+	},
+	{
+		"actionIds": [
+			"VIEW"
+		],
+		"primKey": "[$OBJECT_DEFINITION_ID:FactorCategory$]",
+		"resourceName": "com.liferay.object.model.ObjectDefinition",
+		"roleName": "Testray User",
+		"scope": 4
+	},
+	{
+		"actionIds": [
+			"VIEW"
+		],
+		"primKey": "0",
 		"resourceName": "com.liferay.object.model.ObjectDefinition#[$OBJECT_DEFINITION_ID:Project$]",
 		"roleName": "Testray User",
 		"scope": 1
@@ -853,6 +951,15 @@
 		],
 		"primKey": "0",
 		"resourceName": "com.liferay.portal.kernel.model.User",
+		"roleName": "Testray User",
+		"scope": 1
+	},
+	{
+		"actionIds": [
+			"VIEW"
+		],
+		"primKey": "0",
+		"resourceName": "com.liferay.object.model.ObjectDefinition#[$OBJECT_DEFINITION_ID:Team$]",
 		"roleName": "Testray User",
 		"scope": 1
 	}

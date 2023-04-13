@@ -14,8 +14,13 @@
 
 package com.liferay.jethr0.project.comparator;
 
+import com.liferay.jethr0.dalo.ProjectPrioritizerToProjectComparatorsDALO;
+import com.liferay.jethr0.entity.factory.EntityFactory;
 import com.liferay.jethr0.entity.repository.BaseEntityRepository;
+import com.liferay.jethr0.project.prioritizer.ProjectPrioritizer;
 import com.liferay.jethr0.project.prioritizer.ProjectPrioritizerRepository;
+
+import org.json.JSONObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -27,9 +32,62 @@ import org.springframework.context.annotation.Configuration;
 public class ProjectComparatorRepository
 	extends BaseEntityRepository<ProjectComparator> {
 
+	public ProjectComparator add(
+		ProjectPrioritizer projectPrioritizer, long position,
+		ProjectComparator.Type type, String value) {
+
+		JSONObject jsonObject = new JSONObject();
+
+		jsonObject.put(
+			"position", position
+		).put(
+			"type", type.getJSONObject()
+		).put(
+			"value", value
+		);
+
+		EntityFactory<ProjectComparator> entityFactory =
+			_projectComparatorDALO.getEntityFactory();
+
+		ProjectComparator projectComparator = entityFactory.newEntity(
+			jsonObject);
+
+		projectComparator.setProjectPrioritizer(projectPrioritizer);
+
+		projectPrioritizer.addProjectComparator(projectComparator);
+
+		return add(projectComparator);
+	}
+
 	@Override
 	public ProjectComparatorDALO getEntityDALO() {
 		return _projectComparatorDALO;
+	}
+
+	@Override
+	public ProjectComparator updateEntityRelationshipsInDatabase(
+		ProjectComparator projectComparator) {
+
+		_projectPrioritizerToProjectComparatorsDALO.updateParentEntities(
+			projectComparator);
+
+		return projectComparator;
+	}
+
+	@Override
+	protected ProjectComparator updateEntityRelationshipsFromDatabase(
+		ProjectComparator projectComparator) {
+
+		for (ProjectPrioritizer projectPrioritizer :
+				_projectPrioritizerToProjectComparatorsDALO.getParentEntities(
+					projectComparator)) {
+
+			projectComparator.setProjectPrioritizer(projectPrioritizer);
+
+			projectPrioritizer.addProjectComparator(projectComparator);
+		}
+
+		return projectComparator;
 	}
 
 	@Autowired
@@ -37,5 +95,9 @@ public class ProjectComparatorRepository
 
 	@Autowired
 	private ProjectPrioritizerRepository _projectPrioritizerRepository;
+
+	@Autowired
+	private ProjectPrioritizerToProjectComparatorsDALO
+		_projectPrioritizerToProjectComparatorsDALO;
 
 }

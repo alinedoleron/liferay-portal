@@ -16,63 +16,40 @@ package com.liferay.jethr0.dalo;
 
 import com.liferay.jethr0.build.Build;
 import com.liferay.jethr0.build.BuildFactory;
+import com.liferay.jethr0.entity.dalo.BaseEntityRelationshipDALO;
+import com.liferay.jethr0.entity.factory.EntityFactory;
 import com.liferay.jethr0.project.Project;
+import com.liferay.jethr0.project.ProjectFactory;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import org.json.JSONObject;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 
 /**
  * @author Michael Hashimoto
  */
 @Configuration
-public class ProjectToBuildsDALO extends BaseRelationshipDALO {
+public class ProjectToBuildsDALO
+	extends BaseEntityRelationshipDALO<Project, Build> {
 
-	public JSONObject createRelationship(Project project, Build build) {
-		return create("/o/c/projects", project.getId(), build.getId());
+	@Override
+	public EntityFactory<Build> getChildEntityFactory() {
+		return _buildFactory;
 	}
 
-	public void deleteRelationship(Project project, Build build) {
-		delete("/o/c/projects", project.getId(), build.getId());
-	}
-
-	public List<Build> retrieveBuilds(Project project) {
-		List<Build> builds = new ArrayList<>();
-
-		for (JSONObject responseJSONObject :
-				retrieve("/o/c/projects", project.getId())) {
-
-			builds.add(BuildFactory.newBuild(project, responseJSONObject));
-		}
-
-		return builds;
-	}
-
-	public void updateRelationships(Project project) {
-		List<Build> remoteBuilds = retrieveBuilds(project);
-
-		for (Build build : project.getBuilds()) {
-			if (remoteBuilds.contains(build)) {
-				remoteBuilds.removeAll(Collections.singletonList(build));
-
-				continue;
-			}
-
-			createRelationship(project, build);
-		}
-
-		for (Build remoteBuild : remoteBuilds) {
-			deleteRelationship(project, remoteBuild);
-		}
+	@Override
+	public EntityFactory<Project> getParentEntityFactory() {
+		return _projectFactory;
 	}
 
 	@Override
 	protected String getObjectRelationshipName() {
 		return "projectToBuilds";
 	}
+
+	@Autowired
+	private BuildFactory _buildFactory;
+
+	@Autowired
+	private ProjectFactory _projectFactory;
 
 }

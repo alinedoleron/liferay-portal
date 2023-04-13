@@ -14,11 +14,19 @@
 
 package com.liferay.jethr0.project;
 
+import com.liferay.jethr0.build.Build;
+import com.liferay.jethr0.dalo.ProjectToBuildsDALO;
+import com.liferay.jethr0.dalo.ProjectToTasksDALO;
+import com.liferay.jethr0.dalo.ProjectsToGitBranchesDALO;
+import com.liferay.jethr0.dalo.ProjectsToTestSuitesDALO;
 import com.liferay.jethr0.entity.repository.BaseEntityRepository;
+import com.liferay.jethr0.gitbranch.GitBranch;
+import com.liferay.jethr0.task.Task;
+import com.liferay.jethr0.testsuite.TestSuite;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -29,11 +37,13 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ProjectRepository extends BaseEntityRepository<Project> {
 
-	public List<Project> getByState(Project.State state) {
+	public List<Project> getByStates(Project.State... states) {
+		List<Project.State> statesList = Arrays.asList(states);
+
 		List<Project> projects = new ArrayList<>();
 
 		for (Project project : getAll()) {
-			if (!Objects.equals(project.getState(), state)) {
+			if (!statesList.contains(project.getState())) {
 				continue;
 			}
 
@@ -48,7 +58,62 @@ public class ProjectRepository extends BaseEntityRepository<Project> {
 		return _projectDALO;
 	}
 
+	@Override
+	public Project updateEntityRelationshipsInDatabase(Project project) {
+		_projectToBuildsDALO.updateChildEntities(project);
+		_projectsToGitBranchesDALO.updateRelationships(project);
+		_projectToTasksDALO.updateRelationships(project);
+		_projectsToTestSuitesDALO.updateRelationships(project);
+
+		return project;
+	}
+
+	@Override
+	protected Project updateEntityRelationshipsFromDatabase(Project project) {
+		for (Build build : _projectToBuildsDALO.getChildEntities(project)) {
+			project.addBuild(build);
+
+			build.setProject(project);
+		}
+
+		for (GitBranch gitBranch :
+				_projectsToGitBranchesDALO.retrieveGitBranches(project)) {
+
+			project.addGitBranch(gitBranch);
+
+			gitBranch.addProject(project);
+		}
+
+		for (Task task : _projectToTasksDALO.retrieveTasks(project)) {
+			project.addTask(task);
+
+			task.setProject(project);
+		}
+
+		for (TestSuite testSuite :
+				_projectsToTestSuitesDALO.retrieveTestSuites(project)) {
+
+			project.addTestSuite(testSuite);
+
+			testSuite.addProject(project);
+		}
+
+		return project;
+	}
+
 	@Autowired
 	private ProjectDALO _projectDALO;
+
+	@Autowired
+	private ProjectsToGitBranchesDALO _projectsToGitBranchesDALO;
+
+	@Autowired
+	private ProjectsToTestSuitesDALO _projectsToTestSuitesDALO;
+
+	@Autowired
+	private ProjectToBuildsDALO _projectToBuildsDALO;
+
+	@Autowired
+	private ProjectToTasksDALO _projectToTasksDALO;
 
 }

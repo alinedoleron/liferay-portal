@@ -1831,6 +1831,87 @@ definition {
 		SearchPortlets.viewCopiedContent(text = "_shards");
 	}
 
+	@description = "This is a use case for LPS-130126 and LPS-145648."
+	@priority = 4
+	test CustomFacetDoesNotDisplayEmptyDDMField {
+		task ("Create a web content structure with a text DDM field") {
+			WebContentNavigator.openWebContentStructuresAdmin(siteURLKey = "guest");
+
+			WebContentStructures.addCP(structureName = "Test Structure");
+
+			DataEngine.addField(
+				fieldFieldLabel = "Text",
+				fieldName = "Text");
+
+			WebContentStructures.saveCP(structureName = "Test Structure");
+		}
+
+		task ("Create a web content article using the structure and leave the text DDM field blank") {
+			WebContentNavigator.openWebContentAdmin(siteURLKey = "guest");
+
+			WebContentNavigator.gotoAddWithStructureCP(structureName = "Test Structure");
+
+			WebContent.addWithStructureCP(
+				structureName = "Test Structure",
+				webContentTitle = "WC Title");
+
+			PortletEntry.publish();
+		}
+
+		task ("Go to the Search page and execute a search for the web content article") {
+			Search.openSearchPage(searchTerm = "WC Title");
+		}
+
+		task ("Add the Custom Facet to the page") {
+			SearchPortlets.addWidgets(searchPortletList = "Custom Facet");
+		}
+
+		task ("Curl the Elasticsearch index to retrieve the DDM field name of the text field for the web content structure") {
+			var port = Elasticsearch.getServerPort();
+			var portalHostname = PropsUtil.get("portal.hostname");
+
+			var curl = "http://${portalHostname}:${port}/_search?q=entryClassName:com.liferay.journal.model.JournalArticle";
+
+			var journalArticleDocumentType = JSONCurlUtil.get(${curl});
+
+			var aggregationField = RegexUtil.replace(${journalArticleDocumentType}, "ddmFieldName\":\"(.*)\",\"ddmValueFieldName\"", 1);
+		}
+
+		task ("Configure the Custom Facet widget aggregation field with the DDM field name") {
+			SearchFacetPortlet.configureCustomFacet(aggregationField = ${aggregationField});
+		}
+
+		task ("Refresh the page to allow the changes to take effect") {
+			Refresh();
+		}
+
+		task ("Assert that the Custom Facet does not display any facet terms for the web content article since its text field is empty") {
+			AssertElementNotPresent(
+				key_facetType = "Custom Facet",
+				key_termValue = "",
+				locator1 = "Search#FACET_TERM");
+		}
+
+		task ("Update the text field in the web content structure to be a repeatable field") {
+			WebContentNavigator.openWebContentStructuresAdmin(siteURLKey = "guest");
+
+			WebContentNavigator.gotoEditStructure(structureName = "Test Structure");
+
+			DataEngine.toggleFieldRepeatable(fieldFieldLabel = "Text");
+
+			WebContentStructures.saveCP(structureName = "Test Structure");
+		}
+
+		task ("Perform a search and assert that the Custom Facet does not display any facet terms for the web content article since its repeatable text field is empty") {
+			Search.openSearchPage(searchTerm = "WC Title");
+
+			AssertElementNotPresent(
+				key_facetType = "Custom Facet",
+				key_termValue = "",
+				locator1 = "Search#FACET_TERM");
+		}
+	}
+
 	@priority = 4
 	test DisableEnterpriseSearch {
 		property license.required = "true";
@@ -1864,124 +1945,6 @@ definition {
 				key_configurationScope = "System Scope",
 				locator1 = "SystemSettings#SCOPED_CONFIGURATION_NAME");
 		}
-	}
-
-	@priority = 4
-	test EmptyDDMFieldNotDisplayedWithCustomFacet {
-		ProductMenu.gotoPortlet(
-			category = "Content & Data",
-			portlet = "Web Content");
-
-		NavItem.gotoStructures();
-
-		WebContentStructures.addCP(
-			structureDescription = "Test Structure Description",
-			structureName = "Test Structure");
-
-		DataEngine.addField(
-			fieldFieldLabel = "Text",
-			fieldName = "Text");
-
-		WebContentStructures.saveCP(structureName = "Test Structure");
-
-		ProductMenu.gotoPortlet(
-			category = "Content & Data",
-			portlet = "Web Content");
-
-		WebContentNavigator.gotoAddWithStructureCP(structureName = "Test Structure");
-
-		WebContent.addWithStructureCP(
-			structureName = "Test Structure",
-			webContentTitle = "WC Title");
-
-		PortletEntry.publish();
-
-		Search.openSearchPage();
-
-		SearchResultPortlet.configureSearchResults(displayDocumentForm = "true");
-
-		SearchPortlets.searchEmbedded(searchTerm = "WC Title");
-
-		SearchResultPortlet.viewSearchResults(
-			searchAssetTitle = "WC Title",
-			searchAssetType = "Web Content Article");
-
-		SearchPortlets.addWidgets(searchPortletList = "Custom Facet");
-
-		var port = Elasticsearch.getServerPort();
-		var portalHostname = PropsUtil.get("portal.hostname");
-
-		var curl = "http://${portalHostname}:${port}/_search?q=entryClassName:com.liferay.journal.model.JournalArticle";
-
-		var journalArticleDocumentType = JSONCurlUtil.get(${curl});
-
-		var aggregationField = RegexUtil.replace(${journalArticleDocumentType}, "ddmFieldName\":\"(.*)\",\"ddmValueFieldName\"", 1);
-
-		SearchFacetPortlet.configureCustomFacet(aggregationField = ${aggregationField});
-
-		AssertElementNotPresent(
-			facetValueName = "Custom Facet",
-			locator1 = "Search#FACET_DISPLAY_FREQUENCIES");
-	}
-
-	@priority = 4
-	test EmptyRepeatableDDMFieldNotDisplayedWithCustomFacet {
-		ProductMenu.gotoPortlet(
-			category = "Content & Data",
-			portlet = "Web Content");
-
-		NavItem.gotoStructures();
-
-		WebContentStructures.addCP(
-			structureDescription = "Test Structure Description",
-			structureName = "Test Structure");
-
-		DataEngine.addField(
-			fieldFieldLabel = "Text",
-			fieldName = "Text");
-
-		DataEngine.toggleFieldRepeatable(fieldFieldLabel = "Text");
-
-		WebContentStructures.saveCP(structureName = "Test Structure");
-
-		ProductMenu.gotoPortlet(
-			category = "Content & Data",
-			portlet = "Web Content");
-
-		WebContentNavigator.gotoAddWithStructureCP(structureName = "Test Structure");
-
-		WebContent.addWithStructureCP(
-			structureName = "Test Structure",
-			webContentTitle = "WC Title");
-
-		PortletEntry.publish();
-
-		Search.openSearchPage();
-
-		SearchResultPortlet.configureSearchResults(displayDocumentForm = "true");
-
-		SearchPortlets.searchEmbedded(searchTerm = "WC Title");
-
-		SearchResultPortlet.viewSearchResults(
-			searchAssetTitle = "WC Title",
-			searchAssetType = "Web Content Article");
-
-		SearchPortlets.addWidgets(searchPortletList = "Custom Facet");
-
-		var port = Elasticsearch.getServerPort();
-		var portalHostname = PropsUtil.get("portal.hostname");
-
-		var curl = "http://${portalHostname}:${port}/_search?q=entryClassName:com.liferay.journal.model.JournalArticle";
-
-		var journalArticleDocumentType = JSONCurlUtil.get(${curl});
-
-		var aggregationField = RegexUtil.replace(${journalArticleDocumentType}, "ddmFieldName\":\"(.*)\",\"ddmValueFieldName\"", 1);
-
-		SearchFacetPortlet.configureCustomFacet(aggregationField = ${aggregationField});
-
-		AssertElementNotPresent(
-			facetValueName = "Custom Facet",
-			locator1 = "Search#FACET_DISPLAY_FREQUENCIES");
 	}
 
 	@description = "This is a use case for LPS-167195. Facet selection and search results should match after using browser back button"
@@ -4151,8 +4114,9 @@ definition {
 		Refresh();
 
 		AssertElementNotPresent(
-			facetValueName = "DM Folder Name 1",
-			locator1 = "Search#FACET_DISPLAY_FREQUENCIES");
+			key_facetType = "Folder Facet",
+			key_termValue = "DM Folder Name 1",
+			locator1 = "Search#FACET_TERM_FREQUENCIES");
 	}
 
 	@priority = 4
