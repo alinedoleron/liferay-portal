@@ -273,6 +273,24 @@ export async function getChannels() {
 	return response.items as Channel[];
 }
 
+export async function getDeliveryProductSku({
+	appId,
+	channelId,
+}: {
+	appId: number;
+	channelId: number;
+}) {
+	const response = await fetch(
+		`/o/headless-commerce-delivery-catalog/v1.0/channels/${channelId}/products/${appId}?nestedFields=skus`,
+		{
+			headers,
+			method: 'GET',
+		}
+	);
+
+	return await response.json();
+}
+
 export async function getDeliveryProduct({
 	appId,
 	channelId,
@@ -289,6 +307,45 @@ export async function getDeliveryProduct({
 	);
 
 	return await response.json();
+}
+
+export async function getOrderbyERC(erc: string) {
+	const orderResponse = await fetch(
+		`/o/headless-commerce-admin-order/v1.0/orders/by-externalReferenceCode/${erc}`,
+		{
+			headers,
+			method: 'GET',
+		}
+	);
+
+	return await orderResponse.json();
+}
+
+export async function getPaymentMethodURL(
+	orderId: number,
+	callbackURL: string
+) {
+	const paymentResponse = await fetch(
+		`/o/headless-commerce-delivery-cart/v1.0/carts/${orderId}/payment-url?callbackURL=${callbackURL}`,
+		{
+			headers,
+			method: 'GET',
+		}
+	);
+
+	return await paymentResponse.text();
+}
+
+export async function getPaymentMethods(cartId: number) {
+	const paymentMethodsResponse = await fetch(
+		`/o/headless-commerce-delivery-cart/v1.0/carts/${cartId}/payment-methods`,
+		{
+			headers,
+			method: 'GET',
+		}
+	);
+
+	return await paymentMethodsResponse.json();
 }
 
 export async function getOptions() {
@@ -320,6 +377,18 @@ export async function getOrders(
 		items: PlacedOrder[];
 		totalCount: number;
 	};
+}
+
+export async function getAccountByAccountId({accountId}: {accountId: number}) {
+	const accountResponse = await fetch(
+		`/o/headless-admin-user/v1.0/accounts/${accountId}?nestedFields=accountUserAccounts`,
+		{
+			headers,
+			method: 'GET',
+		}
+	);
+
+	return await accountResponse.json();
 }
 
 export async function getProduct({appERC}: {appERC: string}) {
@@ -425,7 +494,6 @@ export async function getSKUCustomFieldExpandoValue({
 	skuId: number;
 }) {
 	let response = '';
-
 	await Liferay.Service(
 		'/expandovalue/get-data',
 		{

@@ -2,15 +2,17 @@ import ClayButton from '@clayui/button';
 import ClayIcon from '@clayui/icon';
 import ClayModal, {useModal} from '@clayui/modal';
 import {useEffect, useState} from 'react';
+import {Liferay} from '../../liferay/liferay';
 
 import {getCompanyId} from '../../liferay/constants';
-import {Liferay} from '../../liferay/liferay';
 import {
+	getAccountByAccountId,
 	getAccountInfo,
 	getAccountInfoFromCommerce,
 	getAccounts,
 	getChannels,
 	getDeliveryProduct,
+	getPaymentMethodURL,
 	getProduct,
 	getProductSKU,
 	getSKUCustomFieldExpandoValue,
@@ -22,18 +24,32 @@ import {
 } from '../../utils/api';
 
 import './GetAppModal.scss';
+import {SelectPaymentMethod} from './SelectPaymentMethod';
 
 interface App {
 	createdBy: string;
 	id: number;
 	name: {en_US: string} | string;
 	price: number;
+	productId: number;
 	urlImage: string;
 }
 
 interface GetAppModalProps {
 	handleClose: () => void;
 }
+
+const initialBillingAddress = {
+	city: '',
+	country: '',
+	countryISOCode: 'US',
+	name: '',
+	phoneNumber: '',
+	region: '',
+	street1: '',
+	street2: '',
+	zip: '',
+};
 
 export function GetAppModal({handleClose}: GetAppModalProps) {
 	const {observer, onClose} = useModal({
@@ -46,6 +62,7 @@ export function GetAppModal({handleClose}: GetAppModalProps) {
 		id: 0,
 		name: '',
 		price: 0,
+		productId: 0,
 		urlImage: '',
 	});
 	const [appVersion, setAppVersion] = useState<string>();
@@ -66,6 +83,28 @@ export function GetAppModal({handleClose}: GetAppModalProps) {
 		sku: '',
 		skuOptions: [],
 	});
+
+	const [addresses, setAddresses] = useState<PostalAddressResponse[]>([]);
+
+	const [billingAddress, setBillingAddress] = useState<BillingAddress>(
+		initialBillingAddress
+	);
+
+	const [selectedPaymentMethod, setSelectedPaymentMethod] =
+		useState<PaymentMethodSelector>('pay');
+
+	const [selectedAddress, setSelectedAddress] = useState('');
+
+	const [showNewAddressButton, setShowNewAddressButton] = useState(false);
+
+	const [enableTrialMethod, setEnableTrialMethod] = useState<string>('no');
+
+	const [phoneNumber, setPhoneNumber] = useState('');
+
+	const [purchaseOrderNumber, setPurchaseOrderNumber] = useState<string>('');
+	const [email, setEmail] = useState<string>('');
+
+	const [freeApp, setFreeApp] = useState<boolean>(true);
 
 	useEffect(() => {
 		const getModalInfo = async () => {
@@ -120,17 +159,55 @@ export function GetAppModal({handleClose}: GetAppModalProps) {
 				appProductId: Liferay.MarketplaceCustomerFlow.appId,
 			});
 
-			const sku = skuResponse.items[0];
+			let sku;
+			if (skuResponse.items.length > 1) {
+				let isTrial;
+				isTrial = skuResponse.items
+					.map((sku) =>
+						sku.skuOptions.find((option) => option.value === 'yes')
+					)
+					.filter((sku) => sku)[0]?.value;
+				setEnableTrialMethod(isTrial as string);
+				sku = skuResponse.items.find((sku) => sku.price !== 0);
+			}
+			else {
+				sku = skuResponse.items[0];
+			}
+			setSku(sku as SKU);
 
-			setSku(sku);
+			setFreeApp(sku?.price === 0 && !sku.skuOptions);
 
-			const version = await getSKUCustomFieldExpandoValue({
-				companyId: Number(getCompanyId()),
-				customFieldName: 'version',
-				skuId: sku.id,
+			const account = await getAccountByAccountId({accountId});
+
+			const postalAddresses = account?.accountUserAccounts[0]
+				.userAccountContactInformation
+				.postalAddresses as PostalAddressResponse[];
+
+			let addresses = [] as PostalAddressResponse[];
+
+			postalAddresses?.map((item) => {
+				addresses = [...addresses, item];
 			});
 
-			setAppVersion(version);
+			setAddresses(addresses);
+
+			const telephone =
+				account.accountUserAccounts[0].userAccountContactInformation
+					.telephones[0];
+
+			if (telephone) {
+				setPhoneNumber(
+					`(${telephone.extension}) ${telephone.phoneNumber}`
+				);
+			}
+
+			const versionResponse = await getSKUCustomFieldExpandoValue({
+				companyId: Number(getCompanyId()),
+				customFieldName: 'version',
+				skuId: sku?.id as number,
+			});
+
+			setAppVersion(versionResponse);
 
 			const adminProduct = await getProduct({
 				appERC: app?.externalReferenceCode,
@@ -154,172 +231,275 @@ export function GetAppModal({handleClose}: GetAppModalProps) {
 
 			setAccountPublisher(accountPublisher);
 		};
-
 		getModalInfo();
 	}, []);
 
 	async function handleGetApp() {
-		const newCart: Partial<Cart> = {
-			accountId: account?.id || 50307,
+		const cart: Partial<Cart> = {
+			accountId: account?.id as number,
 			cartItems: [
 				{
 					price: {
 						currency: channel.currencyCode,
 						discount: 0,
-						finalPrice: sku.price,
-						price: sku.price,
+						finalPrice: app.price,
+						price: app.price,
 					},
-					productId: app?.id,
+					productId: app.id,
 					quantity: 1,
 					settings: {
 						maxQuantity: 1,
 					},
-					skuId: sku.id as number,
+					skuId: sku?.id as number,
 				},
 			],
 			currencyCode: channel.currencyCode,
 		};
 
-		const cartResponse = await postCartByChannelId({
-			cartBody: newCart,
-			channelId: channel.id,
-		});
+		if (freeApp) {
+			const newCart: Partial<Cart> = {
+				...cart,
+			};
 
-		const cartCheckoutResponse = await postCheckoutCart({
-			cartId: cartResponse.id,
-		});
+			const cartResponse = await postCartByChannelId({
+				cartBody: newCart,
+				channelId: channel.id,
+			});
 
-		const newOrderStatus = {
-			orderStatus: 1,
-		};
+			const cartCheckoutResponse = await postCheckoutCart({
+				cartId: cartResponse.id,
+			});
 
-		await patchOrderByERC(cartCheckoutResponse.orderUUID, newOrderStatus);
+			const newOrderStatus = {
+				orderStatus: 1,
+			};
+
+			await patchOrderByERC(
+				cartCheckoutResponse.orderUUID,
+				newOrderStatus
+			);
+		}
+		else {
+			let newCart: Partial<Cart> = {};
+			if (selectedPaymentMethod === 'pay') {
+				newCart = {
+					...cart,
+					billingAddress,
+					paymentMethod: 'paypal',
+				};
+			}
+
+			if (selectedPaymentMethod === 'order') {
+				newCart = {
+					...cart,
+					billingAddress,
+					purchaseOrderNumber,
+					author: email,
+				};
+			}
+
+			if (selectedPaymentMethod === 'trial') {
+				newCart = {
+					...cart,
+					billingAddress,
+				};
+			}
+
+			const cartResponse = await postCartByChannelId({
+				cartBody: newCart,
+				channelId: channel.id,
+			});
+
+			await postCheckoutCart({cartId: cartResponse.id});
+
+			const origin = window.location.origin;
+
+			const url = `${origin}/next-steps?orderId=${
+				cartResponse.id
+			}&logoURL=${account?.logoURL}&appLogoURL=${
+				app?.urlImage
+			}&accountName=${account?.name}&accountLogo=${
+				account?.logoURL
+			}&appCategory=${'appCategory'}&appName=${app.name}`;
+
+			const paymentMethodURL = await getPaymentMethodURL(
+				cartResponse.id,
+				url
+			);
+
+			window.location.href =
+				selectedPaymentMethod === 'pay' ? paymentMethodURL : url;
+		}
 
 		onClose();
 	}
 
-	const freeApp = Number(sku.price) === 0;
-
 	return (
-		<ClayModal observer={observer}>
-			<div className="get-app-modal-header-container">
-				<div className="get-app-modal-header-left-content">
-					<span className="get-app-modal-header-title">
-						Confirm Install
-					</span>
-
-					<span className="get-app-modal-header-description">
-						Confirm installation of this free app.
-					</span>
-				</div>
-
-				<ClayButton displayType="unstyled" onClick={onClose}>
-					<ClayIcon symbol="times" />
-				</ClayButton>
-			</div>
-
-			<ClayModal.Body>
-				<div className="get-app-modal-body-card-container">
-					<div className="get-app-modal-body-card-header">
-						<span className="get-app-modal-body-card-header-left-content">
-							App Details
+		<div className="modal-open">
+			<ClayModal observer={observer}>
+				<div className="get-app-modal-header-container">
+					<div className="get-app-modal-header-left-content">
+						<span className="get-app-modal-header-title">
+							{freeApp ? 'Confirm Install' : 'Confirm Payment'}
 						</span>
 
-						<div className="get-app-modal-body-card-header-right-content-container">
-							<div className="get-app-modal-body-card-header-right-content-account-info">
-								<span className="get-app-modal-body-card-header-right-content-account-info-name">
-									{account?.name}
-								</span>
-
-								<span className="get-app-modal-body-card-header-right-content-account-info-email">
-									{currentUser?.emailAddress}
-								</span>
-							</div>
-
-							<img
-								alt="Account icon"
-								className="get-app-modal-body-card-header-right-content-account-info-icon"
-								src={account?.logoURL}
-							/>
-						</div>
+						<span className="get-app-modal-header-description">
+							{freeApp
+								? 'Confirm installation of this free app.'
+								: 'Choose app payment method and edit purchasing details'}
+						</span>
 					</div>
 
-					<div className="get-app-modal-body-container">
-						<div className="get-app-modal-body-content-container">
-							<div className="get-app-modal-body-content-left">
+					<ClayButton displayType="unstyled" onClick={onClose}>
+						<ClayIcon symbol="times" />
+					</ClayButton>
+				</div>
+
+				<ClayModal.Body>
+					<div className="get-app-modal-body-card-container">
+						<div className="get-app-modal-body-card-header">
+							<span className="get-app-modal-body-card-header-left-content">
+								App Details
+							</span>
+
+							<div className="get-app-modal-body-card-header-right-content-container">
+								<div className="get-app-modal-body-card-header-right-content-account-info">
+									<span className="get-app-modal-body-card-header-right-content-account-info-name">
+										{account?.name}
+									</span>
+
+									<span className="get-app-modal-body-card-header-right-content-account-info-email">
+										{currentUser?.emailAddress}
+									</span>
+								</div>
+
 								<img
-									alt="App Image"
-									className="get-app-modal-body-content-image"
-									src={app?.urlImage.replace(':8080', '')}
+									alt="Account icon"
+									className="get-app-modal-body-card-header-right-content-account-info-icon"
+									src={account?.logoURL}
 								/>
+							</div>
+						</div>
 
-								<div className="get-app-modal-body-content-app-info-container">
-									<span className="get-app-modal-body-content-app-info-name">
-										{typeof app?.name === 'string'
-											? app?.name
-											: app?.name.en_US}
+						<div className="get-app-modal-body-container">
+							<div className="get-app-modal-body-content-container">
+								<div className="get-app-modal-body-content-left">
+									<img
+										alt="App Image"
+										className="get-app-modal-body-content-image"
+										src={app.urlImage?.replace(':8080', '')}
+									/>
+
+									<div className="get-app-modal-body-content-app-info-container">
+										<span className="get-app-modal-body-content-app-info-name">
+											{typeof app?.name === 'string'
+												? app?.name
+												: app?.name.en_US}
+										</span>
+
+										<span className="get-app-modal-body-content-app-info-version">
+											{appVersion} by{' '}
+											{accountPublisher?.name}
+										</span>
+									</div>
+								</div>
+
+								<div className="get-app-modal-body-content-right">
+									<span className="get-app-modal-body-content-right-price">
+										Price
 									</span>
 
-									<span className="get-app-modal-body-content-app-info-version">
-										{appVersion} by {accountPublisher?.name}
+									<span className="get-app-modal-body-content-right-value">
+										{freeApp ? 'Free' : `$ ${sku.price}`}
 									</span>
+
+									{!freeApp && (
+										<div className="get-app-modal-body-content-right-subscription-container">
+											<span className="get-app-modal-body-content-right-subscription-text">
+												Annually
+											</span>
+										</div>
+									)}
 								</div>
 							</div>
 
-							<div className="get-app-modal-body-content-right">
-								<span className="get-app-modal-body-content-right-price">
-									Price
-								</span>
+							<div>
+								<ClayIcon
+									className="get-app-modal-body-content-alert-icon"
+									symbol="info-panel-open"
+								/>
 
-								<span className="get-app-modal-body-content-right-value">
-									{freeApp ? 'Free' : `$ ${sku.price}`}
+								<span className="get-app-modal-body-content-alert-message">
+									{freeApp
+										? ' A free app does not include support, maintenance or updates from the publisher.'
+										: 'A subscription license includes support, maintenance and updates for the app as long as the subscription is current.'}
 								</span>
-
-								{!freeApp && (
-									<div className="get-app-modal-body-content-right-subscription-container">
-										<span className="get-app-modal-body-content-right-subscription-text">
-											Annually
-										</span>
-									</div>
-								)}
 							</div>
 						</div>
+					</div>
 
-						<div>
-							<ClayIcon
-								className="get-app-modal-body-content-alert-icon"
-								symbol="info-panel-open"
+					{!freeApp && (
+						<>
+							<div className="get-app-modal-text-divider">
+								Select payment method
+							</div>
+
+							<SelectPaymentMethod
+								addresses={addresses}
+								billingAddress={billingAddress}
+								email={email}
+								enableTrialMethod={enableTrialMethod}
+								phoneNumber={phoneNumber}
+								purchaseOrderNumber={purchaseOrderNumber}
+								selectedAddress={selectedAddress}
+								selectedPaymentMethod={selectedPaymentMethod}
+								setBillingAddress={setBillingAddress}
+								setEmail={setEmail}
+								setPurchaseOrderNumber={setPurchaseOrderNumber}
+								setSelectedAddress={setSelectedAddress}
+								setSelectedPaymentMethod={
+									setSelectedPaymentMethod
+								}
+								setShowNewAddressButton={
+									setShowNewAddressButton
+								}
+								showNewAddressButton={showNewAddressButton}
 							/>
+						</>
+					)}
+				</ClayModal.Body>
 
-							<span className="get-app-modal-body-content-alert-message">
-								{freeApp
-									? ' A free app does not include support, maintenance or updates from the publisher.'
-									: 'A subscription license includes support, maintenance and updates for the app as long as the subscription is current.'}
+				<ClayModal.Footer
+					last={
+						<div className="get-app-modal-footer">
+							<ClayButton.Group spaced>
+								<button
+									className="get-app-modal-button-cancel"
+									onClick={onClose}
+								>
+									Cancel
+								</button>
+
+								<button
+									className="get-app-modal-button-get-this-app"
+									onClick={handleGetApp}
+								>
+									{!freeApp && selectedPaymentMethod === 'pay'
+										? `Pay $${sku?.price} Now`
+										: selectedPaymentMethod === 'trial'
+										? 'Start Free Trial'
+										: 'Request Purchase Order'}
+								</button>
+							</ClayButton.Group>
+
+							<span>
+								{selectedPaymentMethod === 'pay' &&
+									'You will be redirected to PayPal to complete payment'}
 							</span>
 						</div>
-					</div>
-				</div>
-			</ClayModal.Body>
-
-			<ClayModal.Footer
-				last={
-					<ClayButton.Group spaced>
-						<button
-							className="get-app-modal-button-cancel"
-							onClick={onClose}
-						>
-							Cancel
-						</button>
-
-						<button
-							className="get-app-modal-button-get-this-app"
-							onClick={handleGetApp}
-						>
-							Get This App
-						</button>
-					</ClayButton.Group>
-				}
-			/>
-		</ClayModal>
+					}
+				/>
+			</ClayModal>
+		</div>
 	);
 }
