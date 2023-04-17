@@ -1,5 +1,6 @@
 import {useEffect, useState} from 'react';
 
+import {GetAppModal} from './components/GetAppModal/GetAppModal';
 import {AppCreationFlow} from './pages/AppCreationFlow/AppCreationFlow';
 import GetAppPage from './pages/GetAppPage/GetAppPage';
 import {NextStepPage} from './pages/NextStepPage/NextStepPage';
@@ -52,9 +53,13 @@ export default function AppRoutes({route}: AppRoutesProps) {
 			return <PublisherGatePage />;
 		}
 	}
+	else if (route === 'open-modal') {
+		return <GetAppModal handleClose={() => {}} />;
+	}
 	else if (route === 'next-steps') {
 		return <NextStepPage />;
 	}
 
 	return <></>;
+	
 }

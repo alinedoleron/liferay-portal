@@ -320,16 +320,28 @@ export async function getPaymentMethodURL(
 	return await paymentResponse.text();
 }
 
-export async function getPaymentMethods(cartId: number) {
-	const paymentMethodsResponse = await fetch(
-		`/o/headless-commerce-delivery-cart/v1.0/carts/${cartId}/payment-methods`,
+export async function getCart(cartId: number) {
+	const cartResponse = await fetch(
+		`/o/headless-commerce-delivery-cart/v1.0/carts/${cartId}`,
 		{
 			headers,
 			method: 'GET',
 		}
 	);
 
-	return await paymentMethodsResponse.json();
+	return await cartResponse.json();
+}
+
+export async function getCartItems(cartId: number) {
+	const cartResponse = await fetch(
+		`/o/headless-commerce-delivery-cart/v1.0/carts/${cartId}/items`,
+		{
+			headers,
+			method: 'GET',
+		}
+	);
+
+	return await cartResponse.json();
 }
 
 export async function getOptions() {
@@ -373,6 +385,18 @@ export async function getOrders(
 		items: PlacedOrder[];
 		totalCount: number;
 	};
+}
+
+export async function getAccountByAccountId({accountId}: {accountId: number}) {
+	const accountResponse = await fetch(
+		`/o/headless-admin-user/v1.0/accounts/${accountId}?nestedFields=accountUserAccounts`,
+		{
+			headers,
+			method: 'GET',
+		}
+	);
+
+	return await accountResponse.json();
 }
 
 export async function getProduct({appERC}: {appERC: string}) {

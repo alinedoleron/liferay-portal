@@ -54,6 +54,7 @@
 			}
 
 			&-image {
+				border-radius: 8px;
 				height: 3.5rem;
 				width: 3.5rem;
 			}
@@ -130,6 +131,7 @@
 				border: 1px solid #0b5fff;
 				border-radius: 6px;
 				color: #0b5fff;
+				font-family: 'Source Sans Pro', sans-serif;
 				font-size: 14px;
 				padding: 6px 12px;
 
@@ -316,11 +318,13 @@
 
 	&-payment-methods-container {
 		display: flex;
+		font-family: 'Source Sans Pro', sans-serif;
 		gap: 16px;
 		padding-bottom: 32px;
 	}
 
 	&-section {
+		font-family: 'Source Sans Pro', sans-serif;
 		line-height: 20px;
 
 		&-card-addresses {
