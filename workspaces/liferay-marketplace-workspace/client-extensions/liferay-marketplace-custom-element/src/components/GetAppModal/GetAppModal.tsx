@@ -2,9 +2,9 @@ import ClayButton from '@clayui/button';
 import ClayIcon from '@clayui/icon';
 import ClayModal, {useModal} from '@clayui/modal';
 import {useEffect, useState} from 'react';
-import {Liferay} from '../../liferay/liferay';
 
 import {getCompanyId} from '../../liferay/constants';
+import {Liferay} from '../../liferay/liferay';
 import {
 	getAccountByAccountId,
 	getAccountInfo,
@@ -158,7 +158,11 @@ export function GetAppModal({handleClose}: GetAppModalProps) {
 			setApp(app);
 
 			const skuResponse = await getProductSKU({
-				appProductId: Liferay.MarketplaceCustomerFlow.appId,
+
+				// appProductId: Liferay.MarketplaceCustomerFlow.appId,
+				// appProductId: 47835, //free
+				// appProductId: 47299, // paid not trial
+				appProductId: 47232, // paid trial
 			});
 
 			let sku;
@@ -327,13 +331,7 @@ export function GetAppModal({handleClose}: GetAppModalProps) {
 			await postCheckoutCart({cartId: cartResponse.id});
 		}
 
-		const url = `${origin}/next-steps?orderId=${cartResponse.id}&logoURL=${
-			account?.logoURL
-		}&appLogoURL=${app?.urlImage}&accountName=${
-			account?.name
-		}&accountLogo=${
-			account?.logoURL
-		}&appCategory=${'appCategory'}&appName=${app.name}`;
+		const url = `${origin}/next-steps?orderId=${cartResponse.id}&logoURL=${account?.logoURL}&appLogoURL=${app?.urlImage}&accountName=${account?.name}&accountLogo=${account?.logoURL}&appName=${app.name}`;
 
 		const paymentMethodURL = await getPaymentMethodURL(
 			cartResponse.id,
