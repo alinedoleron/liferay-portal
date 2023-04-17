@@ -2,9 +2,9 @@ import ClayButton from '@clayui/button';
 import ClayIcon from '@clayui/icon';
 import ClayModal, {useModal} from '@clayui/modal';
 import {useEffect, useState} from 'react';
-import {Liferay} from '../../liferay/liferay';
 
 import {getCompanyId} from '../../liferay/constants';
+import {Liferay} from '../../liferay/liferay';
 import {
 	getAccountInfo,
 	getAccountInfoFromCommerce,
@@ -325,13 +325,7 @@ export function GetAppModal({handleClose}: GetAppModalProps) {
 			await postCheckoutCart({cartId: cartResponse.id});
 		}
 
-		const url = `${origin}/next-steps?orderId=${cartResponse.id}&logoURL=${
-			account?.logoURL
-		}&appLogoURL=${app?.urlImage}&accountName=${
-			account?.name
-		}&accountLogo=${
-			account?.logoURL
-		}&appCategory=${'appCategory'}&appName=${app.name}`;
+		const url = `${origin}/next-steps?orderId=${cartResponse.id}&logoURL=${account?.logoURL}&appLogoURL=${app?.urlImage}&accountName=${account?.name}&accountLogo=${account?.logoURL}&appName=${app.name}`;
 
 		const paymentMethodURL = await getPaymentMethodURL(
 			cartResponse.id,
