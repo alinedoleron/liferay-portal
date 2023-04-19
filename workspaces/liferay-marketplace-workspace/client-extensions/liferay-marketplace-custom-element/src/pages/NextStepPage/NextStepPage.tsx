@@ -7,14 +7,12 @@ import {NewAppPageFooterButtons} from '../../components/NewAppPageFooterButtons/
 
 import './NextStepPage.scss';
 
-import {useEffect, useState} from 'react';
+import {useState} from 'react';
 
 import {
 	getAccountInfoFromCommerce,
 	getCart,
 	getCartItems,
-	getChannels,
-	getDeliveryProduct,
 } from '../../utils/api';
 
 export function NextStepPage() {
@@ -95,8 +93,13 @@ export function NextStepPage() {
 					<NewAppPageFooterButtons
 						backButtonText="Go Back to Dashboard"
 						continueButtonText="Continue Configuration"
-						onClickBack={() => window.location.href = `${window.location.origin}/web/guest/publisher-dashboard`}
-						onClickContinue={() => window.location.href = 'https://console.liferay.cloud/'}
+						onClickBack={() =>
+							(window.location.href = `${window.location.origin}/web/guest/publisher-dashboard`)
+						}
+						onClickContinue={() =>
+							(window.location.href =
+								'https://console.liferay.cloud/')
+						}
 					/>
 
 					<div className="next-step-page-link">
