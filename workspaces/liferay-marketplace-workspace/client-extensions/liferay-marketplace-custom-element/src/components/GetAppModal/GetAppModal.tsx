@@ -1,8 +1,12 @@
 import ClayButton from '@clayui/button';
 import ClayIcon from '@clayui/icon';
 import ClayModal, {useModal} from '@clayui/modal';
+import classNames from 'classnames';
 import {useEffect, useState} from 'react';
 
+import checkFill from '../../assets/icons/check_fill.svg';
+import circleFill from '../../assets/icons/circle_fill.svg';
+import radioSelected from '../../assets/icons/radio-button-checked-2.svg';
 import {getCompanyId} from '../../liferay/constants';
 import {Liferay} from '../../liferay/liferay';
 import {
@@ -21,6 +25,7 @@ import {
 	postCartByChannelId,
 	postCheckoutCart,
 } from '../../utils/api';
+import {AccountSelector} from './AccountSelector';
 
 import './GetAppModal.scss';
 import {SelectPaymentMethod} from './SelectPaymentMethod';
@@ -54,8 +59,10 @@ export function GetAppModal({handleClose}: GetAppModalProps) {
 	const {observer, onClose} = useModal({
 		onClose: handleClose,
 	});
-	const [account, setAccount] = useState<AccountBrief>();
+	const [activeAccounts, setActiveAccounts] =
+		useState<Partial<AccountBrief>[]>();
 	const [accountPublisher, setAccountPublisher] = useState<AccountBrief>();
+	const [accounts, setAccounts] = useState<AccountBrief[]>();
 	const [app, setApp] = useState<App>({
 		createdBy: '',
 		id: 0,
@@ -89,6 +96,9 @@ export function GetAppModal({handleClose}: GetAppModalProps) {
 		initialBillingAddress
 	);
 
+	const [selectedAccount, setSelectedAccount] =
+		useState<Partial<AccountBrief>>();
+
 	const [selectedPaymentMethod, setSelectedPaymentMethod] =
 		useState<PaymentMethodSelector>('pay');
 
@@ -104,6 +114,40 @@ export function GetAppModal({handleClose}: GetAppModalProps) {
 	const [email, setEmail] = useState<string>('');
 
 	const [freeApp, setFreeApp] = useState<boolean>(false);
+
+	const [showSelectAccount, setShowSelectAccount] = useState(true);
+
+	const [steps, setSteps] = useState([
+		{
+			checked: false,
+			name: 'Select Account',
+			selected: true,
+		},
+		{
+			checked: false,
+			name: 'Select Payment method',
+			selected: false,
+		},
+	]);
+
+	const getIcon = ({
+		checked,
+		selected,
+	}: {
+		name: string;
+		checked: boolean;
+		selected: boolean;
+	}) => {
+		if (checked) {
+			return checkFill;
+		}
+
+		if (selected) {
+			return radioSelected;
+		}
+
+		return circleFill;
+	};
 
 	useEffect(() => {
 		const getModalInfo = async () => {
@@ -132,38 +176,31 @@ export function GetAppModal({handleClose}: GetAppModalProps) {
 				accountId = 50307;
 			}
 
-			const currentAccount = await getAccountInfo({
-				accountId,
-			});
-
-			// The call for getAccountInfoFromCommerce is only temporary
-
-			const currentAccountCommerce = await getAccountInfoFromCommerce({
-				accountId,
-			});
-
-			setAccount({
-				...currentAccount,
-				logoURL: currentAccountCommerce.logoURL,
-			});
-
+			setAccounts(userAccounts.accountBriefs);
 			const app = await getDeliveryProduct({
 				accountId,
-				appId: Liferay.MarketplaceCustomerFlow.appId,
+
+				// appId: Liferay.MarketplaceCustomerFlow.appId,
+				// appId: 47835, //free
+				appId: 47232, // paid and trial
+
 				channelId: channel.id,
 			});
 
 			setApp(app);
 
 			const skuResponse = await getProductSKU({
-				appProductId: Liferay.MarketplaceCustomerFlow.appId,
+
+				// appProductId: Liferay.MarketplaceCustomerFlow.appId,
+				// appProductId: 47835, //free
+				appProductId: 47232, // Paid and trial
+
 			});
 
 			let sku;
 
 			if (skuResponse.items.length > 1) {
-				let isTrial;
-				isTrial = skuResponse.items
+				const isTrial = skuResponse.items
 					.map((sku) =>
 						sku.skuOptions.find((option) => option.value === 'yes')
 					)
@@ -242,7 +279,7 @@ export function GetAppModal({handleClose}: GetAppModalProps) {
 
 	async function handleGetApp() {
 		const cart: Partial<Cart> = {
-			accountId: account?.id as number,
+			accountId: selectedAccount?.id as number,
 			cartItems: [
 				{
 					price: {
@@ -304,9 +341,9 @@ export function GetAppModal({handleClose}: GetAppModalProps) {
 			if (selectedPaymentMethod === 'order') {
 				newCart = {
 					...cart,
+					author: email,
 					billingAddress,
 					purchaseOrderNumber,
-					author: email,
 				};
 			}
 
@@ -325,7 +362,7 @@ export function GetAppModal({handleClose}: GetAppModalProps) {
 			await postCheckoutCart({cartId: cartResponse.id});
 		}
 
-		const url = `${origin}/next-steps?orderId=${cartResponse.id}&logoURL=${account?.logoURL}&appLogoURL=${app?.urlImage}&accountName=${account?.name}&accountLogo=${account?.logoURL}&appName=${app.name}`;
+		const url = `${origin}/next-steps?orderId=${cartResponse.id}&logoURL=${selectedAccount?.logoURL}&appLogoURL=${app?.urlImage}&accountName=${selectedAccount?.name}&accountLogo=${selectedAccount?.logoURL}&appName=${app.name}`;
 
 		const paymentMethodURL = await getPaymentMethodURL(
 			cartResponse.id,
@@ -337,6 +374,53 @@ export function GetAppModal({handleClose}: GetAppModalProps) {
 
 		onClose();
 	}
+
+	const handleChangeStep = () => {
+		setShowSelectAccount(false);
+		setSteps([
+			{
+				checked: true,
+				name: 'Select Account',
+				selected: false,
+			},
+			{
+				checked: false,
+				name: 'Select Payment method',
+				selected: true,
+			},
+		]);
+	};
+
+	const handleClick = () => {
+		if (!freeApp && showSelectAccount && selectedAccount) {
+			return handleChangeStep();
+		}
+		if (selectedAccount) {
+			return handleGetApp();
+		}
+
+		return;
+	};
+
+	const getButtonText = () => {
+		if (!freeApp) {
+			if (showSelectAccount) {
+				return 'Continue';
+			}
+			if (selectedPaymentMethod === 'pay') {
+				return `Pay $${sku?.price} Now`;
+			}
+			if (selectedPaymentMethod === 'trial') {
+				return 'Start Free Trial';
+			}
+			if (selectedPaymentMethod === 'order') {
+				return 'Request Purchase Order';
+			}
+		}
+		else {
+			return 'Get This App';
+		}
+	};
 
 	return (
 		<div className="modal-open">
@@ -359,30 +443,39 @@ export function GetAppModal({handleClose}: GetAppModalProps) {
 					</ClayButton>
 				</div>
 
-				<ClayModal.Body>
+				<ClayModal.Body
+					className="get-app-modal-body-card-body"
+					scrollable={
+						activeAccounts?.length
+							? activeAccounts.length > 3
+							: false
+					}
+				>
 					<div className="get-app-modal-body-card-container">
 						<div className="get-app-modal-body-card-header">
 							<span className="get-app-modal-body-card-header-left-content">
 								App Details
 							</span>
 
-							<div className="get-app-modal-body-card-header-right-content-container">
-								<div className="get-app-modal-body-card-header-right-content-account-info">
-									<span className="get-app-modal-body-card-header-right-content-account-info-name">
-										{account?.name}
-									</span>
+							{selectedAccount && (
+								<div className="get-app-modal-body-card-header-right-content-container">
+									<div className="get-app-modal-body-card-header-right-content-account-info">
+										<span className="get-app-modal-body-card-header-right-content-account-info-name">
+											{selectedAccount?.name}
+										</span>
 
-									<span className="get-app-modal-body-card-header-right-content-account-info-email">
-										{currentUser?.emailAddress}
-									</span>
+										<span className="get-app-modal-body-card-header-right-content-account-info-email">
+											{currentUser?.emailAddress}
+										</span>
+									</div>
+
+									<img
+										alt="Account icon"
+										className="get-app-modal-body-card-header-right-content-account-info-icon"
+										src={selectedAccount?.logoURL}
+									/>
 								</div>
-
-								<img
-									alt="Account icon"
-									className="get-app-modal-body-card-header-right-content-account-info-icon"
-									src={account?.logoURL}
-								/>
-							</div>
+							)}
 						</div>
 
 						<div className="get-app-modal-body-container">
@@ -442,12 +535,61 @@ export function GetAppModal({handleClose}: GetAppModalProps) {
 						</div>
 					</div>
 
-					{!freeApp && (
-						<>
-							<div className="get-app-modal-text-divider">
-								Select payment method
-							</div>
+					<div className="steps">
+						<div className="get-app-modal-text-divider">
+							{freeApp ? (
+								<span>{steps[0].name}</span>
+							) : (
+								steps.map((step) => {
+									return (
+										<div className="get-app-modal-step-item">
+											<img
+												alt={
+													checkFill
+														? 'check fill'
+														: step.selected
+														? 'radio selected'
+														: 'circle fill'
+												}
+												className={classNames(
+													'get-app-modal-step-icon',
+													{
+														'get-app-modal-step-icon-checked':
+															step.checked,
+														'get-app-modal-step-icon-selected':
+															step.selected,
+													}
+												)}
+												src={getIcon(step)}
+											/>
 
+											<span
+												className={classNames({
+													'get-app-modal-step-item-active':
+														step.checked ||
+														step.selected,
+												})}
+											>
+												{step.name}
+											</span>
+										</div>
+									);
+								})
+							)}
+						</div>
+					</div>
+
+					{showSelectAccount ? (
+						<AccountSelector
+							accounts={accounts as AccountBrief[]}
+							activeAccounts={activeAccounts as AccountBrief[]}
+							selectedAccount={selectedAccount}
+							setActiveAccounts={setActiveAccounts}
+							setSelectedAccount={setSelectedAccount}
+							userEmail={currentUser?.emailAddress as string}
+						/>
+					) : (
+						!freeApp && (
 							<SelectPaymentMethod
 								addresses={addresses}
 								billingAddress={billingAddress}
@@ -469,7 +611,7 @@ export function GetAppModal({handleClose}: GetAppModalProps) {
 								}
 								showNewAddressButton={showNewAddressButton}
 							/>
-						</>
+						)
 					)}
 				</ClayModal.Body>
 
@@ -485,16 +627,22 @@ export function GetAppModal({handleClose}: GetAppModalProps) {
 								</button>
 
 								<button
-									className="get-app-modal-button-get-this-app"
-									onClick={handleGetApp}
+									className={classNames(
+										'get-app-modal-button-get-this-app',
+										{
+											'get-app-modal-button-get-this-app-enabled':
+												showSelectAccount &&
+												selectedAccount,
+										},
+										{
+											'get-app-modal-button-get-this-app-disabled':
+												showSelectAccount &&
+												!selectedAccount,
+										}
+									)}
+									onClick={handleClick}
 								>
-									{!freeApp && selectedPaymentMethod === 'pay'
-										? `Pay $${sku?.price} Now`
-										: selectedPaymentMethod === 'trial'
-										? 'Start Free Trial'
-										: selectedPaymentMethod === 'order'
-										? 'Request Purchase Order'
-										: 'Get This App'}
+									{getButtonText()}
 								</button>
 							</ClayButton.Group>
 

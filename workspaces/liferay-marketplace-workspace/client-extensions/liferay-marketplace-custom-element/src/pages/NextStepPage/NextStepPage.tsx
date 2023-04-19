@@ -7,14 +7,12 @@ import {NewAppPageFooterButtons} from '../../components/NewAppPageFooterButtons/
 
 import './NextStepPage.scss';
 
-import {useEffect, useState} from 'react';
+import {useState} from 'react';
 
 import {
 	getAccountInfoFromCommerce,
 	getCart,
 	getCartItems,
-	getChannels,
-	getDeliveryProduct,
 } from '../../utils/api';
 
 export function NextStepPage() {
