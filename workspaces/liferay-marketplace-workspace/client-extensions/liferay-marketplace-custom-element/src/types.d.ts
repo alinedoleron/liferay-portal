@@ -106,7 +106,8 @@ type Channel = {
 	type: string;
 };
 
-interface CommerceAccount extends Omit<Account, 'description'> {
+interface CommerceAccount extends Account {
+	active: boolean;
 	taxId: string;
 	logoURL: string;
 }
