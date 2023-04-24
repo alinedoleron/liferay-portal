@@ -32,6 +32,16 @@ definition {
 		PortletEntry.save();
 	}
 
+	macro deleteAllDatasetEntries {
+		JSONFrontendDatasetEntries._deleteFDSEntry();
+
+		Navigator.openWithAppendToBaseURL(urlAppend = "group/control_panel/manage?p_p_id=com_liferay_frontend_data_set_views_web_internal_portlet_FDSViewsPortlet");
+
+		AssertElementPresent(
+			locator1 = "Message#EMPTY_STATE_INFO",
+			value1 = "No Results Found");
+	}
+
 	macro deleteDataSet {
 		Click(
 			key_entry = ${entry},
@@ -88,24 +98,6 @@ definition {
 		Click(
 			locator1 = "FrontendDataSet#SELECT_TYPE_PROVIDER",
 			value1 = ${key_type});
-	}
-
-	macro tearDownCP {
-		while (IsElementPresent(locator1 = "FrontendDataSet#TABLE_BODY")) {
-			Click(
-				key_entry = "",
-				locator1 = "FrontendDataSetAdmin#ENTRY_KEBAB_MENU");
-
-			ClickNoError(locator1 = "FrontendDataSetAdmin#DELETE_ENTRY_BUTTON");
-
-			AssertElementPresent(
-				key_modalText = "Deleting a dataset is an action that cannot be reversed. The content will be deleted and some dataset fragments may not be displayed.",
-				locator1 = "FrontendDataSetAdmin#DELETE_DATA_SET_MODAL_BODY");
-
-			Button.clickDelete();
-
-			Alert.viewSuccessMessage();
-		}
 	}
 
 }

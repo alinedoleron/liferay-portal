@@ -266,34 +266,14 @@ public abstract class BaseKnowledgeBaseArticleResourceImpl
 		KnowledgeBaseArticle existingKnowledgeBaseArticle =
 			getKnowledgeBaseArticle(knowledgeBaseArticleId);
 
-		if (knowledgeBaseArticle.getActions() != null) {
-			existingKnowledgeBaseArticle.setActions(
-				knowledgeBaseArticle.getActions());
-		}
-
 		if (knowledgeBaseArticle.getArticleBody() != null) {
 			existingKnowledgeBaseArticle.setArticleBody(
 				knowledgeBaseArticle.getArticleBody());
 		}
 
-		if (knowledgeBaseArticle.getDateCreated() != null) {
-			existingKnowledgeBaseArticle.setDateCreated(
-				knowledgeBaseArticle.getDateCreated());
-		}
-
-		if (knowledgeBaseArticle.getDateModified() != null) {
-			existingKnowledgeBaseArticle.setDateModified(
-				knowledgeBaseArticle.getDateModified());
-		}
-
 		if (knowledgeBaseArticle.getDescription() != null) {
 			existingKnowledgeBaseArticle.setDescription(
 				knowledgeBaseArticle.getDescription());
-		}
-
-		if (knowledgeBaseArticle.getEncodingFormat() != null) {
-			existingKnowledgeBaseArticle.setEncodingFormat(
-				knowledgeBaseArticle.getEncodingFormat());
 		}
 
 		if (knowledgeBaseArticle.getExternalReferenceCode() != null) {
@@ -311,16 +291,6 @@ public abstract class BaseKnowledgeBaseArticleResourceImpl
 				knowledgeBaseArticle.getKeywords());
 		}
 
-		if (knowledgeBaseArticle.getNumberOfAttachments() != null) {
-			existingKnowledgeBaseArticle.setNumberOfAttachments(
-				knowledgeBaseArticle.getNumberOfAttachments());
-		}
-
-		if (knowledgeBaseArticle.getNumberOfKnowledgeBaseArticles() != null) {
-			existingKnowledgeBaseArticle.setNumberOfKnowledgeBaseArticles(
-				knowledgeBaseArticle.getNumberOfKnowledgeBaseArticles());
-		}
-
 		if (knowledgeBaseArticle.getParentKnowledgeBaseArticleId() != null) {
 			existingKnowledgeBaseArticle.setParentKnowledgeBaseArticleId(
 				knowledgeBaseArticle.getParentKnowledgeBaseArticleId());
@@ -329,16 +299,6 @@ public abstract class BaseKnowledgeBaseArticleResourceImpl
 		if (knowledgeBaseArticle.getParentKnowledgeBaseFolderId() != null) {
 			existingKnowledgeBaseArticle.setParentKnowledgeBaseFolderId(
 				knowledgeBaseArticle.getParentKnowledgeBaseFolderId());
-		}
-
-		if (knowledgeBaseArticle.getSiteId() != null) {
-			existingKnowledgeBaseArticle.setSiteId(
-				knowledgeBaseArticle.getSiteId());
-		}
-
-		if (knowledgeBaseArticle.getSubscribed() != null) {
-			existingKnowledgeBaseArticle.setSubscribed(
-				knowledgeBaseArticle.getSubscribed());
 		}
 
 		if (knowledgeBaseArticle.getTaxonomyCategoryIds() != null) {
@@ -1891,7 +1851,7 @@ public abstract class BaseKnowledgeBaseArticleResourceImpl
 			if (parameters.containsKey("knowledgeBaseFolderId")) {
 				knowledgeBaseArticleUnsafeConsumer = knowledgeBaseArticle ->
 					postKnowledgeBaseFolderKnowledgeBaseArticle(
-						Long.parseLong(
+						_parseLong(
 							(String)parameters.get("knowledgeBaseFolderId")),
 						knowledgeBaseArticle);
 			}
@@ -1984,14 +1944,14 @@ public abstract class BaseKnowledgeBaseArticleResourceImpl
 		if (parameters.containsKey("siteId")) {
 			return getSiteKnowledgeBaseArticlesPage(
 				(Long)parameters.get("siteId"),
-				Boolean.parseBoolean((String)parameters.get("flatten")), search,
-				null, filter, pagination, sorts);
+				_parseBoolean((String)parameters.get("flatten")), search, null,
+				filter, pagination, sorts);
 		}
 		else if (parameters.containsKey("knowledgeBaseFolderId")) {
 			return getKnowledgeBaseFolderKnowledgeBaseArticlesPage(
-				Long.parseLong((String)parameters.get("knowledgeBaseFolderId")),
-				Boolean.parseBoolean((String)parameters.get("flatten")), search,
-				null, filter, pagination, sorts);
+				_parseLong((String)parameters.get("knowledgeBaseFolderId")),
+				_parseBoolean((String)parameters.get("flatten")), search, null,
+				filter, pagination, sorts);
 		}
 		else {
 			throw new NotSupportedException(
@@ -2038,7 +1998,7 @@ public abstract class BaseKnowledgeBaseArticleResourceImpl
 				knowledgeBaseArticle -> patchKnowledgeBaseArticle(
 					knowledgeBaseArticle.getId() != null ?
 						knowledgeBaseArticle.getId() :
-							Long.parseLong(
+							_parseLong(
 								(String)parameters.get(
 									"knowledgeBaseArticleId")),
 					knowledgeBaseArticle);
@@ -2049,7 +2009,7 @@ public abstract class BaseKnowledgeBaseArticleResourceImpl
 				knowledgeBaseArticle -> putKnowledgeBaseArticle(
 					knowledgeBaseArticle.getId() != null ?
 						knowledgeBaseArticle.getId() :
-							Long.parseLong(
+							_parseLong(
 								(String)parameters.get(
 									"knowledgeBaseArticleId")),
 					knowledgeBaseArticle);
@@ -2072,6 +2032,22 @@ public abstract class BaseKnowledgeBaseArticleResourceImpl
 				knowledgeBaseArticleUnsafeConsumer.accept(knowledgeBaseArticle);
 			}
 		}
+	}
+
+	private Boolean _parseBoolean(String value) {
+		if (value != null) {
+			return Boolean.parseBoolean(value);
+		}
+
+		return null;
+	}
+
+	private Long _parseLong(String value) {
+		if (value != null) {
+			return Long.parseLong(value);
+		}
+
+		return null;
 	}
 
 	protected String getPermissionCheckerActionsResourceName(Object id)

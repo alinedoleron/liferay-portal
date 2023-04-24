@@ -16,6 +16,7 @@ package com.liferay.portal.tools.rest.builder.internal.freemarker.tool;
 
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.search.Sort;
+import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.DateUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.ListUtil;
@@ -103,6 +104,10 @@ public class FreeMarkerTool {
 		}
 
 		return false;
+	}
+
+	public String[] distinct(String[] array) {
+		return ArrayUtil.distinct(array);
 	}
 
 	public boolean generateBatch(
@@ -809,6 +814,13 @@ public class FreeMarkerTool {
 
 		return ResourceOpenAPIParser.
 			getVulcanBatchImplementationUpdateStrategies(javaMethodSignatures);
+	}
+
+	public Map<String, String> getWritableDTOProperties(
+		ConfigYAML configYAML, OpenAPIYAML openAPIYAML, Schema schema) {
+
+		return DTOOpenAPIParser.getProperties(
+			configYAML, true, openAPIYAML, schema);
 	}
 
 	public boolean hasHTTPMethod(

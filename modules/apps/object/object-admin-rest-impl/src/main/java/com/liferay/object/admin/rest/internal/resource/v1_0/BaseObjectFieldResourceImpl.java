@@ -538,10 +538,6 @@ public abstract class BaseObjectFieldResourceImpl
 			existingObjectField.setDBType(objectField.getDBType());
 		}
 
-		if (objectField.getActions() != null) {
-			existingObjectField.setActions(objectField.getActions());
-		}
-
 		if (objectField.getBusinessType() != null) {
 			existingObjectField.setBusinessType(objectField.getBusinessType());
 		}
@@ -589,11 +585,6 @@ public abstract class BaseObjectFieldResourceImpl
 
 		if (objectField.getName() != null) {
 			existingObjectField.setName(objectField.getName());
-		}
-
-		if (objectField.getRelationshipType() != null) {
-			existingObjectField.setRelationshipType(
-				objectField.getRelationshipType());
 		}
 
 		if (objectField.getRequired() != null) {
@@ -709,7 +700,7 @@ public abstract class BaseObjectFieldResourceImpl
 			if (parameters.containsKey("objectDefinitionId")) {
 				objectFieldUnsafeConsumer =
 					objectField -> postObjectDefinitionObjectField(
-						Long.parseLong(
+						_parseLong(
 							(String)parameters.get("objectDefinitionId")),
 						objectField);
 			}
@@ -782,7 +773,7 @@ public abstract class BaseObjectFieldResourceImpl
 
 		if (parameters.containsKey("objectDefinitionId")) {
 			return getObjectDefinitionObjectFieldsPage(
-				Long.parseLong((String)parameters.get("objectDefinitionId")),
+				_parseLong((String)parameters.get("objectDefinitionId")),
 				search, filter, pagination, sorts);
 		}
 		else {
@@ -827,14 +818,14 @@ public abstract class BaseObjectFieldResourceImpl
 		if ("PARTIAL_UPDATE".equalsIgnoreCase(updateStrategy)) {
 			objectFieldUnsafeConsumer = objectField -> patchObjectField(
 				objectField.getId() != null ? objectField.getId() :
-					Long.parseLong((String)parameters.get("objectFieldId")),
+					_parseLong((String)parameters.get("objectFieldId")),
 				objectField);
 		}
 
 		if ("UPDATE".equalsIgnoreCase(updateStrategy)) {
 			objectFieldUnsafeConsumer = objectField -> putObjectField(
 				objectField.getId() != null ? objectField.getId() :
-					Long.parseLong((String)parameters.get("objectFieldId")),
+					_parseLong((String)parameters.get("objectFieldId")),
 				objectField);
 		}
 
@@ -853,6 +844,14 @@ public abstract class BaseObjectFieldResourceImpl
 				objectFieldUnsafeConsumer.accept(objectField);
 			}
 		}
+	}
+
+	private Long _parseLong(String value) {
+		if (value != null) {
+			return Long.parseLong(value);
+		}
+
+		return null;
 	}
 
 	public void setContextAcceptLanguage(AcceptLanguage contextAcceptLanguage) {

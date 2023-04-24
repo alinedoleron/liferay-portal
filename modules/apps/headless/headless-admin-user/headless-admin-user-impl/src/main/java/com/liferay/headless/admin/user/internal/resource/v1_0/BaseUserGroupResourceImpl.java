@@ -393,10 +393,6 @@ public abstract class BaseUserGroupResourceImpl
 		UserGroup existingUserGroup = getUserGroupByExternalReferenceCode(
 			externalReferenceCode);
 
-		if (userGroup.getActions() != null) {
-			existingUserGroup.setActions(userGroup.getActions());
-		}
-
 		if (userGroup.getDescription() != null) {
 			existingUserGroup.setDescription(userGroup.getDescription());
 		}
@@ -408,10 +404,6 @@ public abstract class BaseUserGroupResourceImpl
 
 		if (userGroup.getName() != null) {
 			existingUserGroup.setName(userGroup.getName());
-		}
-
-		if (userGroup.getUsersCount() != null) {
-			existingUserGroup.setUsersCount(userGroup.getUsersCount());
 		}
 
 		preparePatch(userGroup, existingUserGroup);
@@ -587,10 +579,6 @@ public abstract class BaseUserGroupResourceImpl
 
 		UserGroup existingUserGroup = getUserGroup(userGroupId);
 
-		if (userGroup.getActions() != null) {
-			existingUserGroup.setActions(userGroup.getActions());
-		}
-
 		if (userGroup.getDescription() != null) {
 			existingUserGroup.setDescription(userGroup.getDescription());
 		}
@@ -602,10 +590,6 @@ public abstract class BaseUserGroupResourceImpl
 
 		if (userGroup.getName() != null) {
 			existingUserGroup.setName(userGroup.getName());
-		}
-
-		if (userGroup.getUsersCount() != null) {
-			existingUserGroup.setUsersCount(userGroup.getUsersCount());
 		}
 
 		preparePatch(userGroup, existingUserGroup);
@@ -871,14 +855,14 @@ public abstract class BaseUserGroupResourceImpl
 		if ("PARTIAL_UPDATE".equalsIgnoreCase(updateStrategy)) {
 			userGroupUnsafeConsumer = userGroup -> patchUserGroup(
 				userGroup.getId() != null ? userGroup.getId() :
-					Long.parseLong((String)parameters.get("userGroupId")),
+					_parseLong((String)parameters.get("userGroupId")),
 				userGroup);
 		}
 
 		if ("UPDATE".equalsIgnoreCase(updateStrategy)) {
 			userGroupUnsafeConsumer = userGroup -> putUserGroup(
 				userGroup.getId() != null ? userGroup.getId() :
-					Long.parseLong((String)parameters.get("userGroupId")),
+					_parseLong((String)parameters.get("userGroupId")),
 				userGroup);
 		}
 
@@ -897,6 +881,14 @@ public abstract class BaseUserGroupResourceImpl
 				userGroupUnsafeConsumer.accept(userGroup);
 			}
 		}
+	}
+
+	private Long _parseLong(String value) {
+		if (value != null) {
+			return Long.parseLong(value);
+		}
+
+		return null;
 	}
 
 	public void setContextAcceptLanguage(AcceptLanguage contextAcceptLanguage) {

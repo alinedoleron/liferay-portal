@@ -224,11 +224,6 @@ public abstract class BaseCartItemResourceImpl
 
 		CartItem existingCartItem = getCartItem(cartItemId);
 
-		if (cartItem.getAdaptiveMediaImageHTMLTag() != null) {
-			existingCartItem.setAdaptiveMediaImageHTMLTag(
-				cartItem.getAdaptiveMediaImageHTMLTag());
-		}
-
 		if (cartItem.getCustomFields() != null) {
 			existingCartItem.setCustomFields(cartItem.getCustomFields());
 		}
@@ -237,49 +232,20 @@ public abstract class BaseCartItemResourceImpl
 			existingCartItem.setErrorMessages(cartItem.getErrorMessages());
 		}
 
-		if (cartItem.getName() != null) {
-			existingCartItem.setName(cartItem.getName());
-		}
-
 		if (cartItem.getOptions() != null) {
 			existingCartItem.setOptions(cartItem.getOptions());
-		}
-
-		if (cartItem.getParentCartItemId() != null) {
-			existingCartItem.setParentCartItemId(
-				cartItem.getParentCartItemId());
 		}
 
 		if (cartItem.getProductId() != null) {
 			existingCartItem.setProductId(cartItem.getProductId());
 		}
 
-		if (cartItem.getProductURLs() != null) {
-			existingCartItem.setProductURLs(cartItem.getProductURLs());
-		}
-
 		if (cartItem.getQuantity() != null) {
 			existingCartItem.setQuantity(cartItem.getQuantity());
 		}
 
-		if (cartItem.getSku() != null) {
-			existingCartItem.setSku(cartItem.getSku());
-		}
-
 		if (cartItem.getSkuId() != null) {
 			existingCartItem.setSkuId(cartItem.getSkuId());
-		}
-
-		if (cartItem.getSubscription() != null) {
-			existingCartItem.setSubscription(cartItem.getSubscription());
-		}
-
-		if (cartItem.getThumbnail() != null) {
-			existingCartItem.setThumbnail(cartItem.getThumbnail());
-		}
-
-		if (cartItem.getValid() != null) {
-			existingCartItem.setValid(cartItem.getValid());
 		}
 
 		preparePatch(cartItem, existingCartItem);
@@ -545,14 +511,14 @@ public abstract class BaseCartItemResourceImpl
 		if ("PARTIAL_UPDATE".equalsIgnoreCase(updateStrategy)) {
 			cartItemUnsafeConsumer = cartItem -> patchCartItem(
 				cartItem.getId() != null ? cartItem.getId() :
-					Long.parseLong((String)parameters.get("cartItemId")),
+					_parseLong((String)parameters.get("cartItemId")),
 				cartItem);
 		}
 
 		if ("UPDATE".equalsIgnoreCase(updateStrategy)) {
 			cartItemUnsafeConsumer = cartItem -> putCartItem(
 				cartItem.getId() != null ? cartItem.getId() :
-					Long.parseLong((String)parameters.get("cartItemId")),
+					_parseLong((String)parameters.get("cartItemId")),
 				cartItem);
 		}
 
@@ -571,6 +537,14 @@ public abstract class BaseCartItemResourceImpl
 				cartItemUnsafeConsumer.accept(cartItem);
 			}
 		}
+	}
+
+	private Long _parseLong(String value) {
+		if (value != null) {
+			return Long.parseLong(value);
+		}
+
+		return null;
 	}
 
 	public void setContextAcceptLanguage(AcceptLanguage contextAcceptLanguage) {
