@@ -416,25 +416,6 @@ public abstract class BaseTaxonomyCategoryResourceImpl
 		TaxonomyCategory existingTaxonomyCategory = getTaxonomyCategory(
 			taxonomyCategoryId);
 
-		if (taxonomyCategory.getActions() != null) {
-			existingTaxonomyCategory.setActions(taxonomyCategory.getActions());
-		}
-
-		if (taxonomyCategory.getAvailableLanguages() != null) {
-			existingTaxonomyCategory.setAvailableLanguages(
-				taxonomyCategory.getAvailableLanguages());
-		}
-
-		if (taxonomyCategory.getDateCreated() != null) {
-			existingTaxonomyCategory.setDateCreated(
-				taxonomyCategory.getDateCreated());
-		}
-
-		if (taxonomyCategory.getDateModified() != null) {
-			existingTaxonomyCategory.setDateModified(
-				taxonomyCategory.getDateModified());
-		}
-
 		if (taxonomyCategory.getDescription() != null) {
 			existingTaxonomyCategory.setDescription(
 				taxonomyCategory.getDescription());
@@ -457,20 +438,6 @@ public abstract class BaseTaxonomyCategoryResourceImpl
 		if (taxonomyCategory.getName_i18n() != null) {
 			existingTaxonomyCategory.setName_i18n(
 				taxonomyCategory.getName_i18n());
-		}
-
-		if (taxonomyCategory.getNumberOfTaxonomyCategories() != null) {
-			existingTaxonomyCategory.setNumberOfTaxonomyCategories(
-				taxonomyCategory.getNumberOfTaxonomyCategories());
-		}
-
-		if (taxonomyCategory.getSiteId() != null) {
-			existingTaxonomyCategory.setSiteId(taxonomyCategory.getSiteId());
-		}
-
-		if (taxonomyCategory.getTaxonomyCategoryUsageCount() != null) {
-			existingTaxonomyCategory.setTaxonomyCategoryUsageCount(
-				taxonomyCategory.getTaxonomyCategoryUsageCount());
 		}
 
 		if (taxonomyCategory.getTaxonomyVocabularyId() != null) {
@@ -1046,7 +1013,7 @@ public abstract class BaseTaxonomyCategoryResourceImpl
 			if (parameters.containsKey("taxonomyVocabularyId")) {
 				taxonomyCategoryUnsafeConsumer =
 					taxonomyCategory -> postTaxonomyVocabularyTaxonomyCategory(
-						Long.parseLong(
+						_parseLong(
 							(String)parameters.get("taxonomyVocabularyId")),
 						taxonomyCategory);
 			}
@@ -1061,7 +1028,7 @@ public abstract class BaseTaxonomyCategoryResourceImpl
 				putTaxonomyVocabularyTaxonomyCategoryByExternalReferenceCode(
 					taxonomyCategory.getTaxonomyVocabularyId() != null ?
 						taxonomyCategory.getTaxonomyVocabularyId() :
-							Long.parseLong(
+							_parseLong(
 								(String)parameters.get("taxonomyVocabularyId")),
 					taxonomyCategory.getExternalReferenceCode(),
 					taxonomyCategory);
@@ -1199,6 +1166,14 @@ public abstract class BaseTaxonomyCategoryResourceImpl
 				taxonomyCategoryUnsafeConsumer.accept(taxonomyCategory);
 			}
 		}
+	}
+
+	private Long _parseLong(String value) {
+		if (value != null) {
+			return Long.parseLong(value);
+		}
+
+		return null;
 	}
 
 	protected String getPermissionCheckerActionsResourceName(Object id)

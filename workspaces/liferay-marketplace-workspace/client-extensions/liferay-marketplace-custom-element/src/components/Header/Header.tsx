@@ -1,7 +1,9 @@
+import {ReactNode} from 'react';
+
 import './Header.scss';
 
 interface HeaderProps {
-	description: string;
+	description: ReactNode | string;
 	title: string;
 }
 

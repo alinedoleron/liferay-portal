@@ -65,7 +65,7 @@ type BillingAddress = {
 	countryISOCode: string;
 	name?: string;
 	phoneNumber?: string;
-	region?: string;
+	regionISOCode?: string;
 	street1?: string;
 	street2?: string;
 	zip?: string;
@@ -106,7 +106,8 @@ type Channel = {
 	type: string;
 };
 
-interface CommerceAccount extends Omit<Account, 'description'> {
+interface CommerceAccount extends Account {
+	active: boolean;
 	taxId: string;
 	logoURL: string;
 }

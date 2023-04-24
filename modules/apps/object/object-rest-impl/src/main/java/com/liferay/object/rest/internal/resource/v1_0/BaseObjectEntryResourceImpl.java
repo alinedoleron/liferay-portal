@@ -344,10 +344,6 @@ public abstract class BaseObjectEntryResourceImpl
 		ObjectEntry existingObjectEntry = getByExternalReferenceCode(
 			externalReferenceCode);
 
-		if (objectEntry.getActions() != null) {
-			existingObjectEntry.setActions(objectEntry.getActions());
-		}
-
 		if (objectEntry.getDateCreated() != null) {
 			existingObjectEntry.setDateCreated(objectEntry.getDateCreated());
 		}
@@ -356,25 +352,17 @@ public abstract class BaseObjectEntryResourceImpl
 			existingObjectEntry.setDateModified(objectEntry.getDateModified());
 		}
 
-		if (objectEntry.getExternalReferenceCode() != null) {
-			existingObjectEntry.setExternalReferenceCode(
-				objectEntry.getExternalReferenceCode());
-		}
-
 		if (objectEntry.getKeywords() != null) {
 			existingObjectEntry.setKeywords(objectEntry.getKeywords());
 		}
 
 		if (objectEntry.getProperties() != null) {
-			Map<String, Object> properties = objectEntry.getProperties();
+			Map<String, Object> properties =
+				existingObjectEntry.getProperties();
 
-			properties.putAll(existingObjectEntry.getProperties());
+			properties.putAll(objectEntry.getProperties());
 
 			existingObjectEntry.setProperties(properties);
-		}
-
-		if (objectEntry.getScopeKey() != null) {
-			existingObjectEntry.setScopeKey(objectEntry.getScopeKey());
 		}
 
 		if (objectEntry.getTaxonomyCategoryIds() != null) {
@@ -567,10 +555,6 @@ public abstract class BaseObjectEntryResourceImpl
 			getScopeScopeKeyByExternalReferenceCode(
 				scopeKey, externalReferenceCode);
 
-		if (objectEntry.getActions() != null) {
-			existingObjectEntry.setActions(objectEntry.getActions());
-		}
-
 		if (objectEntry.getDateCreated() != null) {
 			existingObjectEntry.setDateCreated(objectEntry.getDateCreated());
 		}
@@ -579,25 +563,17 @@ public abstract class BaseObjectEntryResourceImpl
 			existingObjectEntry.setDateModified(objectEntry.getDateModified());
 		}
 
-		if (objectEntry.getExternalReferenceCode() != null) {
-			existingObjectEntry.setExternalReferenceCode(
-				objectEntry.getExternalReferenceCode());
-		}
-
 		if (objectEntry.getKeywords() != null) {
 			existingObjectEntry.setKeywords(objectEntry.getKeywords());
 		}
 
 		if (objectEntry.getProperties() != null) {
-			Map<String, Object> properties = objectEntry.getProperties();
+			Map<String, Object> properties =
+				existingObjectEntry.getProperties();
 
-			properties.putAll(existingObjectEntry.getProperties());
+			properties.putAll(objectEntry.getProperties());
 
 			existingObjectEntry.setProperties(properties);
-		}
-
-		if (objectEntry.getScopeKey() != null) {
-			existingObjectEntry.setScopeKey(objectEntry.getScopeKey());
 		}
 
 		if (objectEntry.getTaxonomyCategoryIds() != null) {
@@ -814,10 +790,6 @@ public abstract class BaseObjectEntryResourceImpl
 
 		ObjectEntry existingObjectEntry = getObjectEntry(objectEntryId);
 
-		if (objectEntry.getActions() != null) {
-			existingObjectEntry.setActions(objectEntry.getActions());
-		}
-
 		if (objectEntry.getDateCreated() != null) {
 			existingObjectEntry.setDateCreated(objectEntry.getDateCreated());
 		}
@@ -826,25 +798,17 @@ public abstract class BaseObjectEntryResourceImpl
 			existingObjectEntry.setDateModified(objectEntry.getDateModified());
 		}
 
-		if (objectEntry.getExternalReferenceCode() != null) {
-			existingObjectEntry.setExternalReferenceCode(
-				objectEntry.getExternalReferenceCode());
-		}
-
 		if (objectEntry.getKeywords() != null) {
 			existingObjectEntry.setKeywords(objectEntry.getKeywords());
 		}
 
 		if (objectEntry.getProperties() != null) {
-			Map<String, Object> properties = objectEntry.getProperties();
+			Map<String, Object> properties =
+				existingObjectEntry.getProperties();
 
-			properties.putAll(existingObjectEntry.getProperties());
+			properties.putAll(objectEntry.getProperties());
 
 			existingObjectEntry.setProperties(properties);
-		}
-
-		if (objectEntry.getScopeKey() != null) {
-			existingObjectEntry.setScopeKey(objectEntry.getScopeKey());
 		}
 
 		if (objectEntry.getTaxonomyCategoryIds() != null) {
@@ -1296,14 +1260,14 @@ public abstract class BaseObjectEntryResourceImpl
 		if ("PARTIAL_UPDATE".equalsIgnoreCase(updateStrategy)) {
 			objectEntryUnsafeConsumer = objectEntry -> patchObjectEntry(
 				objectEntry.getId() != null ? objectEntry.getId() :
-					Long.parseLong((String)parameters.get("objectEntryId")),
+					_parseLong((String)parameters.get("objectEntryId")),
 				objectEntry);
 		}
 
 		if ("UPDATE".equalsIgnoreCase(updateStrategy)) {
 			objectEntryUnsafeConsumer = objectEntry -> putObjectEntry(
 				objectEntry.getId() != null ? objectEntry.getId() :
-					Long.parseLong((String)parameters.get("objectEntryId")),
+					_parseLong((String)parameters.get("objectEntryId")),
 				objectEntry);
 		}
 
@@ -1322,6 +1286,14 @@ public abstract class BaseObjectEntryResourceImpl
 				objectEntryUnsafeConsumer.accept(objectEntry);
 			}
 		}
+	}
+
+	private Long _parseLong(String value) {
+		if (value != null) {
+			return Long.parseLong(value);
+		}
+
+		return null;
 	}
 
 	protected String getPermissionCheckerActionsResourceName(Object id)

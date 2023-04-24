@@ -703,25 +703,6 @@ public abstract class BaseDocumentFolderResourceImpl
 		DocumentFolder existingDocumentFolder = getDocumentFolder(
 			documentFolderId);
 
-		if (documentFolder.getActions() != null) {
-			existingDocumentFolder.setActions(documentFolder.getActions());
-		}
-
-		if (documentFolder.getAssetLibraryKey() != null) {
-			existingDocumentFolder.setAssetLibraryKey(
-				documentFolder.getAssetLibraryKey());
-		}
-
-		if (documentFolder.getDateCreated() != null) {
-			existingDocumentFolder.setDateCreated(
-				documentFolder.getDateCreated());
-		}
-
-		if (documentFolder.getDateModified() != null) {
-			existingDocumentFolder.setDateModified(
-				documentFolder.getDateModified());
-		}
-
 		if (documentFolder.getDescription() != null) {
 			existingDocumentFolder.setDescription(
 				documentFolder.getDescription());
@@ -736,28 +717,9 @@ public abstract class BaseDocumentFolderResourceImpl
 			existingDocumentFolder.setName(documentFolder.getName());
 		}
 
-		if (documentFolder.getNumberOfDocumentFolders() != null) {
-			existingDocumentFolder.setNumberOfDocumentFolders(
-				documentFolder.getNumberOfDocumentFolders());
-		}
-
-		if (documentFolder.getNumberOfDocuments() != null) {
-			existingDocumentFolder.setNumberOfDocuments(
-				documentFolder.getNumberOfDocuments());
-		}
-
 		if (documentFolder.getParentDocumentFolderId() != null) {
 			existingDocumentFolder.setParentDocumentFolderId(
 				documentFolder.getParentDocumentFolderId());
-		}
-
-		if (documentFolder.getSiteId() != null) {
-			existingDocumentFolder.setSiteId(documentFolder.getSiteId());
-		}
-
-		if (documentFolder.getSubscribed() != null) {
-			existingDocumentFolder.setSubscribed(
-				documentFolder.getSubscribed());
 		}
 
 		if (documentFolder.getViewableBy() != null) {
@@ -1989,14 +1951,14 @@ public abstract class BaseDocumentFolderResourceImpl
 		if (parameters.containsKey("assetLibraryId")) {
 			return getAssetLibraryDocumentFoldersPage(
 				(Long)parameters.get("assetLibraryId"),
-				Boolean.parseBoolean((String)parameters.get("flatten")), search,
-				null, filter, pagination, sorts);
+				_parseBoolean((String)parameters.get("flatten")), search, null,
+				filter, pagination, sorts);
 		}
 		else if (parameters.containsKey("siteId")) {
 			return getSiteDocumentFoldersPage(
 				(Long)parameters.get("siteId"),
-				Boolean.parseBoolean((String)parameters.get("flatten")), search,
-				null, filter, pagination, sorts);
+				_parseBoolean((String)parameters.get("flatten")), search, null,
+				filter, pagination, sorts);
 		}
 		else {
 			throw new NotSupportedException(
@@ -2042,15 +2004,14 @@ public abstract class BaseDocumentFolderResourceImpl
 			documentFolderUnsafeConsumer =
 				documentFolder -> patchDocumentFolder(
 					documentFolder.getId() != null ? documentFolder.getId() :
-						Long.parseLong(
-							(String)parameters.get("documentFolderId")),
+						_parseLong((String)parameters.get("documentFolderId")),
 					documentFolder);
 		}
 
 		if ("UPDATE".equalsIgnoreCase(updateStrategy)) {
 			documentFolderUnsafeConsumer = documentFolder -> putDocumentFolder(
 				documentFolder.getId() != null ? documentFolder.getId() :
-					Long.parseLong((String)parameters.get("documentFolderId")),
+					_parseLong((String)parameters.get("documentFolderId")),
 				documentFolder);
 		}
 
@@ -2069,6 +2030,22 @@ public abstract class BaseDocumentFolderResourceImpl
 				documentFolderUnsafeConsumer.accept(documentFolder);
 			}
 		}
+	}
+
+	private Boolean _parseBoolean(String value) {
+		if (value != null) {
+			return Boolean.parseBoolean(value);
+		}
+
+		return null;
+	}
+
+	private Long _parseLong(String value) {
+		if (value != null) {
+			return Long.parseLong(value);
+		}
+
+		return null;
 	}
 
 	protected String getPermissionCheckerActionsResourceName(Object id)

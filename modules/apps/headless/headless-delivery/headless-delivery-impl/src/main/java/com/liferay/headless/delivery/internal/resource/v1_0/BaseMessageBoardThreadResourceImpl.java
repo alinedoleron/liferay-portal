@@ -67,6 +67,7 @@ import java.io.Serializable;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -420,10 +421,10 @@ public abstract class BaseMessageBoardThreadResourceImpl
 	public Page<MessageBoardThread> getMessageBoardThreadsRankedPage(
 			@io.swagger.v3.oas.annotations.Parameter(hidden = true)
 			@javax.ws.rs.QueryParam("dateCreated")
-			java.util.Date dateCreated,
+			Date dateCreated,
 			@io.swagger.v3.oas.annotations.Parameter(hidden = true)
 			@javax.ws.rs.QueryParam("dateModified")
-			java.util.Date dateModified,
+			Date dateModified,
 			@io.swagger.v3.oas.annotations.Parameter(hidden = true)
 			@javax.ws.rs.QueryParam("messageBoardSectionId")
 			Long messageBoardSectionId,
@@ -597,24 +598,9 @@ public abstract class BaseMessageBoardThreadResourceImpl
 		MessageBoardThread existingMessageBoardThread = getMessageBoardThread(
 			messageBoardThreadId);
 
-		if (messageBoardThread.getActions() != null) {
-			existingMessageBoardThread.setActions(
-				messageBoardThread.getActions());
-		}
-
 		if (messageBoardThread.getArticleBody() != null) {
 			existingMessageBoardThread.setArticleBody(
 				messageBoardThread.getArticleBody());
-		}
-
-		if (messageBoardThread.getDateCreated() != null) {
-			existingMessageBoardThread.setDateCreated(
-				messageBoardThread.getDateCreated());
-		}
-
-		if (messageBoardThread.getDateModified() != null) {
-			existingMessageBoardThread.setDateModified(
-				messageBoardThread.getDateModified());
 		}
 
 		if (messageBoardThread.getEncodingFormat() != null) {
@@ -642,34 +628,9 @@ public abstract class BaseMessageBoardThreadResourceImpl
 				messageBoardThread.getKeywords());
 		}
 
-		if (messageBoardThread.getLastPostDate() != null) {
-			existingMessageBoardThread.setLastPostDate(
-				messageBoardThread.getLastPostDate());
-		}
-
-		if (messageBoardThread.getLocked() != null) {
-			existingMessageBoardThread.setLocked(
-				messageBoardThread.getLocked());
-		}
-
-		if (messageBoardThread.getMessageBoardRootMessageId() != null) {
-			existingMessageBoardThread.setMessageBoardRootMessageId(
-				messageBoardThread.getMessageBoardRootMessageId());
-		}
-
 		if (messageBoardThread.getMessageBoardSectionId() != null) {
 			existingMessageBoardThread.setMessageBoardSectionId(
 				messageBoardThread.getMessageBoardSectionId());
-		}
-
-		if (messageBoardThread.getNumberOfMessageBoardAttachments() != null) {
-			existingMessageBoardThread.setNumberOfMessageBoardAttachments(
-				messageBoardThread.getNumberOfMessageBoardAttachments());
-		}
-
-		if (messageBoardThread.getNumberOfMessageBoardMessages() != null) {
-			existingMessageBoardThread.setNumberOfMessageBoardMessages(
-				messageBoardThread.getNumberOfMessageBoardMessages());
 		}
 
 		if (messageBoardThread.getSeen() != null) {
@@ -679,16 +640,6 @@ public abstract class BaseMessageBoardThreadResourceImpl
 		if (messageBoardThread.getShowAsQuestion() != null) {
 			existingMessageBoardThread.setShowAsQuestion(
 				messageBoardThread.getShowAsQuestion());
-		}
-
-		if (messageBoardThread.getSiteId() != null) {
-			existingMessageBoardThread.setSiteId(
-				messageBoardThread.getSiteId());
-		}
-
-		if (messageBoardThread.getStatus() != null) {
-			existingMessageBoardThread.setStatus(
-				messageBoardThread.getStatus());
 		}
 
 		if (messageBoardThread.getSubscribed() != null) {
@@ -704,11 +655,6 @@ public abstract class BaseMessageBoardThreadResourceImpl
 		if (messageBoardThread.getThreadType() != null) {
 			existingMessageBoardThread.setThreadType(
 				messageBoardThread.getThreadType());
-		}
-
-		if (messageBoardThread.getViewCount() != null) {
-			existingMessageBoardThread.setViewCount(
-				messageBoardThread.getViewCount());
 		}
 
 		if (messageBoardThread.getViewableBy() != null) {
@@ -1627,7 +1573,7 @@ public abstract class BaseMessageBoardThreadResourceImpl
 				messageBoardThreadUnsafeConsumer =
 					messageBoardThread ->
 						postMessageBoardSectionMessageBoardThread(
-							Long.parseLong(
+							_parseLong(
 								(String)parameters.get(
 									"messageBoardSectionId")),
 							messageBoardThread);
@@ -1707,12 +1653,12 @@ public abstract class BaseMessageBoardThreadResourceImpl
 		if (parameters.containsKey("siteId")) {
 			return getSiteMessageBoardThreadsPage(
 				(Long)parameters.get("siteId"),
-				Boolean.parseBoolean((String)parameters.get("flatten")), search,
-				null, filter, pagination, sorts);
+				_parseBoolean((String)parameters.get("flatten")), search, null,
+				filter, pagination, sorts);
 		}
 		else if (parameters.containsKey("messageBoardSectionId")) {
 			return getMessageBoardSectionMessageBoardThreadsPage(
-				Long.parseLong((String)parameters.get("messageBoardSectionId")),
+				_parseLong((String)parameters.get("messageBoardSectionId")),
 				search, null, filter, pagination, sorts);
 		}
 		else {
@@ -1760,7 +1706,7 @@ public abstract class BaseMessageBoardThreadResourceImpl
 				messageBoardThread -> patchMessageBoardThread(
 					messageBoardThread.getId() != null ?
 						messageBoardThread.getId() :
-							Long.parseLong(
+							_parseLong(
 								(String)parameters.get("messageBoardThreadId")),
 					messageBoardThread);
 		}
@@ -1770,7 +1716,7 @@ public abstract class BaseMessageBoardThreadResourceImpl
 				messageBoardThread -> putMessageBoardThread(
 					messageBoardThread.getId() != null ?
 						messageBoardThread.getId() :
-							Long.parseLong(
+							_parseLong(
 								(String)parameters.get("messageBoardThreadId")),
 					messageBoardThread);
 		}
@@ -1790,6 +1736,22 @@ public abstract class BaseMessageBoardThreadResourceImpl
 				messageBoardThreadUnsafeConsumer.accept(messageBoardThread);
 			}
 		}
+	}
+
+	private Boolean _parseBoolean(String value) {
+		if (value != null) {
+			return Boolean.parseBoolean(value);
+		}
+
+		return null;
+	}
+
+	private Long _parseLong(String value) {
+		if (value != null) {
+			return Long.parseLong(value);
+		}
+
+		return null;
 	}
 
 	protected String getPermissionCheckerActionsResourceName(Object id)
