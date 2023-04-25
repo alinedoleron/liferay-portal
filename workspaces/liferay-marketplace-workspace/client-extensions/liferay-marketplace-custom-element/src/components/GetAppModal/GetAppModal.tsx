@@ -88,6 +88,8 @@ export function GetAppModal({handleClose}: GetAppModalProps) {
 		skuOptions: [],
 	});
 
+	const [skus, setSkus] = useState<SKU[]>([]);
+
 	const [addresses, setAddresses] = useState<BillingAddress[]>([]);
 
 	const [billingAddress, setBillingAddress] = useState<BillingAddress>(
@@ -162,6 +164,26 @@ export function GetAppModal({handleClose}: GetAppModalProps) {
 	}, [billingAddress]);
 
 	useEffect(() => {
+			if(!freeApp && skus.length) {
+				let selectedSku;
+
+				if (selectedPaymentMethod === 'trial') {
+					selectedSku = skus
+					.filter((sku) =>
+						sku.skuOptions.find((option) => option.value === 'yes')
+					)[0];
+				} else if(selectedPaymentMethod === 'pay') {
+					selectedSku = skus.find((sku) => sku.price !== 0);
+				} else {
+					selectedSku = skus[0];
+				}
+	
+				setSku(selectedSku as SKU);
+			}
+
+	}, [selectedPaymentMethod]);
+
+	useEffect(() => {
 		const getModalInfo = async () => {
 			const channels = await getChannels();
 
@@ -191,17 +213,23 @@ export function GetAppModal({handleClose}: GetAppModalProps) {
 			setAccounts(userAccounts.accountBriefs);
 			const app = await getDeliveryProduct({
 				accountId,
-				appId: Liferay.MarketplaceCustomerFlow.appId,
+				// appId: Liferay.MarketplaceCustomerFlow.appId,
+				// appId: 47835, //free
+				appId: 47232, // Paid and trial
 				channelId: channel.id,
 			});
 
 			setApp(app);
 
 			const skuResponse = await getProductSKU({
-				appProductId: Liferay.MarketplaceCustomerFlow.appId,
+				// appProductId: Liferay.MarketplaceCustomerFlow.appId,
+				// appProductId: 47835, //free
+                appProductId: 47232, // Paid and trial
 			});
 
-			let sku;
+			setSkus(skuResponse.items);
+
+			let skuTemp;
 
 			if (skuResponse.items.length > 1) {
 				const isTrial = skuResponse.items
@@ -210,14 +238,14 @@ export function GetAppModal({handleClose}: GetAppModalProps) {
 					)
 					.filter((sku) => sku)[0]?.value;
 				setEnableTrialMethod(isTrial as string);
-				sku = skuResponse.items.find((sku) => sku.price !== 0);
+				skuTemp = skuResponse.items.find((sku) => sku.price !== 0);
 			}
 			else {
-				sku = skuResponse.items[0];
+				skuTemp = skuResponse.items[0];
 			}
-			setSku(sku as SKU);
+			setSku(skuTemp as SKU);
 
-			if (sku?.price === 0 && sku.skuOptions[0].value === 'no') {
+			if (skuTemp?.price === 0 && skuTemp.skuOptions[0].value === 'no') {
 				setFreeApp(true);
 				setSelectedPaymentMethod(null);
 			}
@@ -225,7 +253,7 @@ export function GetAppModal({handleClose}: GetAppModalProps) {
 			const versionResponse = await getSKUCustomFieldExpandoValue({
 				companyId: Number(getCompanyId()),
 				customFieldName: 'version',
-				skuId: sku?.id as number,
+				skuId: skuTemp?.id as number,
 			});
 
 			if (typeof versionResponse === 'string') {
