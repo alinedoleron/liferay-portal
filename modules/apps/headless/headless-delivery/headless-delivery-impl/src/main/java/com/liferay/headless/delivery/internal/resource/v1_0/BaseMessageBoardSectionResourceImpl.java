@@ -265,49 +265,17 @@ public abstract class BaseMessageBoardSectionResourceImpl
 		MessageBoardSection existingMessageBoardSection =
 			getMessageBoardSection(messageBoardSectionId);
 
-		if (messageBoardSection.getActions() != null) {
-			existingMessageBoardSection.setActions(
-				messageBoardSection.getActions());
-		}
-
-		if (messageBoardSection.getDateCreated() != null) {
-			existingMessageBoardSection.setDateCreated(
-				messageBoardSection.getDateCreated());
-		}
-
-		if (messageBoardSection.getDateModified() != null) {
-			existingMessageBoardSection.setDateModified(
-				messageBoardSection.getDateModified());
-		}
+		existingMessageBoardSection.setCustomFields(
+			messageBoardSection.getCustomFields());
 
 		if (messageBoardSection.getDescription() != null) {
 			existingMessageBoardSection.setDescription(
 				messageBoardSection.getDescription());
 		}
 
-		if (messageBoardSection.getNumberOfMessageBoardSections() != null) {
-			existingMessageBoardSection.setNumberOfMessageBoardSections(
-				messageBoardSection.getNumberOfMessageBoardSections());
-		}
-
-		if (messageBoardSection.getNumberOfMessageBoardThreads() != null) {
-			existingMessageBoardSection.setNumberOfMessageBoardThreads(
-				messageBoardSection.getNumberOfMessageBoardThreads());
-		}
-
 		if (messageBoardSection.getParentMessageBoardSectionId() != null) {
 			existingMessageBoardSection.setParentMessageBoardSectionId(
 				messageBoardSection.getParentMessageBoardSectionId());
-		}
-
-		if (messageBoardSection.getSiteId() != null) {
-			existingMessageBoardSection.setSiteId(
-				messageBoardSection.getSiteId());
-		}
-
-		if (messageBoardSection.getSubscribed() != null) {
-			existingMessageBoardSection.setSubscribed(
-				messageBoardSection.getSubscribed());
 		}
 
 		if (messageBoardSection.getTitle() != null) {
@@ -1252,8 +1220,8 @@ public abstract class BaseMessageBoardSectionResourceImpl
 		if (parameters.containsKey("siteId")) {
 			return getSiteMessageBoardSectionsPage(
 				(Long)parameters.get("siteId"),
-				Boolean.parseBoolean((String)parameters.get("flatten")), search,
-				null, filter, pagination, sorts);
+				_parseBoolean((String)parameters.get("flatten")), search, null,
+				filter, pagination, sorts);
 		}
 		else {
 			throw new NotSupportedException(
@@ -1300,7 +1268,7 @@ public abstract class BaseMessageBoardSectionResourceImpl
 				messageBoardSection -> patchMessageBoardSection(
 					messageBoardSection.getId() != null ?
 						messageBoardSection.getId() :
-							Long.parseLong(
+							_parseLong(
 								(String)parameters.get(
 									"messageBoardSectionId")),
 					messageBoardSection);
@@ -1311,7 +1279,7 @@ public abstract class BaseMessageBoardSectionResourceImpl
 				messageBoardSection -> putMessageBoardSection(
 					messageBoardSection.getId() != null ?
 						messageBoardSection.getId() :
-							Long.parseLong(
+							_parseLong(
 								(String)parameters.get(
 									"messageBoardSectionId")),
 					messageBoardSection);
@@ -1334,6 +1302,22 @@ public abstract class BaseMessageBoardSectionResourceImpl
 				messageBoardSectionUnsafeConsumer.accept(messageBoardSection);
 			}
 		}
+	}
+
+	private Boolean _parseBoolean(String value) {
+		if (value != null) {
+			return Boolean.parseBoolean(value);
+		}
+
+		return null;
+	}
+
+	private Long _parseLong(String value) {
+		if (value != null) {
+			return Long.parseLong(value);
+		}
+
+		return null;
 	}
 
 	protected String getPermissionCheckerActionsResourceName(Object id)

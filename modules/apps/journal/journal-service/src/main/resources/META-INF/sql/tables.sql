@@ -87,7 +87,7 @@ create table JournalFeed (
 	feedId VARCHAR(75) null,
 	name VARCHAR(75) null,
 	description STRING null,
-	DDMStructureKey VARCHAR(75) null,
+	DDMStructureId LONG,
 	DDMTemplateKey VARCHAR(75) null,
 	DDMRendererTemplateKey VARCHAR(75) null,
 	delta INTEGER,

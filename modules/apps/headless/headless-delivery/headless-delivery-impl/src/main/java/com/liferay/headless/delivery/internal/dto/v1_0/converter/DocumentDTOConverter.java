@@ -150,6 +150,7 @@ public class DocumentDTOConverter
 				encodingFormat = fileEntry.getMimeType();
 				externalReferenceCode = fileEntry.getExternalReferenceCode();
 				fileExtension = fileEntry.getExtension();
+				fileName = fileEntry.getFileName();
 				id = fileEntry.getFileEntryId();
 				keywords = ListUtil.toArray(
 					_assetTagLocalService.getTags(

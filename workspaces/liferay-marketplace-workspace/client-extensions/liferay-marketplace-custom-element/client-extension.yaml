@@ -13,7 +13,8 @@ liferay-marketplace-custom-element-create-app:
         route: create-app
     type: customElement
     urls:
-        - "*.js"
+        - http://127.0.0.1:5173/@vite/client
+        - http://127.0.0.1:5173/src/main.tsx
     useESM: true
 liferay-marketplace-custom-element-get-app:
     cssURLs:
@@ -27,7 +28,8 @@ liferay-marketplace-custom-element-get-app:
         route: get-app
     type: customElement
     urls:
-        - "*.js"
+        - http://127.0.0.1:5173/@vite/client
+        - http://127.0.0.1:5173/src/main.tsx
     useESM: true
 liferay-marketplace-custom-element-published-apps:
     cssURLs:
@@ -41,7 +43,8 @@ liferay-marketplace-custom-element-published-apps:
         route: published-apps
     type: customElement
     urls:
-        - "*.js"
+        - http://127.0.0.1:5173/@vite/client
+        - http://127.0.0.1:5173/src/main.tsx
     useESM: true
 liferay-marketplace-custom-element-purchased-apps:
     cssURLs:
@@ -55,5 +58,21 @@ liferay-marketplace-custom-element-purchased-apps:
         route: purchased-apps
     type: customElement
     urls:
-        - "*.js"
+        - http://127.0.0.1:5173/@vite/client
+        - http://127.0.0.1:5173/src/main.tsx
+    useESM: true
+liferay-marketplace-custom-element-next-steps:
+    cssURLs:
+        - .*.css
+    friendlyURLMapping: liferay-marketplace-custom-element-next-steps
+    htmlElementName: liferay-marketplace-custom-element
+    instanceable: false
+    name: Liferay Marketplace Next Steps
+    portletCategoryName: category.client-extensions
+    properties:
+        route: next-steps
+    type: customElement
+    urls:
+        - http://127.0.0.1:5173/@vite/client
+        - http://127.0.0.1:5173/src/main.tsx
     useESM: true

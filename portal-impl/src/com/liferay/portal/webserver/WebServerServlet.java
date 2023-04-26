@@ -240,26 +240,7 @@ public class WebServerServlet extends HttpServlet {
 				}
 			}
 
-			String objectDefinitionExternalReferenceCode = ParamUtil.getString(
-				httpServletRequest, "objectDefinitionExternalReferenceCode");
-
-			if (Validator.isNotNull(objectDefinitionExternalReferenceCode)) {
-				Message message = new Message();
-
-				message.put("companyId", user.getCompanyId());
-				message.put(
-					"objectDefinitionExternalReferenceCode",
-					objectDefinitionExternalReferenceCode);
-				message.put(
-					"objectEntryExternalReferenceCode",
-					ParamUtil.getString(
-						httpServletRequest,
-						"objectEntryExternalReferenceCode"));
-				message.put("userId", user.getUserId());
-
-				_messageBus.sendMessage(
-					DestinationNames.OBJECT_ENTRY_ATTACHMENT_DOWNLOAD, message);
-			}
+			sendMessageObjectEntryAttachmentDownload(httpServletRequest, user);
 		}
 		catch (Exception exception) {
 			if (_log.isDebugEnabled()) {
@@ -274,6 +255,46 @@ public class WebServerServlet extends HttpServlet {
 		}
 
 		return true;
+	}
+
+	/**
+	 * @see com.liferay.portal.servlet.filters.virtualhost.VirtualHostFilter
+	 */
+	public static void sendMessageObjectEntryAttachmentDownload(
+		HttpServletRequest httpServletRequest, User user) {
+
+		String objectDefinitionExternalReferenceCode = ParamUtil.getString(
+			httpServletRequest, "objectDefinitionExternalReferenceCode");
+
+		if (Validator.isNull(objectDefinitionExternalReferenceCode)) {
+			return;
+		}
+
+		try {
+			if (user == null) {
+				user = _getUser(httpServletRequest);
+			}
+
+			Message message = new Message();
+
+			message.put("companyId", user.getCompanyId());
+			message.put(
+				"objectDefinitionExternalReferenceCode",
+				objectDefinitionExternalReferenceCode);
+			message.put(
+				"objectEntryExternalReferenceCode",
+				ParamUtil.getString(
+					httpServletRequest, "objectEntryExternalReferenceCode"));
+			message.put("userId", user.getUserId());
+
+			_messageBus.sendMessage(
+				DestinationNames.OBJECT_ENTRY_ATTACHMENT_DOWNLOAD, message);
+		}
+		catch (Exception exception) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(exception);
+			}
+		}
 	}
 
 	@Override
@@ -1532,7 +1553,8 @@ public class WebServerServlet extends HttpServlet {
 				FileEntry.class.getName());
 
 		fileEntryModelResourcePermission.check(
-			permissionChecker, fileEntry.getFileEntryId(), ActionKeys.VIEW);
+			permissionChecker, fileEntry.getFileEntryId(),
+			_getActionId(httpServletRequest));
 
 		FileVersion fileVersion = fileEntry.getFileVersion();
 
@@ -1683,6 +1705,49 @@ public class WebServerServlet extends HttpServlet {
 
 			return null;
 		};
+	}
+
+	private String _getActionId(HttpServletRequest httpServletRequest) {
+		boolean audioPreview = ParamUtil.getBoolean(
+			httpServletRequest, "audioPreview");
+		boolean imagePreview = ParamUtil.getBoolean(
+			httpServletRequest, "imagePreview");
+		boolean videoPreview = ParamUtil.getBoolean(
+			httpServletRequest, "videoPreview");
+
+		if (audioPreview || imagePreview || videoPreview) {
+			return ActionKeys.VIEW;
+		}
+
+		int documentThumbnail = ParamUtil.getInteger(
+			httpServletRequest, "documentThumbnail");
+
+		if ((documentThumbnail > 0) && (documentThumbnail <= 3)) {
+			return ActionKeys.VIEW;
+		}
+
+		int imageThumbnail = ParamUtil.getInteger(
+			httpServletRequest, "imageThumbnail");
+
+		if ((imageThumbnail > 0) && (imageThumbnail <= 3)) {
+			return ActionKeys.VIEW;
+		}
+
+		int previewFileIndex = ParamUtil.getInteger(
+			httpServletRequest, "previewFileIndex");
+
+		if (previewFileIndex > 0) {
+			return ActionKeys.VIEW;
+		}
+
+		int videoThumbnail = ParamUtil.getInteger(
+			httpServletRequest, "videoThumbnail");
+
+		if ((videoThumbnail > 0) && (videoThumbnail <= 3)) {
+			return ActionKeys.VIEW;
+		}
+
+		return ActionKeys.DOWNLOAD;
 	}
 
 	private FileEntry _getFileEntry(

@@ -71,6 +71,7 @@ public class ${className}SimulationPanelApp extends BaseJSPPanelApp {
 	}
 
 	@Override
+#if (${newTemplate.equals("true")})
 	protected ServletContext getServletContext() {
 		return _servletContext;
 	}
@@ -79,5 +80,14 @@ public class ${className}SimulationPanelApp extends BaseJSPPanelApp {
 		target = "(osgi.web.symbolicname=${artifactId})"
 	)
 	private ServletContext _servletContext;
+#else
+	@Reference(
+		target = "(osgi.web.symbolicname=${artifactId})",
+		unbind = "-"
+	)
+	public void setServletContext(ServletContext servletContext) {
+		super.setServletContext(servletContext);
+	}
+#end
 
 }

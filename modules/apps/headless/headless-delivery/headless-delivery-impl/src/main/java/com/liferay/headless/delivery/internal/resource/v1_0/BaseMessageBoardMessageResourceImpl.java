@@ -266,11 +266,6 @@ public abstract class BaseMessageBoardMessageResourceImpl
 		MessageBoardMessage existingMessageBoardMessage =
 			getMessageBoardMessage(messageBoardMessageId);
 
-		if (messageBoardMessage.getActions() != null) {
-			existingMessageBoardMessage.setActions(
-				messageBoardMessage.getActions());
-		}
-
 		if (messageBoardMessage.getAnonymous() != null) {
 			existingMessageBoardMessage.setAnonymous(
 				messageBoardMessage.getAnonymous());
@@ -281,15 +276,8 @@ public abstract class BaseMessageBoardMessageResourceImpl
 				messageBoardMessage.getArticleBody());
 		}
 
-		if (messageBoardMessage.getDateCreated() != null) {
-			existingMessageBoardMessage.setDateCreated(
-				messageBoardMessage.getDateCreated());
-		}
-
-		if (messageBoardMessage.getDateModified() != null) {
-			existingMessageBoardMessage.setDateModified(
-				messageBoardMessage.getDateModified());
-		}
+		existingMessageBoardMessage.setCustomFields(
+			messageBoardMessage.getCustomFields());
 
 		if (messageBoardMessage.getEncodingFormat() != null) {
 			existingMessageBoardMessage.setEncodingFormat(
@@ -326,24 +314,9 @@ public abstract class BaseMessageBoardMessageResourceImpl
 				messageBoardMessage.getMessageBoardSectionId());
 		}
 
-		if (messageBoardMessage.getMessageBoardThreadId() != null) {
-			existingMessageBoardMessage.setMessageBoardThreadId(
-				messageBoardMessage.getMessageBoardThreadId());
-		}
-
 		if (messageBoardMessage.getModified() != null) {
 			existingMessageBoardMessage.setModified(
 				messageBoardMessage.getModified());
-		}
-
-		if (messageBoardMessage.getNumberOfMessageBoardAttachments() != null) {
-			existingMessageBoardMessage.setNumberOfMessageBoardAttachments(
-				messageBoardMessage.getNumberOfMessageBoardAttachments());
-		}
-
-		if (messageBoardMessage.getNumberOfMessageBoardMessages() != null) {
-			existingMessageBoardMessage.setNumberOfMessageBoardMessages(
-				messageBoardMessage.getNumberOfMessageBoardMessages());
 		}
 
 		if (messageBoardMessage.getParentMessageBoardMessageId() != null) {
@@ -354,21 +327,6 @@ public abstract class BaseMessageBoardMessageResourceImpl
 		if (messageBoardMessage.getShowAsAnswer() != null) {
 			existingMessageBoardMessage.setShowAsAnswer(
 				messageBoardMessage.getShowAsAnswer());
-		}
-
-		if (messageBoardMessage.getSiteId() != null) {
-			existingMessageBoardMessage.setSiteId(
-				messageBoardMessage.getSiteId());
-		}
-
-		if (messageBoardMessage.getStatus() != null) {
-			existingMessageBoardMessage.setStatus(
-				messageBoardMessage.getStatus());
-		}
-
-		if (messageBoardMessage.getSubscribed() != null) {
-			existingMessageBoardMessage.setSubscribed(
-				messageBoardMessage.getSubscribed());
 		}
 
 		if (messageBoardMessage.getViewableBy() != null) {
@@ -1799,7 +1757,7 @@ public abstract class BaseMessageBoardMessageResourceImpl
 			if (parameters.containsKey("messageBoardThreadId")) {
 				messageBoardMessageUnsafeConsumer = messageBoardMessage ->
 					postMessageBoardThreadMessageBoardMessage(
-						Long.parseLong(
+						_parseLong(
 							(String)parameters.get("messageBoardThreadId")),
 						messageBoardMessage);
 			}
@@ -1885,12 +1843,12 @@ public abstract class BaseMessageBoardMessageResourceImpl
 		if (parameters.containsKey("siteId")) {
 			return getSiteMessageBoardMessagesPage(
 				(Long)parameters.get("siteId"),
-				Boolean.parseBoolean((String)parameters.get("flatten")), search,
-				null, filter, pagination, sorts);
+				_parseBoolean((String)parameters.get("flatten")), search, null,
+				filter, pagination, sorts);
 		}
 		else if (parameters.containsKey("messageBoardThreadId")) {
 			return getMessageBoardThreadMessageBoardMessagesPage(
-				Long.parseLong((String)parameters.get("messageBoardThreadId")),
+				_parseLong((String)parameters.get("messageBoardThreadId")),
 				search, null, filter, pagination, sorts);
 		}
 		else {
@@ -1938,7 +1896,7 @@ public abstract class BaseMessageBoardMessageResourceImpl
 				messageBoardMessage -> patchMessageBoardMessage(
 					messageBoardMessage.getId() != null ?
 						messageBoardMessage.getId() :
-							Long.parseLong(
+							_parseLong(
 								(String)parameters.get(
 									"messageBoardMessageId")),
 					messageBoardMessage);
@@ -1949,7 +1907,7 @@ public abstract class BaseMessageBoardMessageResourceImpl
 				messageBoardMessage -> putMessageBoardMessage(
 					messageBoardMessage.getId() != null ?
 						messageBoardMessage.getId() :
-							Long.parseLong(
+							_parseLong(
 								(String)parameters.get(
 									"messageBoardMessageId")),
 					messageBoardMessage);
@@ -1972,6 +1930,22 @@ public abstract class BaseMessageBoardMessageResourceImpl
 				messageBoardMessageUnsafeConsumer.accept(messageBoardMessage);
 			}
 		}
+	}
+
+	private Boolean _parseBoolean(String value) {
+		if (value != null) {
+			return Boolean.parseBoolean(value);
+		}
+
+		return null;
+	}
+
+	private Long _parseLong(String value) {
+		if (value != null) {
+			return Long.parseLong(value);
+		}
+
+		return null;
 	}
 
 	protected String getPermissionCheckerActionsResourceName(Object id)

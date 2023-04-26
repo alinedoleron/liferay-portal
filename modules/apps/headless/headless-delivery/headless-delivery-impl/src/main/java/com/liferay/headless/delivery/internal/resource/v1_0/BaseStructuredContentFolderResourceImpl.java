@@ -1671,25 +1671,8 @@ public abstract class BaseStructuredContentFolderResourceImpl
 		StructuredContentFolder existingStructuredContentFolder =
 			getStructuredContentFolder(structuredContentFolderId);
 
-		if (structuredContentFolder.getActions() != null) {
-			existingStructuredContentFolder.setActions(
-				structuredContentFolder.getActions());
-		}
-
-		if (structuredContentFolder.getAssetLibraryKey() != null) {
-			existingStructuredContentFolder.setAssetLibraryKey(
-				structuredContentFolder.getAssetLibraryKey());
-		}
-
-		if (structuredContentFolder.getDateCreated() != null) {
-			existingStructuredContentFolder.setDateCreated(
-				structuredContentFolder.getDateCreated());
-		}
-
-		if (structuredContentFolder.getDateModified() != null) {
-			existingStructuredContentFolder.setDateModified(
-				structuredContentFolder.getDateModified());
-		}
+		existingStructuredContentFolder.setCustomFields(
+			structuredContentFolder.getCustomFields());
 
 		if (structuredContentFolder.getDescription() != null) {
 			existingStructuredContentFolder.setDescription(
@@ -1706,33 +1689,11 @@ public abstract class BaseStructuredContentFolderResourceImpl
 				structuredContentFolder.getName());
 		}
 
-		if (structuredContentFolder.getNumberOfStructuredContentFolders() !=
-				null) {
-
-			existingStructuredContentFolder.setNumberOfStructuredContentFolders(
-				structuredContentFolder.getNumberOfStructuredContentFolders());
-		}
-
-		if (structuredContentFolder.getNumberOfStructuredContents() != null) {
-			existingStructuredContentFolder.setNumberOfStructuredContents(
-				structuredContentFolder.getNumberOfStructuredContents());
-		}
-
 		if (structuredContentFolder.getParentStructuredContentFolderId() !=
 				null) {
 
 			existingStructuredContentFolder.setParentStructuredContentFolderId(
 				structuredContentFolder.getParentStructuredContentFolderId());
-		}
-
-		if (structuredContentFolder.getSiteId() != null) {
-			existingStructuredContentFolder.setSiteId(
-				structuredContentFolder.getSiteId());
-		}
-
-		if (structuredContentFolder.getSubscribed() != null) {
-			existingStructuredContentFolder.setSubscribed(
-				structuredContentFolder.getSubscribed());
 		}
 
 		if (structuredContentFolder.getViewableBy() != null) {
@@ -2014,14 +1975,14 @@ public abstract class BaseStructuredContentFolderResourceImpl
 		if (parameters.containsKey("assetLibraryId")) {
 			return getAssetLibraryStructuredContentFoldersPage(
 				(Long)parameters.get("assetLibraryId"),
-				Boolean.parseBoolean((String)parameters.get("flatten")), search,
-				null, filter, pagination, sorts);
+				_parseBoolean((String)parameters.get("flatten")), search, null,
+				filter, pagination, sorts);
 		}
 		else if (parameters.containsKey("siteId")) {
 			return getSiteStructuredContentFoldersPage(
 				(Long)parameters.get("siteId"),
-				Boolean.parseBoolean((String)parameters.get("flatten")), search,
-				null, filter, pagination, sorts);
+				_parseBoolean((String)parameters.get("flatten")), search, null,
+				filter, pagination, sorts);
 		}
 		else {
 			throw new NotSupportedException(
@@ -2068,7 +2029,7 @@ public abstract class BaseStructuredContentFolderResourceImpl
 				structuredContentFolder -> patchStructuredContentFolder(
 					structuredContentFolder.getId() != null ?
 						structuredContentFolder.getId() :
-							Long.parseLong(
+							_parseLong(
 								(String)parameters.get(
 									"structuredContentFolderId")),
 					structuredContentFolder);
@@ -2079,7 +2040,7 @@ public abstract class BaseStructuredContentFolderResourceImpl
 				structuredContentFolder -> putStructuredContentFolder(
 					structuredContentFolder.getId() != null ?
 						structuredContentFolder.getId() :
-							Long.parseLong(
+							_parseLong(
 								(String)parameters.get(
 									"structuredContentFolderId")),
 					structuredContentFolder);
@@ -2104,6 +2065,22 @@ public abstract class BaseStructuredContentFolderResourceImpl
 					structuredContentFolder);
 			}
 		}
+	}
+
+	private Boolean _parseBoolean(String value) {
+		if (value != null) {
+			return Boolean.parseBoolean(value);
+		}
+
+		return null;
+	}
+
+	private Long _parseLong(String value) {
+		if (value != null) {
+			return Long.parseLong(value);
+		}
+
+		return null;
 	}
 
 	protected String getPermissionCheckerActionsResourceName(Object id)

@@ -204,6 +204,15 @@ export async function getAccountInfoFromCommerce(accountId: number) {
 	return (await response.json()) as CommerceAccount;
 }
 
+export async function getAccountAddressesFromCommerce(accountId: number) {
+	const response = await fetch(
+		`/o/headless-commerce-admin-account/v1.0/accounts/${accountId}/accountAddresses`,
+		{headers, method: 'GET'}
+	);
+
+	return (await response.json()) as {items: BillingAddress[]};
+}
+
 export async function getAccounts() {
 	const response = await fetch('/o/headless-admin-user/v1.0/accounts', {
 		headers,
@@ -223,6 +232,30 @@ export async function getAccountPostalAddressesByAccountId(accountId: number) {
 	);
 
 	return (await response.json()) as {items: AccountPostalAddresses[]};
+}
+
+export async function getCart(cartId: number) {
+	const cartResponse = await fetch(
+		`/o/headless-commerce-delivery-cart/v1.0/carts/${cartId}`,
+		{
+			headers,
+			method: 'GET',
+		}
+	);
+
+	return await cartResponse.json();
+}
+
+export async function getCartItems(cartId: number) {
+	const cartResponse = await fetch(
+		`/o/headless-commerce-delivery-cart/v1.0/carts/${cartId}/items`,
+		{
+			headers,
+			method: 'GET',
+		}
+	);
+
+	return await cartResponse.json();
 }
 
 export async function getCatalogs() {
@@ -326,18 +359,6 @@ export async function getPaymentMethodURL(
 	);
 
 	return await paymentResponse.text();
-}
-
-export async function getPaymentMethods(cartId: number) {
-	const paymentMethodsResponse = await fetch(
-		`/o/headless-commerce-delivery-cart/v1.0/carts/${cartId}/payment-methods`,
-		{
-			headers,
-			method: 'GET',
-		}
-	);
-
-	return await paymentMethodsResponse.json();
 }
 
 export async function getOptions() {

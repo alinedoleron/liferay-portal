@@ -19,7 +19,8 @@ import com.liferay.commerce.configuration.CommerceOrderCheckoutConfiguration;
 import com.liferay.commerce.constants.CommerceConstants;
 import com.liferay.commerce.constants.CommerceOrderActionKeys;
 import com.liferay.commerce.constants.CommerceOrderConstants;
-import com.liferay.commerce.constants.CommercePaymentConstants;
+import com.liferay.commerce.constants.CommerceOrderPaymentConstants;
+import com.liferay.commerce.constants.CommercePaymentMethodConstants;
 import com.liferay.commerce.constants.CommerceShipmentConstants;
 import com.liferay.commerce.context.CommerceContext;
 import com.liferay.commerce.context.CommerceContextFactory;
@@ -34,6 +35,7 @@ import com.liferay.commerce.exception.CommerceOrderShippingMethodException;
 import com.liferay.commerce.exception.CommerceOrderStatusException;
 import com.liferay.commerce.exception.CommerceOrderValidatorException;
 import com.liferay.commerce.internal.order.status.CompletedCommerceOrderStatusImpl;
+import com.liferay.commerce.internal.order.status.PartiallyShippedCommerceOrderStatusImpl;
 import com.liferay.commerce.internal.order.status.ShippedCommerceOrderStatusImpl;
 import com.liferay.commerce.inventory.model.CommerceInventoryBookedQuantity;
 import com.liferay.commerce.inventory.service.CommerceInventoryBookedQuantityLocalService;
@@ -310,6 +312,10 @@ public class CommerceOrderEngineImpl implements CommerceOrderEngine {
 			CommerceOrder commerceOrder)
 		throws Exception {
 
+		CommerceOrderStatus partiallyShippedCommerceOrderStatus =
+			_commerceOrderStatusRegistry.getCommerceOrderStatus(
+				PartiallyShippedCommerceOrderStatusImpl.KEY);
+
 		CommerceOrderStatus shippedCommerceOrderStatus =
 			_commerceOrderStatusRegistry.getCommerceOrderStatus(
 				ShippedCommerceOrderStatusImpl.KEY);
@@ -339,7 +345,9 @@ public class CommerceOrderEngineImpl implements CommerceOrderEngine {
 			commerceOrder = transitionCommerceOrder(
 				commerceOrder, CommerceOrderConstants.ORDER_STATUS_SHIPPED, 0);
 		}
-		else {
+		else if (partiallyShippedCommerceOrderStatus.isTransitionCriteriaMet(
+					commerceOrder)) {
+
 			commerceOrder = transitionCommerceOrder(
 				commerceOrder,
 				CommerceOrderConstants.ORDER_STATUS_PARTIALLY_SHIPPED, 0);
@@ -439,14 +447,13 @@ public class CommerceOrderEngineImpl implements CommerceOrderEngine {
 				commerceOrder.getCommercePaymentMethodKey());
 
 		if ((commerceOrder.getPaymentStatus() ==
-				CommerceOrderConstants.PAYMENT_STATUS_PAID) ||
+				CommerceOrderPaymentConstants.STATUS_COMPLETED) ||
 			(commercePaymentMethod == null) ||
 			((commercePaymentMethod != null) &&
 			 (commercePaymentMethod.getPaymentType() ==
-				 CommercePaymentConstants.
-					 COMMERCE_PAYMENT_METHOD_TYPE_OFFLINE) &&
+				 CommercePaymentMethodConstants.TYPE_OFFLINE) &&
 			 (commerceOrder.getPaymentStatus() ==
-				 CommerceOrderConstants.PAYMENT_STATUS_PENDING))) {
+				 CommerceOrderPaymentConstants.STATUS_PENDING))) {
 
 			return transitionCommerceOrder(
 				commerceOrder, CommerceOrderConstants.ORDER_STATUS_PENDING,
@@ -533,7 +540,7 @@ public class CommerceOrderEngineImpl implements CommerceOrderEngine {
 				if ((orderStatus ==
 						CommerceOrderConstants.ORDER_STATUS_PENDING) &&
 					(commerceOrder.getPaymentStatus() ==
-						CommerceOrderConstants.PAYMENT_STATUS_PAID)) {
+						CommerceOrderPaymentConstants.STATUS_COMPLETED)) {
 
 					CommerceSubscriptionEntryHelperUtil.
 						checkCommerceSubscriptions(commerceOrder);

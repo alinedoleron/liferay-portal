@@ -250,10 +250,6 @@ public abstract class BaseBlogPostingResourceImpl
 
 		BlogPosting existingBlogPosting = getBlogPosting(blogPostingId);
 
-		if (blogPosting.getActions() != null) {
-			existingBlogPosting.setActions(blogPosting.getActions());
-		}
-
 		if (blogPosting.getAlternativeHeadline() != null) {
 			existingBlogPosting.setAlternativeHeadline(
 				blogPosting.getAlternativeHeadline());
@@ -263,13 +259,7 @@ public abstract class BaseBlogPostingResourceImpl
 			existingBlogPosting.setArticleBody(blogPosting.getArticleBody());
 		}
 
-		if (blogPosting.getDateCreated() != null) {
-			existingBlogPosting.setDateCreated(blogPosting.getDateCreated());
-		}
-
-		if (blogPosting.getDateModified() != null) {
-			existingBlogPosting.setDateModified(blogPosting.getDateModified());
-		}
+		existingBlogPosting.setCustomFields(blogPosting.getCustomFields());
 
 		if (blogPosting.getDatePublished() != null) {
 			existingBlogPosting.setDatePublished(
@@ -278,11 +268,6 @@ public abstract class BaseBlogPostingResourceImpl
 
 		if (blogPosting.getDescription() != null) {
 			existingBlogPosting.setDescription(blogPosting.getDescription());
-		}
-
-		if (blogPosting.getEncodingFormat() != null) {
-			existingBlogPosting.setEncodingFormat(
-				blogPosting.getEncodingFormat());
 		}
 
 		if (blogPosting.getExternalReferenceCode() != null) {
@@ -301,15 +286,6 @@ public abstract class BaseBlogPostingResourceImpl
 
 		if (blogPosting.getKeywords() != null) {
 			existingBlogPosting.setKeywords(blogPosting.getKeywords());
-		}
-
-		if (blogPosting.getNumberOfComments() != null) {
-			existingBlogPosting.setNumberOfComments(
-				blogPosting.getNumberOfComments());
-		}
-
-		if (blogPosting.getSiteId() != null) {
-			existingBlogPosting.setSiteId(blogPosting.getSiteId());
 		}
 
 		if (blogPosting.getTaxonomyCategoryIds() != null) {
@@ -1439,14 +1415,14 @@ public abstract class BaseBlogPostingResourceImpl
 		if ("PARTIAL_UPDATE".equalsIgnoreCase(updateStrategy)) {
 			blogPostingUnsafeConsumer = blogPosting -> patchBlogPosting(
 				blogPosting.getId() != null ? blogPosting.getId() :
-					Long.parseLong((String)parameters.get("blogPostingId")),
+					_parseLong((String)parameters.get("blogPostingId")),
 				blogPosting);
 		}
 
 		if ("UPDATE".equalsIgnoreCase(updateStrategy)) {
 			blogPostingUnsafeConsumer = blogPosting -> putBlogPosting(
 				blogPosting.getId() != null ? blogPosting.getId() :
-					Long.parseLong((String)parameters.get("blogPostingId")),
+					_parseLong((String)parameters.get("blogPostingId")),
 				blogPosting);
 		}
 
@@ -1465,6 +1441,14 @@ public abstract class BaseBlogPostingResourceImpl
 				blogPostingUnsafeConsumer.accept(blogPosting);
 			}
 		}
+	}
+
+	private Long _parseLong(String value) {
+		if (value != null) {
+			return Long.parseLong(value);
+		}
+
+		return null;
 	}
 
 	protected String getPermissionCheckerActionsResourceName(Object id)
