@@ -7,6 +7,7 @@ import catalogIcon from '../../assets/icons/catalog-icon.svg';
 import shieldCheckIcon from '../../assets/icons/shield-check-icon.svg';
 import userIcon from '../../assets/icons/user-icon.svg';
 import {DetailedCard} from '../DetailedCard/DetailedCard';
+import {showAccountImage} from '../../utils/util';
 
 interface MemberProfileProps {
 	member: MemberProps;
@@ -30,7 +31,10 @@ export function MemberProfile({member, setSelectedMember}: MemberProfileProps) {
 			</a>
 
 			<div className="d-inline-block member-profile-image">
-				<img alt="Member Image" src={member.image}></img>
+				<img
+					alt="Member Image"
+					src={showAccountImage(member.image)}
+				></img>
 			</div>
 
 			<div className="d-inline-block member-profile-heading-container">

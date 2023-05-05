@@ -2,6 +2,7 @@ import ClayIcon from '@clayui/icon';
 import ClayTable from '@clayui/table';
 
 import './PublishedAppsDashboardTableRow.scss';
+import {showAccountImage} from '../../utils/util';
 import {MemberProps} from '../../pages/PublishedAppsDashboardPage/PublishedDashboardPageUtil';
 
 interface DashboardMemberTableRowProps {
@@ -22,7 +23,7 @@ export function DashboardMemberTableRow({
 					<img
 						alt="Member Image"
 						className="dashboard-table-row-name-logo"
-						src={image}
+						src={showAccountImage(image)}
 					/>
 
 					<span className="dashboard-table-row-name-text">
