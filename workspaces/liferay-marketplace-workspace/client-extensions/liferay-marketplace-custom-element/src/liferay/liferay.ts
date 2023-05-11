@@ -4,11 +4,15 @@ interface ILiferay {
 	ThemeDisplay: {
 		getCanonicalURL: () => string;
 		getCompanyId: () => string;
+		getCompanyGroupId: () => string;
 		getLanguageId: () => string;
+		getPathContext: () => string;
 		getPathThemeImages: () => string;
 		getPortalURL: () => string;
+		getUserId: () => string;
 		isSignedIn: () => boolean;
 	};
+	authToken: string;
 	detach: Function;
 	on: Function;
 }
@@ -24,9 +28,12 @@ export const Liferay = window.Liferay || {
 	ThemeDisplay: {
 		getCanonicalURL: () => window.location.href,
 		getCompanyId: () => '',
+		getCompanyGroupId: () => '',
+		getPathContext: () => '',
 		getPathThemeImages: () => '',
 		getLanguageId: () => '',
 		getPortalURL: () => '',
+		getUserId: () => '',
 		isSignedIn: () => {
 			return false;
 		},
