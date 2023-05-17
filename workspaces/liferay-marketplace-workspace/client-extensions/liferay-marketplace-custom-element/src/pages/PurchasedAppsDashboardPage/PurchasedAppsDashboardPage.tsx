@@ -8,6 +8,7 @@ import {PurchasedAppsDashboardTableRow} from '../../components/DashboardTable/Pu
 import {MemberProfile} from '../../components/MemberProfile/MemberProfile';
 import {getCompanyId} from '../../liferay/constants';
 import {
+	baseURL,
 	getAccountInfoFromCommerce,
 	getAccounts,
 	getChannels,
@@ -383,7 +384,7 @@ export function PurchasedAppsDashboardPage() {
 
 			{selectedNavigationItem === 'My Apps' && (
 				<DashboardPage
-					buttonHref="https://marketplace.liferay.com/"
+					buttonHref={baseURL + '/web/marketplace/'}
 					buttonMessage="Add Apps"
 					dashboardNavigationItems={dashboardNavigationItems}
 					messages={appMessages}
