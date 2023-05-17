@@ -11,7 +11,7 @@ import phoneIcon from '../../assets/icons/phone_icon.svg';
 import userIcon from '../../assets/icons/user_icon.svg';
 import {DetailedCard} from '../../components/DetailedCard/DetailedCard';
 import {getAccountPostalAddressesByAccountId} from '../../utils/api';
-import {showAccountImage} from '../../utils/util';
+import {removeProtocolURL, showAccountImage} from '../../utils/util';
 
 import {getCustomFieldValue} from '../../utils/customFieldUtil';
 import {DashboardListItems} from '../DashBoardPage/DashboardPage';
@@ -220,10 +220,16 @@ export function AccountDetailsPage({
 
 								<td className="account-details-body-table-description">
 									<a
-										href={getCustomFieldValue(
-											selectedAccount.customFields ?? [],
-											'Homepage URL'
-										)}
+										href={
+											`https://marketplace.liferay.com/` +
+											removeProtocolURL(
+												getCustomFieldValue(
+													selectedAccount.customFields ??
+														[],
+													'Homepage URL'
+												)
+											)
+										}
 										target="__blank"
 									>
 										{getCustomFieldValue(
