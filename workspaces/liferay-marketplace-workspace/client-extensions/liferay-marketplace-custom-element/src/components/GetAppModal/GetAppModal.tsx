@@ -36,6 +36,7 @@ interface App {
 	name: {en_US: string} | string;
 	price: number;
 	productId: number;
+	slug: string;
 	urlImage: string;
 }
 
@@ -369,13 +370,8 @@ export function GetAppModal({handleClose}: GetAppModalProps) {
 			await postCheckoutCart({cartId: cartResponse.id});
 		}
 
-		const appName =
-			typeof app?.name === 'string' ? app?.name : app?.name.en_US;
-
-		const appNameURL = appName.trim().toLowerCase().replaceAll(' ', '-');
-
 		const nextStepsCallbackURL = `${Liferay.ThemeDisplay.getCanonicalURL().replace(
-			`/p/${appNameURL}`,
+			`/p/${app.slug}`,
 			''
 		)}/next-steps?orderId=${cartResponse.id}&logoURL=${
 			selectedAccount?.logoURL
