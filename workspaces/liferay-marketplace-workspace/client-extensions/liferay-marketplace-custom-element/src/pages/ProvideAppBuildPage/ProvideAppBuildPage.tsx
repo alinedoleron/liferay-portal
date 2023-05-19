@@ -19,6 +19,10 @@ import {
 	createAttachment,
 	createProductSpecification,
 	createSpecification,
+	getProductIdCategory,
+	getVocabularies,
+	patchProductIdCategory,
+	updateApp,
 	updateProductSpecification,
 } from '../../utils/api';
 import {submitBase64EncodedFile} from '../../utils/util';
@@ -39,7 +43,7 @@ export function ProvideAppBuildPage({
 	onClickContinue,
 }: ProvideAppBuildPageProps) {
 	const [
-		{appBuild, appERC, appId, appProductId, appType, buildZIPFiles},
+		{appBuild, appCategories, appDescription, appERC, appId, appProductId, appTags ,appType, buildZIPFiles},
 		dispatch,
 	] = useAppContext();
 
@@ -271,6 +275,124 @@ export function ProvideAppBuildPage({
 							dispatch({
 								payload: {id, value: appType.value},
 								type: TYPES.UPDATE_APP_LXC_COMPATIBILITY,
+							});
+						}
+
+						if (appType.value === 'cloud') {
+							const vocabulariesResponse =
+								await getVocabularies();
+
+							let liferayPlatformOfferingId = 0;
+							let marketplaceLiferayVersionId = 0;
+							let marketplaceProductTypeId = 0;
+							let marketplaceEditionId = 0;
+
+							let liferayPlatformOfferingERC = "";
+							let marketplaceLiferayVersionERC = "";
+							let marketplaceProductTypeERC = "";
+							let marketplaceEditionERC = "";
+						
+							vocabulariesResponse.items.forEach(
+								(vocab: {externalReferenceCode: string, id: number; name: string}) => {
+									if (
+										vocab.name ===
+										'Liferay Platform Offering'
+									) {
+										liferayPlatformOfferingId = vocab.id + 1;
+										liferayPlatformOfferingERC = vocab.externalReferenceCode;
+									}
+
+									if (
+										vocab.name ===
+										'Marketplace Liferay Version'
+									) {
+										marketplaceLiferayVersionId = vocab.id + 1;
+										marketplaceLiferayVersionERC =vocab.externalReferenceCode;
+									}
+									if (
+										vocab.name ===
+										'Marketplace Product Type'
+									) {
+										marketplaceProductTypeId = vocab.id + 1;
+										marketplaceProductTypeERC = vocab.externalReferenceCode;
+									}
+
+									if (vocab.name === 'Marketplace Edition') {
+										marketplaceEditionId = vocab.id + 1;
+										marketplaceEditionERC = vocab.externalReferenceCode
+									}
+								}
+							);
+
+							// const newCategories = [
+								
+							// 	{
+							// 		// checked: false,
+							// 		externalReferenceCode: liferayPlatformOfferingERC,
+							// 		id: liferayPlatformOfferingId.toString(),
+							// 		// label: 'Fully-Managed',
+							// 		// value: 'Fully-Managed',
+							// 		name: 'Fully-Managed',
+							// 		vocabulary: "Liferay Platform Offering"
+							// 	},
+							// 	{
+							// 		externalReferenceCode: marketplaceLiferayVersionERC,
+							// 		id: marketplaceLiferayVersionId,
+							// 		name: '7.4',
+							// 		vocabulary: "Marketplace Liferay Version"
+							// 		// label: 'Fully-Managed',
+							// 		// value: 'Fully-Managed',
+							// 	},
+							// 	{
+							// 		externalReferenceCode: marketplaceProductTypeERC,
+							// 		id: marketplaceProductTypeId,
+							// 		name: 'App',
+							// 		vocabulary: "Marketplace Product Type"
+							// 		// label: 'Fully-Managed',
+							// 		// value: 'Fully-Managed',
+							// 	},
+							// 	{
+							// 		externalReferenceCode:marketplaceEditionERC,
+							// 		id: marketplaceEditionId,
+							// 		name: 'EE',
+							// 		vocabulary: "Marketplace Edition"
+							// 		// label: 'Fully-Managed',
+							// 		// value: 'Fully-Managed',
+							// 	},
+							// ];
+
+							const newCategories = [
+								
+								{
+									externalReferenceCode: liferayPlatformOfferingERC,
+									id: liferayPlatformOfferingId,
+									name: 'Fully-Managed',
+								},
+								{
+									externalReferenceCode: marketplaceLiferayVersionERC,
+									id: marketplaceLiferayVersionId,
+									name: '7.4',
+								},
+								{
+									externalReferenceCode: marketplaceProductTypeERC,
+									id: marketplaceProductTypeId,
+									name: 'App',
+								},
+								{
+									externalReferenceCode:marketplaceEditionERC,
+									id: marketplaceEditionId,
+									name: 'EE',
+								},
+							];
+
+							const body = {
+								appCategories: [...appCategories,...newCategories, ...appTags],
+								// appCategories: [...newCategories],
+							}
+
+							await patchProductIdCategory({
+								appId: appProductId.toString(),
+								body
 							});
 						}
 					};

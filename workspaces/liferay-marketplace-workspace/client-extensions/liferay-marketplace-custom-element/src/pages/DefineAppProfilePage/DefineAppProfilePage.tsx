@@ -85,6 +85,10 @@ export function DefineAppProfilePage({
 
 			let categoryVocabId = 0;
 			let tagVocabId = 0;
+			// let liferayPlatformOfferingId = 0;
+			// let marketplaceLiferayVersionId = 0;
+			// let marketplaceProductTypeId = 0;
+			// let marketplaceEditionId = 0;
 
 			vocabulariesResponse.items.forEach(
 				(vocab: {id: number; name: string}) => {
@@ -95,6 +99,29 @@ export function DefineAppProfilePage({
 					if (vocab.name === 'Marketplace App Tags') {
 						tagVocabId = vocab.id;
 					}
+					// if (
+					// 	vocab.name ===
+					// 	'Liferay Platform Offering'
+					// ) {
+					// 	liferayPlatformOfferingId = vocab.id;
+					// }
+
+					// if (
+					// 	vocab.name ===
+					// 	'Marketplace Liferay Version'
+					// ) {
+					// 	marketplaceLiferayVersionId = vocab.id;
+					// }
+					// if (
+					// 	vocab.name ===
+					// 	'Marketplace Product Type'
+					// ) {
+					// 	marketplaceProductTypeId = vocab.id;
+					// }
+
+					// if (vocab.name === 'Marketplace Edition') {
+					// 	marketplaceEditionId = vocab.id;
+					// }
 				}
 			);
 
@@ -280,12 +307,16 @@ export function DefineAppProfilePage({
 					let product;
 					let response;
 
+					let body = {};
+
 					if (appERC) {
-						response = await updateApp({
+						body = {
 							appDescription,
-							appERC,
 							appName,
-						});
+						}
+						response = await updateApp({
+							appERC,
+							body});
 					}
 					else {
 						response = await createApp({
