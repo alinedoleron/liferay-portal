@@ -665,6 +665,42 @@ export async function patchOrderByERC(erc: string, body: any) {
 	return response;
 }
 
+export async function getProductIdCategory({
+	appId,
+}: {
+	appId: string;
+}) {
+	const response = await fetch(
+		`${baseURL}/o/headless-commerce-admin-catalog/v1.0/products/${appId}/categories`,
+		{
+			headers,
+			method: 'GET',
+		}
+	);
+
+	const {items} = await response.json();
+	return items;
+}
+
+export async function patchProductIdCategory({
+	body,
+	appId,
+}: {
+	body: any;
+	appId: string;
+}) {
+	const response = await fetch(
+		`${baseURL}/o/headless-commerce-admin-catalog/v1.0/products/${appId}/categories`,
+		{
+			body: JSON.stringify(body),
+			headers,
+			method: 'PATCH',
+		}
+	);
+
+	return response;
+}
+
 export async function patchSKUById(skuId: number, body: any) {
 	const response = await fetch(
 		`${baseURL}/o/headless-commerce-admin-catalog/v1.0/skus/${skuId}`,
@@ -823,22 +859,17 @@ export async function postTrialProductOption(
 	return id;
 }
 
-export function updateApp({
-	appDescription,
+export async function updateApp({
 	appERC,
-	appName,
+	body
 }: {
-	appDescription: string;
 	appERC: string;
-	appName: string;
+	body: any;
 }) {
 	return fetch(
 		`${baseURL}/o/headless-commerce-admin-catalog/v1.0/products/by-externalReferenceCode/${appERC}`,
 		{
-			body: JSON.stringify({
-				description: {en_US: appDescription},
-				name: {en_US: appName},
-			}),
+			body: JSON.stringify(body),
 			headers,
 			method: 'PATCH',
 		}
