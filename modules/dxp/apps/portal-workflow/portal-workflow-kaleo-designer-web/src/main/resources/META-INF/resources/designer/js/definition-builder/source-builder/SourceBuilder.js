@@ -42,8 +42,8 @@ export default function SourceBuilder() {
 	);
 
 	useEffect(() => {
-		if (elements) {
-			const metada = {
+		if (currentEditor && elements) {
+			const metadata = {
 				description: definitionDescription,
 				name: definitionName,
 				version,
@@ -51,18 +51,24 @@ export default function SourceBuilder() {
 
 			const xmlContent = serializeDefinition(
 				xmlNamespace,
-				metada,
+				metadata,
 				elements.filter(isNode),
 				elements.filter(isEdge)
 			);
 
-			if (xmlContent && currentEditor) {
+			if (xmlContent && currentEditor?.mode === 'source') {
 				currentEditor.setData(xmlContent);
 			}
 		}
 
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [currentEditor, definitionName, elements, version]);
+	}, [currentEditor?.mode, definitionName, elements, version]);
+
+	useEffect(() => {
+		if (currentEditor) {
+			currentEditor.setMode('source');
+		}
+	}, [currentEditor]);
 
 	useEffect(() => {
 		if (showInvalidContentMessage) {
@@ -148,9 +154,8 @@ export default function SourceBuilder() {
 			<Editor
 				config={editorConfig}
 				onInstanceReady={({editor}) => {
-					setCurrentEditor(editor);
-
 					editor.setMode('source');
+					setCurrentEditor(editor);
 				}}
 				ref={editorRef}
 			/>
