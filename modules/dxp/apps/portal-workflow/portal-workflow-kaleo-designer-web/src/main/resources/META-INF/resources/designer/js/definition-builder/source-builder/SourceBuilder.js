@@ -14,6 +14,7 @@ import ClayAlert from '@clayui/alert';
 import ClayIcon from '@clayui/icon';
 import ClayLayout from '@clayui/layout';
 import ClayLink from '@clayui/link';
+import ClayLoadingIndicator from '@clayui/loading-indicator';
 import ClayToolbar from '@clayui/toolbar';
 import {Editor} from 'frontend-editor-ckeditor-web';
 import React, {useContext, useEffect, useRef, useState} from 'react';
@@ -34,6 +35,7 @@ export default function SourceBuilder() {
 		version,
 	} = useContext(DefinitionBuilderContext);
 	const editorRef = useRef();
+	const [loading, setLoading] = useState(true);
 	const [showImportSuccessMessage, setShowImportSuccessMessage] = useState(
 		false
 	);
@@ -42,7 +44,7 @@ export default function SourceBuilder() {
 	);
 
 	useEffect(() => {
-		if (currentEditor && elements) {
+		if (currentEditor?.mode === 'source' && elements) {
 			const metadata = {
 				description: definitionDescription,
 				name: definitionName,
@@ -56,16 +58,18 @@ export default function SourceBuilder() {
 				elements.filter(isEdge)
 			);
 
-			if (xmlContent && currentEditor?.mode === 'source') {
+			if (xmlContent) {
 				currentEditor.setData(xmlContent);
+
+				setLoading(false);
 			}
 		}
 
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [currentEditor?.mode, definitionName, elements, version]);
+	}, [currentEditor, definitionName, elements, version]);
 
 	useEffect(() => {
-		if (currentEditor) {
+		if (currentEditor && currentEditor.mode !== 'source') {
 			currentEditor.setMode('source');
 		}
 	}, [currentEditor]);
@@ -151,10 +155,19 @@ export default function SourceBuilder() {
 				</ClayLayout.ContainerFluid>
 			</ClayToolbar>
 
+			{loading && (
+				<ClayLoadingIndicator
+					displayType="primary"
+					shape="squares"
+					size="md"
+				/>
+			)}
+
 			<Editor
 				config={editorConfig}
 				onInstanceReady={({editor}) => {
 					editor.setMode('source');
+
 					setCurrentEditor(editor);
 				}}
 				ref={editorRef}
