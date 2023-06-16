@@ -126,7 +126,7 @@ export default function Fields({
 
 		portletId:
 			'com_liferay_object_web_internal_object_definitions_portlet_ObjectDefinitionsPortlet',
-		style,
+		style: 'fluid' as 'fluid',
 		views: [
 			{
 				contentRenderer: 'table',
