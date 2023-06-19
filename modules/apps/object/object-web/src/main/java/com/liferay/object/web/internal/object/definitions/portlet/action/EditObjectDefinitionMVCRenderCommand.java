@@ -89,6 +89,9 @@ public class EditObjectDefinitionMVCRenderCommand implements MVCRenderCommand {
 			renderRequest.setAttribute(
 				ObjectWebKeys.OBJECT_FIELDS,
 				_objectFieldLocalService.getObjectFields(objectDefinitionId));
+			renderRequest.setAttribute(
+				ObjectWebKeys.OBJECT_FIELDS,
+				_objectFieldLocalService.getObjectFields(objectDefinitionId));
 		}
 		catch (PortalException portalException) {
 			SessionErrors.add(renderRequest, portalException.getClass());
