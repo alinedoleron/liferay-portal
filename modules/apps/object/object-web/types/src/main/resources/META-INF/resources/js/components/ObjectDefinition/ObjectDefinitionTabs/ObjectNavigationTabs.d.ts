@@ -35,6 +35,7 @@ interface ObjectNavigationProps {
 	handleChange: React.ChangeEventHandler<HTMLInputElement>;
 	hasPublishObjectPermission: boolean;
 	hasUpdateObjectDefinitionPermission: boolean;
+	isDefaultStorageType: boolean;
 	isApproved: boolean;
 	isDefaultStorageType: boolean;
 	label: LocalizedValue<string>;
@@ -49,6 +50,7 @@ interface ObjectNavigationProps {
 	objectDefinitionId: number;
 	objectFieldTypes: ObjectFieldType[];
 	objectFields: ObjectField[];
+	objectFieldId: number;
 	pluralLabel: LocalizedValue<string>;
 	portletNamespace: string;
 	readOnly: boolean;
@@ -91,6 +93,7 @@ export declare function ObjectNavigationTabs({
 	objectDefinitionId,
 	objectFieldTypes,
 	objectFields,
+	objectRelationshipId,
 	pluralLabel,
 	portletNamespace,
 	readOnly,

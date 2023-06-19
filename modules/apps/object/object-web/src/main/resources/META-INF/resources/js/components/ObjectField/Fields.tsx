@@ -205,6 +205,10 @@ export default function Fields({
 				setShowVerticalBar(true);
 				settriggerSideBarAnimation(true);
 			}
+
+			if (action.data.id === 'editObjectField') {
+				setVerticalBarVisible(true);
+			}
 		},
 		portletId:
 			'com_liferay_object_web_internal_object_definitions_portlet_ObjectDefinitionsPortlet',

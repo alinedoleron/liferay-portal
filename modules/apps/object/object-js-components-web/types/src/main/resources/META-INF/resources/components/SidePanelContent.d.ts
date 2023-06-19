@@ -27,6 +27,7 @@ export declare function SidePanelContent({
 	customLabel,
 	onSave,
 	readOnly,
+	setVerticalBarVisible,
 	title,
 }: IProps): JSX.Element;
 export declare function SidePanelForm({
@@ -51,6 +52,7 @@ interface CommonProps extends IContainerProps {
 	readOnly?: boolean;
 	setShowVerticalBar?: (values: boolean) => void;
 	title: string;
+	setVerticalBarVisible?: (values: boolean) => void;
 }
 interface IProps extends CommonProps {
 	onSave?: () => void;

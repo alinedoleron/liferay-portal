@@ -50,6 +50,7 @@ export function SidePanelContent({
 	customLabel,
 	onSave,
 	readOnly,
+	setVerticalBarVisible,
 	title,
 }: IProps) {
 	const saveProps: {
@@ -147,6 +148,7 @@ interface CommonProps extends IContainerProps {
 	readOnly?: boolean;
 	setShowVerticalBar?: (values: boolean) => void;
 	title: string;
+	setVerticalBarVisible?: (values: boolean) => void;
 }
 
 interface IProps extends CommonProps {
