@@ -45,6 +45,7 @@ interface ObjectNavigationProps {
 		name: string;
 	}[];
 	objectDefinitionId: number;
+	objectFieldTypes: ObjectFieldType[];
 	objectFields: ObjectField[];
 	pluralLabel: LocalizedValue<string>;
 	portletNamespace: string;
@@ -74,6 +75,7 @@ export function ObjectNavigationTabs({
 	label,
 	nonRelationshipObjectFieldsInfo,
 	objectDefinitionId,
+	objectFieldTypes,
 	objectFields,
 	pluralLabel,
 	portletNamespace,
@@ -111,48 +113,60 @@ export function ObjectNavigationTabs({
 				</ClayTabs>
 			</div>
 
-			<ClayTabs.Content activeIndex={active} fade>
-				<ClayTabs.TabPane aria-labelledby="tab-1">
-					<EditObjectDetails
-						companyKeyValuePair={companyKeyValuePair}
-						dbTableName={dbTableName}
-						errors={errors}
-						externalReferenceCode={externalReferenceCode}
-						handleChange={handleChange}
-						hasPublishObjectPermission={hasPublishObjectPermission}
-						hasUpdateObjectDefinitionPermission={
-							hasUpdateObjectDefinitionPermission
-						}
-						isApproved={isApproved}
-						label={label}
-						nonRelationshipObjectFieldsInfo={
-							nonRelationshipObjectFieldsInfo
-						}
-						objectDefinitionId={objectDefinitionId}
-						objectFields={objectFields}
-						pluralLabel={pluralLabel}
-						portletNamespace={portletNamespace}
-						setValues={setValues}
-						shortName={shortName}
-						siteKeyValuePair={siteKeyValuePair}
-						storageTypes={storageTypes}
-						values={values}
-					/>
-				</ClayTabs.TabPane>
+			<div className="lfr-objects__navigation-tabs-content">
+				<ClayTabs.Content activeIndex={active} fade>
+					<ClayTabs.TabPane
+						aria-labelledby="details-tab"
+						id="detailsTab"
+					>
+						<EditObjectDetails
+							companyKeyValuePair={companyKeyValuePair}
+							dbTableName={dbTableName}
+							errors={errors}
+							externalReferenceCode={externalReferenceCode}
+							handleChange={handleChange}
+							hasPublishObjectPermission={
+								hasPublishObjectPermission
+							}
+							hasUpdateObjectDefinitionPermission={
+								hasUpdateObjectDefinitionPermission
+							}
+							isApproved={isApproved}
+							label={label}
+							nonRelationshipObjectFieldsInfo={
+								nonRelationshipObjectFieldsInfo
+							}
+							objectDefinitionId={objectDefinitionId}
+							objectFields={objectFields}
+							pluralLabel={pluralLabel}
+							portletNamespace={portletNamespace}
+							setValues={setValues}
+							shortName={shortName}
+							siteKeyValuePair={siteKeyValuePair}
+							storageTypes={storageTypes}
+							values={values}
+						/>
+					</ClayTabs.TabPane>
 
-				<ClayTabs.TabPane aria-labelledby="fields-tab">
-					<Fields
-						apiURL={fieldsApiURL}
-						creationMenu={fieldsCreationMenu}
-						id={fieldId}
-						items={fieldDropdownItems}
-						objectDefinitionExternalReferenceCode={
-							externalReferenceCode
-						}
-						url={fieldUrl}
-					/>
-				</ClayTabs.TabPane>
-			</ClayTabs.Content>
+					<ClayTabs.TabPane
+						aria-labelledby="fields-tab"
+						id="fieldsTab"
+					>
+						<Fields
+							apiURL={fieldsApiURL}
+							creationMenu={fieldsCreationMenu}
+							id={fieldId}
+							items={fieldDropdownItems}
+							objectDefinitionExternalReferenceCode={
+								externalReferenceCode
+							}
+							objectFieldTypes={objectFieldTypes}
+							objectName={shortName}
+							url={fieldUrl}
+						/>
+					</ClayTabs.TabPane>
+				</ClayTabs.Content>
+			</div>
 		</>
 	);
 }
