@@ -38,11 +38,13 @@ renderResponse.setTitle(LanguageUtil.format(request, "edit-x", objectDefinition.
 			).put(
 				"companyKeyValuePair", objectDefinitionsDetailsDisplayContext.getScopeKeyValuePairs("company")
 			).put(
+				"creationLanguageId", objectDefinition.getDefaultLanguageId()
+			).put(
 				"dbTableName", objectDefinition.getDBTableName()
 			).put(
 				"externalReferenceCode", objectDefinition.getExternalReferenceCode()
 			).put(
-				"fieldDropdownitems", objectDefinitionsFieldsDisplayContext.getFDSActionDropdownItems()
+				"fieldDropdownItems", objectDefinitionsFieldsDisplayContext.getFDSActionDropdownItems()
 			).put(
 				"fieldId", ObjectDefinitionsFDSNames.OBJECT_FIELDS
 			).put(
@@ -50,13 +52,21 @@ renderResponse.setTitle(LanguageUtil.format(request, "edit-x", objectDefinition.
 			).put(
 				"fieldsCreationMenu", objectDefinitionsFieldsDisplayContext.getCreationMenu(objectDefinition)
 			).put(
-				"fieldUrl", objectDefinitionsFieldsDisplayContext.getEditObjectFieldURL()
+				"filterOperators", LocalizedJSONArrayUtil.getFilterOperatorsJSONObject(locale)
+			).put(
+				"forbiddenChars", PropsUtil.getArray(PropsKeys.DL_CHAR_BLACKLIST)
+			).put(
+				"forbiddenLastChars", objectDefinitionsFieldsDisplayContext.getForbiddenLastCharacters()
+			).put(
+				"forbiddenNames", PropsUtil.getArray(PropsKeys.DL_NAME_BLACKLIST)
 			).put(
 				"hasPublishObjectPermission", objectDefinitionsDetailsDisplayContext.hasPublishObjectPermission()
 			).put(
 				"hasUpdateObjectDefinitionPermission", objectDefinitionsDetailsDisplayContext.hasUpdateObjectDefinitionPermission()
 			).put(
 				"isApproved", objectDefinition.isApproved()
+			).put(
+				"isDefaultStorageType", objectDefinition.isDefaultStorageType()
 			).put(
 				"label", LocalizationUtil.getLocalizationMap(objectDefinition.getLabel())
 			).put(
@@ -70,15 +80,23 @@ renderResponse.setTitle(LanguageUtil.format(request, "edit-x", objectDefinition.
 			).put(
 				"portletNamespace", liferayPortletResponse.getNamespace()
 			).put(
+				"readOnly", !objectDefinitionsFieldsDisplayContext.hasUpdateObjectDefinitionPermission()
+			).put(
+				"readOnlySidebarElements", objectDefinitionsFieldsDisplayContext.getObjectCodeEditorElements()
+			).put(
 				"screenNavigationCategoryKey", ParamUtil.getString(request, "screenNavigationCategoryKey")
 			).put(
 				"shortName", objectDefinition.getShortName()
+			).put(
+				"sidebarElements", objectDefinitionsFieldsDisplayContext.getObjectCodeEditorElements()
 			).put(
 				"siteKeyValuePair", objectDefinitionsDetailsDisplayContext.getScopeKeyValuePairs("site")
 			).put(
 				"storageTypes", objectDefinitionsDetailsDisplayContext.getStoragesJSONArray()
 			).put(
 				"system", objectDefinition.isSystem()
+			).put(
+				"workflowStatusJSONArray", LocalizedJSONArrayUtil.getWorkflowStatusJSONArray(locale)
 			).build()
 		%>'
 	/>

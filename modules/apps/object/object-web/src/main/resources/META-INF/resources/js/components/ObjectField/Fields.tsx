@@ -19,13 +19,19 @@ import {
 	// @ts-ignore
 
 } from '@liferay/frontend-data-set-web';
-import {API, getLocalizableLabel} from '@liferay/object-js-components-web';
+import {
+	API,
+	SidebarCategory,
+	getLocalizableLabel,
+} from '@liferay/object-js-components-web';
 import classNames from 'classnames';
 import React, {useEffect, useState} from 'react';
 
 import {IFDSTableProps, defaultDataSetProps, fdsItem} from '../../utils/fds';
 import AddObjectField from './AddObjectField';
 import EditObjectField from './EditObjectField';
+
+import './Fields.scss';
 
 interface ItemData {
 	id: number;
@@ -36,21 +42,44 @@ interface ItemData {
 interface FieldsProps extends IFDSTableProps {
 	objectFieldTypes: ObjectFieldType[];
 	objectName: string;
+	creationLanguageId: Liferay.Language.Locale;
+	filterOperators: TFilterOperators;
+	forbiddenChars: string[];
+	forbiddenLastChars: string[];
+	forbiddenNames: string[];
+	isApproved: boolean;
+	isDefaultStorageType: boolean;
+	objectFieldId: number;
+	objectRelationshipId: number;
+	readOnly: boolean;
+	readOnlySidebarElements: SidebarCategory[];
+	sidebarElements: SidebarCategory[];
+	workflowStatusJSONArray: LabelValueObject[];
 }
 
 export default function Fields({
 	apiURL,
+	creationLanguageId,
 	creationMenu,
+	filterOperators,
+	forbiddenChars,
+	forbiddenLastChars,
+	forbiddenNames,
 	formName,
 	id,
+	isApproved,
+	isDefaultStorageType,
 	items,
 	objectDefinitionExternalReferenceCode,
+	objectFieldId,
 	objectFieldTypes,
 	objectName,
+	objectRelationshipId,
+	readOnly,
+	readOnlySidebarElements,
+	sidebarElements,
+	workflowStatusJSONArray,
 }: FieldsProps) {
-	const [creationLanguageId, setCreationLanguageId] = useState<
-		Liferay.Language.Locale
-	>();
 	const [isModalVisible, setModalVisible] = useState<boolean>(false);
 	const [isVerticalBarVisible, setVerticalBarVisible] = useState<boolean>(
 		false
@@ -58,21 +87,9 @@ export default function Fields({
 
 	const sidePanelitems = [
 		{
-			title: 'Fields',
+			title: 'editObjectFieldSideBar',
 		},
 	];
-
-	useEffect(() => {
-		const makeFetch = async () => {
-			const objectDefinition = await API.getObjectDefinitionByExternalReferenceCode(
-				objectDefinitionExternalReferenceCode
-			);
-
-			setCreationLanguageId(objectDefinition.defaultLanguageId);
-		};
-
-		makeFetch();
-	}, [objectDefinitionExternalReferenceCode]);
 
 	useEffect(() => {
 		Liferay.on('addObjectField', () => setModalVisible(true));
@@ -82,7 +99,7 @@ export default function Fields({
 
 	function objectFieldLabelDataRenderer({value}: fdsItem<ItemData>) {
 		const handleEditField = () => {
-			setVerticalBarVisible(!isVerticalBarVisible);
+			setVerticalBarVisible(true);
 		};
 
 		return (
@@ -146,13 +163,17 @@ export default function Fields({
 			if (action.data.id === 'deleteObjectField') {
 				Liferay.fire('deleteObjectField', {itemData});
 			}
+
+			if (action.data.id === 'editObjectField') {
+				setVerticalBarVisible(true);
+			}
 		},
 		portletId:
 			'com_liferay_object_web_internal_object_definitions_portlet_ObjectDefinitionsPortlet',
 		showManagementBar: true,
 		showPagination: true,
 		showSearch: true,
-		style: 'default' as 'default',
+		style: 'fluid' as 'fluid',
 		views: [
 			{
 				contentRenderer: 'table',
@@ -200,47 +221,46 @@ export default function Fields({
 
 	return (
 		<>
-			<FrontendDataSet {...dataSetProps} />
-
+			<FrontendDataSet {...dataSetProps} />;
 			{isVerticalBarVisible && (
 				<VerticalBar
-					defaultActive="Fields"
-					defaultPanelWidth={1100}
+					defaultActive="editObjectFieldSideBar"
+					defaultPanelWidth={900}
 					panelWidth={700}
-					panelWidthMax={1100}
-					panelWidthMin={250}
+					panelWidthMax={900}
+					panelWidthMin={150}
 					position="right"
 					resize
 				>
-					<div
-						style={{
-							overflow: 'auto',
-						}}
-					>
+					<div className="lfr__object-edit-field-side-panel">
 						<VerticalBar.Content items={sidePanelitems}>
 							{(item) => (
 								<VerticalBar.Panel key={item.title}>
 									<EditObjectField
-										creationLanguageId="ar_SA"
-										filterOperators={{
-											dateOperators: [],
-											numericOperators: [],
-											picklistOperators: [],
-										}}
-										forbiddenChars={[]}
-										forbiddenLastChars={[]}
-										forbiddenNames={[]}
-										isApproved={false}
-										isDefaultStorageType={false}
+										creationLanguageId={creationLanguageId}
+										filterOperators={filterOperators}
+										forbiddenChars={forbiddenChars}
+										forbiddenLastChars={forbiddenLastChars}
+										forbiddenNames={forbiddenNames}
+										isApproved={isApproved}
+										isDefaultStorageType={
+											isDefaultStorageType
+										}
 										objectDefinitionExternalReferenceCode=""
-										objectField={{} as ObjectField}
-										objectFieldId={0}
-										objectFieldTypes={[]}
-										objectName=""
-										objectRelationshipId={0}
-										readOnly={false}
-										sidebarElements={[]}
-										workflowStatusJSONArray={[]}
+										objectFieldId={objectFieldId}
+										objectFieldTypes={objectFieldTypes}
+										objectName={objectName}
+										objectRelationshipId={
+											objectRelationshipId
+										}
+										readOnly={readOnly}
+										setVerticalBarVisible={
+											setVerticalBarVisible
+										}
+										sidebarElements={sidebarElements}
+										workflowStatusJSONArray={
+											workflowStatusJSONArray
+										}
 									/>
 								</VerticalBar.Panel>
 							)}
@@ -248,7 +268,6 @@ export default function Fields({
 					</div>
 				</VerticalBar>
 			)}
-
 			{isModalVisible && (
 				<AddObjectField
 					apiURL={apiURL as string}

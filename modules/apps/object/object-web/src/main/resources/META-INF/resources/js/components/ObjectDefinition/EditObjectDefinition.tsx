@@ -12,7 +12,11 @@
  * details.
  */
 
-import {API, ManagementToolbar} from '@liferay/object-js-components-web';
+import {
+	API,
+	ManagementToolbar,
+	SidebarCategory,
+} from '@liferay/object-js-components-web';
 import React, {useEffect, useState} from 'react';
 
 import {defaultLanguageId} from '../../utils/constants';
@@ -23,6 +27,7 @@ import {useObjectDefinitionForm} from './useObjectDefinitionForm';
 
 interface EditObjectDefinitionProps {
 	backURL: string;
+	creationLanguageId: Liferay.Language.Locale;
 	companyKeyValuePair: KeyValuePair[];
 	dbTableName: string;
 	externalReferenceCode: string;
@@ -34,9 +39,14 @@ interface EditObjectDefinitionProps {
 	};
 	fieldId: string;
 	fieldUrl: string;
+	filterOperators: TFilterOperators;
+	forbiddenChars: string[];
+	forbiddenLastChars: string[];
+	forbiddenNames: string[];
 	hasPublishObjectPermission: boolean;
 	hasUpdateObjectDefinitionPermission: boolean;
 	isApproved: boolean;
+	isDefaultStorageType: boolean;
 	label: LocalizedValue<string>;
 	nonRelationshipObjectFieldsInfo: {
 		label: LocalizedValue<string>;
@@ -44,12 +54,18 @@ interface EditObjectDefinitionProps {
 	}[];
 	objectDefinitionId: number;
 	objectFieldTypes: ObjectFieldType[];
+	objectRelationshipId: number;
+	objectFieldId: number;
 	onSubmit: (draft: boolean) => void;
 	pluralLabel: LocalizedValue<string>;
 	portletNamespace: string;
+	readOnly: boolean;
+	readOnlySidebarElements: SidebarCategory[];
 	screenNavigationCategoryKey: string;
 	setValues: (values: Partial<ObjectDefinition>) => void;
 	shortName: string;
+	sidebarElements: SidebarCategory[];
+	workflowStatusJSONArray: LabelValueObject[];
 	siteKeyValuePair: KeyValuePair[];
 	storageTypes: LabelValueObject[];
 	system: boolean;
@@ -58,27 +74,38 @@ interface EditObjectDefinitionProps {
 export default function EditObjectDefinition({
 	backURL,
 	companyKeyValuePair,
+	creationLanguageId,
 	dbTableName,
 	externalReferenceCode,
 	fieldDropdownItems,
 	fieldId,
-	fieldUrl,
 	fieldsApiURL,
 	fieldsCreationMenu,
+	filterOperators,
+	forbiddenChars,
+	forbiddenLastChars,
+	forbiddenNames,
 	hasPublishObjectPermission,
 	hasUpdateObjectDefinitionPermission,
 	isApproved,
+	isDefaultStorageType,
 	label,
 	nonRelationshipObjectFieldsInfo,
 	objectDefinitionId,
+	objectFieldId,
 	objectFieldTypes,
+	objectRelationshipId,
 	pluralLabel,
 	portletNamespace,
+	readOnly,
+	readOnlySidebarElements,
 	screenNavigationCategoryKey,
 	shortName,
+	sidebarElements,
 	siteKeyValuePair,
 	storageTypes,
 	system,
+	workflowStatusJSONArray,
 }: EditObjectDefinitionProps) {
 	const [objectFields, setObjectFields] = useState<ObjectField[]>([]);
 	const {
@@ -157,36 +184,47 @@ export default function EditObjectDefinition({
 
 			<ObjectNavigationTabs
 				companyKeyValuePair={companyKeyValuePair}
+				creationLanguageId={creationLanguageId}
 				dbTableName={dbTableName}
 				errors={errors}
 				externalReferenceCode={externalReferenceCode}
 				fieldDropdownItems={fieldDropdownItems}
 				fieldId={fieldId}
-				fieldUrl={fieldUrl}
 				fieldsApiURL={fieldsApiURL}
 				fieldsCreationMenu={fieldsCreationMenu}
+				filterOperators={filterOperators}
+				forbiddenChars={forbiddenChars}
+				forbiddenLastChars={forbiddenLastChars}
+				forbiddenNames={forbiddenNames}
 				handleChange={handleChange}
 				hasPublishObjectPermission={hasPublishObjectPermission}
 				hasUpdateObjectDefinitionPermission={
 					hasUpdateObjectDefinitionPermission
 				}
 				isApproved={isApproved}
+				isDefaultStorageType={isDefaultStorageType}
 				label={label}
 				nonRelationshipObjectFieldsInfo={
 					nonRelationshipObjectFieldsInfo
 				}
 				objectDefinitionId={objectDefinitionId}
+				objectFieldId={objectFieldId}
 				objectFieldTypes={objectFieldTypes}
 				objectFields={objectFields}
+				objectRelationshipId={objectRelationshipId}
 				pluralLabel={pluralLabel}
 				portletNamespace={portletNamespace}
+				readOnly={readOnly}
+				readOnlySidebarElements={readOnlySidebarElements}
 				screenNavigationCategoryKey={screenNavigationCategoryKey}
 				setValues={setValues}
 				shortName={shortName}
+				sidebarElements={sidebarElements}
 				siteKeyValuePair={siteKeyValuePair}
 				storageTypes={storageTypes}
 				system={system}
 				values={values}
+				workflowStatusJSONArray={workflowStatusJSONArray}
 			/>
 		</>
 	);
