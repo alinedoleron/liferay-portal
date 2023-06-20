@@ -28,6 +28,8 @@ import {
 	fdsItem,
 	formatActionURL,
 } from '../../utils/fds';
+import EditObjectDefinition from '../ObjectDefinition/EditObjectDefinition';
+import EditRelationship from './EditRelationship';
 
 interface ItemData {
 	id: number;
@@ -43,6 +45,10 @@ export default function Relationships({
 	objectDefinitionExternalReferenceCode,
 	style,
 	url,
+	deletionTypes,
+	objectRelationship,
+	parameterEndpoint,
+	parameterRequired,
 }: IFDSTableProps) {
 	const [creationLanguageId, setCreationLanguageId] = useState<
 		Liferay.Language.Locale
@@ -128,7 +134,7 @@ export default function Relationships({
 		},
 		portletId:
 			'com_liferay_object_web_internal_object_definitions_portlet_ObjectDefinitionsPortlet',
-		style,
+		style: 'fluid' as 'fluid',
 		views: [
 			{
 				contentRenderer: 'table',
@@ -173,5 +179,17 @@ export default function Relationships({
 		],
 	};
 
-	return <FrontendDataSet {...dataSetProps} />;
+	return (
+		<div>
+			<FrontendDataSet {...dataSetProps} />;
+			<EditRelationship 
+				deletionTypes={[]}
+				hasUpdateObjectDefinitionPermission={false}
+				objectRelationship={undefined}
+				parameterEndpoint={''}
+				parameterRequired={false}>
+
+			</EditObjectDefinition>
+		</div>
+	)
 }

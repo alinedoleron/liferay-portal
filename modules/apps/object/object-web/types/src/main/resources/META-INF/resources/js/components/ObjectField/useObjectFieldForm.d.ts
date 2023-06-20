@@ -34,10 +34,10 @@ export declare function useObjectFieldForm({
 			output: unknown;
 			script: unknown;
 			defaultValue: unknown;
+			filters: unknown;
 			acceptedFileExtensions: unknown;
 			defaultValueType: unknown;
 			fileSource: unknown;
-			filters: unknown;
 			maxLength: unknown;
 			maximumFileSize: unknown;
 			objectDefinition1ShortName: unknown;

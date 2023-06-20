@@ -21,11 +21,11 @@ interface EditObjectDefinitionProps {
 	dbTableName: string;
 	externalReferenceCode: string;
 	fieldsApiURL: string;
+	fieldDropdownItems: [];
 	fieldsCreationMenu: {
 		primaryItems?: any[];
 		secondaryItems?: any[];
 	};
-	fieldDropdownitems: [];
 	fieldId: string;
 	fieldUrl: string;
 	hasPublishObjectPermission: boolean;
@@ -40,6 +40,14 @@ interface EditObjectDefinitionProps {
 	onSubmit: (draft: boolean) => void;
 	pluralLabel: LocalizedValue<string>;
 	portletNamespace: string;
+	relationshipDropdownItems: [];
+	relationshipsApiURL: string;
+	relationshipCreationMenu: {
+		primaryItems?: any[];
+		secondaryItems?: any[];
+	};
+	relationshipId: string;
+	relationshipUrl: string;
 	screenNavigationCategoryKey: string;
 	setValues: (values: Partial<ObjectDefinition>) => void;
 	shortName: string;
@@ -52,7 +60,7 @@ export default function EditObjectDefinition({
 	companyKeyValuePair,
 	dbTableName,
 	externalReferenceCode,
-	fieldDropdownitems,
+	fieldDropdownItems,
 	fieldId,
 	fieldUrl,
 	fieldsApiURL,
@@ -65,6 +73,11 @@ export default function EditObjectDefinition({
 	objectDefinitionId,
 	pluralLabel,
 	portletNamespace,
+	relationshipCreationMenu,
+	relationshipDropdownItems,
+	relationshipId,
+	relationshipUrl,
+	relationshipsApiURL,
 	screenNavigationCategoryKey,
 	shortName,
 	siteKeyValuePair,

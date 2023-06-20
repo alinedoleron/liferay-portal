@@ -22,6 +22,7 @@ String backURL = ParamUtil.getString(request, "backURL", String.valueOf(renderRe
 ObjectDefinition objectDefinition = (ObjectDefinition)request.getAttribute(ObjectWebKeys.OBJECT_DEFINITION);
 ObjectDefinitionsDetailsDisplayContext objectDefinitionsDetailsDisplayContext = (ObjectDefinitionsDetailsDisplayContext)request.getAttribute(ObjectWebKeys.OBJECT_DEFINITIONS_DETAILS_DISPLAY_CONTEXT);
 ObjectDefinitionsFieldsDisplayContext objectDefinitionsFieldsDisplayContext = (ObjectDefinitionsFieldsDisplayContext)request.getAttribute(ObjectWebKeys.OBJECT_DEFINITIONS_FIELDS_DISPLAY_CONTEXT);
+ObjectDefinitionsRelationshipsDisplayContext objectDefinitionsRelationshipsDisplayContext = (ObjectDefinitionsRelationshipsDisplayContext)request.getAttribute(ObjectWebKeys.OBJECT_DEFINITIONS_RELATIONSHIPS_DISPLAY_CONTEXT);
 
 portletDisplay.setShowBackIcon(true);
 portletDisplay.setURLBack(backURL);
@@ -42,7 +43,7 @@ renderResponse.setTitle(LanguageUtil.format(request, "edit-x", objectDefinition.
 			).put(
 				"externalReferenceCode", objectDefinition.getExternalReferenceCode()
 			).put(
-				"fieldDropdownitems", objectDefinitionsFieldsDisplayContext.getFDSActionDropdownItems()
+				"fieldDropdownItems", objectDefinitionsFieldsDisplayContext.getFDSActionDropdownItems()
 			).put(
 				"fieldId", ObjectDefinitionsFDSNames.OBJECT_FIELDS
 			).put(
@@ -68,6 +69,16 @@ renderResponse.setTitle(LanguageUtil.format(request, "edit-x", objectDefinition.
 			).put(
 				"portletNamespace", liferayPortletResponse.getNamespace()
 			).put(
+				"relationshipCreationMenu", objectDefinitionsRelationshipsDisplayContext.getCreationMenu()
+			).put(
+				"relationshipDropdownitems", objectDefinitionsRelationshipsDisplayContext.getFDSActionDropdownItems()
+			).put(
+				"relationshipId", ObjectDefinitionsFDSNames.OBJECT_RELATIONSHIPS
+			).put(
+				"relationshipsApiURL", objectDefinitionsRelationshipsDisplayContext.getAPIURL()
+			).put(
+				"relationshipUrl", objectDefinitionsRelationshipsDisplayContext.getEditObjectRelationshipURL()
+			).put(
 				"screenNavigationCategoryKey", ParamUtil.getString(request, "screenNavigationCategoryKey")
 			).put(
 				"shortName", objectDefinition.getShortName()
@@ -77,6 +88,14 @@ renderResponse.setTitle(LanguageUtil.format(request, "edit-x", objectDefinition.
 				"storageTypes", objectDefinitionsDetailsDisplayContext.getStoragesJSONArray()
 			).put(
 				"system", objectDefinition.isSystem()
+			).put(
+				"deletionTypes", objectDefinitionsRelationshipsDisplayContext.getObjectRelationshipDeletionTypesJSONArray()
+			).put(
+				"objectRelationship", objectDefinitionsRelationshipsDisplayContext.getObjectRelationshipJSONObject(objectRelationship)
+			).put(
+				"parameterEndpoint", objectDefinitionsRelationshipsDisplayContext.getRESTContextPath(objectDefinition)
+			).put(
+				"parameterRequired", objectDefinitionsRelationshipsDisplayContext.isParameterRequired(objectDefinition)
 			).build()
 		%>'
 	/>

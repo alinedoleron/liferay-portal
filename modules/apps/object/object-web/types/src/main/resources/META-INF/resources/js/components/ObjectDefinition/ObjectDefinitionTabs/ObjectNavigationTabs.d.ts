@@ -22,11 +22,11 @@ interface ObjectNavigationProps {
 	errors: FormError<ObjectDefinition>;
 	externalReferenceCode: string;
 	fieldsApiURL: string;
+	fieldDropdownItems: [];
 	fieldsCreationMenu: {
 		primaryItems?: any[];
 		secondaryItems?: any[];
 	};
-	fieldDropdownitems: [];
 	fieldId: string;
 	fieldUrl: string;
 	handleChange: React.ChangeEventHandler<HTMLInputElement>;
@@ -42,6 +42,14 @@ interface ObjectNavigationProps {
 	objectFields: ObjectField[];
 	pluralLabel: LocalizedValue<string>;
 	portletNamespace: string;
+	relationshipDropdownItems: [];
+	relationshipCreationMenu: {
+		primaryItems?: any[];
+		secondaryItems?: any[];
+	};
+	relationshipsApiURL: string;
+	relationshipId: string;
+	relationshipUrl: string;
 	screenNavigationCategoryKey: string;
 	setValues: (values: Partial<ObjectDefinition>) => void;
 	shortName: string;
@@ -55,7 +63,7 @@ export declare function ObjectNavigationTabs({
 	dbTableName,
 	errors,
 	externalReferenceCode,
-	fieldDropdownitems,
+	fieldDropdownItems,
 	fieldId,
 	fieldUrl,
 	fieldsApiURL,
@@ -70,6 +78,11 @@ export declare function ObjectNavigationTabs({
 	objectFields,
 	pluralLabel,
 	portletNamespace,
+	relationshipCreationMenu,
+	relationshipDropdownItems,
+	relationshipId,
+	relationshipUrl,
+	relationshipsApiURL,
 	setValues,
 	shortName,
 	siteKeyValuePair,

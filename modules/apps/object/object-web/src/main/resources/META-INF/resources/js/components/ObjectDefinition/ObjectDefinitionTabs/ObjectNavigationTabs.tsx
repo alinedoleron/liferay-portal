@@ -21,6 +21,7 @@ import EditObjectDetails, {
 	KeyValuePair,
 } from '../../ObjectDetails/EditObjectDetails';
 import Fields from '../../ObjectField/Fields';
+import Relationships from '../../ObjectRelationship/Relationships';
 
 interface ObjectNavigationProps {
 	companyKeyValuePair: KeyValuePair[];
@@ -28,11 +29,11 @@ interface ObjectNavigationProps {
 	errors: FormError<ObjectDefinition>;
 	externalReferenceCode: string;
 	fieldsApiURL: string;
+	fieldDropdownItems: [];
 	fieldsCreationMenu: {
 		primaryItems?: any[];
 		secondaryItems?: any[];
 	};
-	fieldDropdownitems: [];
 	fieldId: string;
 	fieldUrl: string;
 	handleChange: React.ChangeEventHandler<HTMLInputElement>;
@@ -48,6 +49,14 @@ interface ObjectNavigationProps {
 	objectFields: ObjectField[];
 	pluralLabel: LocalizedValue<string>;
 	portletNamespace: string;
+	relationshipDropdownItems: [];
+	relationshipCreationMenu: {
+		primaryItems?: any[];
+		secondaryItems?: any[];
+	};
+	relationshipsApiURL: string;
+	relationshipId: string;
+	relationshipUrl: string;
 	screenNavigationCategoryKey: string;
 	setValues: (values: Partial<ObjectDefinition>) => void;
 	shortName: string;
@@ -55,6 +64,10 @@ interface ObjectNavigationProps {
 	storageTypes: LabelValueObject[];
 	system: boolean;
 	values: Partial<ObjectDefinition>;
+	deletionTypes: any,
+	objectRelationship: any,
+	parameterEndpoint: any,
+	parameterRequired: any,
 }
 
 export function ObjectNavigationTabs({
@@ -62,7 +75,7 @@ export function ObjectNavigationTabs({
 	dbTableName,
 	errors,
 	externalReferenceCode,
-	fieldDropdownitems,
+	fieldDropdownItems,
 	fieldId,
 	fieldUrl,
 	fieldsApiURL,
@@ -77,13 +90,22 @@ export function ObjectNavigationTabs({
 	objectFields,
 	pluralLabel,
 	portletNamespace,
+	relationshipCreationMenu,
+	relationshipDropdownItems,
+	relationshipId,
+	relationshipUrl,
+	relationshipsApiURL,
 	setValues,
 	shortName,
 	siteKeyValuePair,
 	storageTypes,
 	values,
+	deletionTypes,
+	objectRelationship,
+	parameterEndpoint,
+	parameterRequired,
 }: ObjectNavigationProps) {
-	const [active, setActive] = useState(0);
+	const [active, setActive] = useState(2);
 
 	return (
 		<>
@@ -108,6 +130,15 @@ export function ObjectNavigationTabs({
 					>
 						{Liferay.Language.get('fields')}
 					</ClayTabs.Item>
+					
+					<ClayTabs.Item
+						innerProps={{
+							'aria-controls': 'tabpanel-3',
+						}}
+					>
+						{Liferay.Language.get('relationships')}
+					</ClayTabs.Item>
+					
 				</ClayTabs>
 			</div>
 
@@ -140,20 +171,29 @@ export function ObjectNavigationTabs({
 					/>
 				</ClayTabs.TabPane>
 
-				<ClayTabs.TabPane
-					aria-labelledby="fields-tab"
-					id="fieldsTab"
-					onClick={() => setSelectedTabId('fieldsTab')}
-				>
+				<ClayTabs.TabPane aria-labelledby="fields-tab">
 					<Fields
 						apiURL={fieldsApiURL}
 						creationMenu={fieldsCreationMenu}
 						id={fieldId}
-						items={fieldDropdownitems}
+						items={fieldDropdownItems}
 						objectDefinitionExternalReferenceCode={
 							externalReferenceCode
 						}
 						url={fieldUrl}
+					/>
+				</ClayTabs.TabPane>
+
+				<ClayTabs.TabPane aria-labelledby="relationships-tab">
+					<Relationships
+						apiURL={relationshipsApiURL}
+						creationMenu={relationshipCreationMenu}
+						id={relationshipId}
+						items={relationshipDropdownItems}
+						objectDefinitionExternalReferenceCode={
+							externalReferenceCode
+						}
+						url={relationshipUrl}
 					/>
 				</ClayTabs.TabPane>
 			</ClayTabs.Content>

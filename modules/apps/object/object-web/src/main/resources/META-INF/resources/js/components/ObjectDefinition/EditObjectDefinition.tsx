@@ -27,11 +27,11 @@ interface EditObjectDefinitionProps {
 	dbTableName: string;
 	externalReferenceCode: string;
 	fieldsApiURL: string;
+	fieldDropdownItems: [];
 	fieldsCreationMenu: {
 		primaryItems?: any[];
 		secondaryItems?: any[];
 	};
-	fieldDropdownitems: [];
 	fieldId: string;
 	fieldUrl: string;
 	hasPublishObjectPermission: boolean;
@@ -46,12 +46,24 @@ interface EditObjectDefinitionProps {
 	onSubmit: (draft: boolean) => void;
 	pluralLabel: LocalizedValue<string>;
 	portletNamespace: string;
+	relationshipDropdownItems: [];
+	relationshipsApiURL: string;
+	relationshipCreationMenu: {
+		primaryItems?: any[];
+		secondaryItems?: any[];
+	};
+	relationshipId: string;
+	relationshipUrl: string;
 	screenNavigationCategoryKey: string;
 	setValues: (values: Partial<ObjectDefinition>) => void;
 	shortName: string;
 	siteKeyValuePair: KeyValuePair[];
 	storageTypes: LabelValueObject[];
 	system: boolean;
+	deletionTypes: any,
+	objectRelationship: any,
+	parameterEndpoint: any,
+	parameterRequired: any,
 }
 
 export default function EditObjectDefinition({
@@ -59,7 +71,7 @@ export default function EditObjectDefinition({
 	companyKeyValuePair,
 	dbTableName,
 	externalReferenceCode,
-	fieldDropdownitems,
+	fieldDropdownItems,
 	fieldId,
 	fieldUrl,
 	fieldsApiURL,
@@ -72,11 +84,20 @@ export default function EditObjectDefinition({
 	objectDefinitionId,
 	pluralLabel,
 	portletNamespace,
+	relationshipCreationMenu,
+	relationshipDropdownItems,
+	relationshipId,
+	relationshipUrl,
+	relationshipsApiURL,
 	screenNavigationCategoryKey,
 	shortName,
 	siteKeyValuePair,
 	storageTypes,
 	system,
+	deletionTypes,
+	objectRelationship,
+	parameterEndpoint,
+	parameterRequired,
 }: EditObjectDefinitionProps) {
 	const [objectFields, setObjectFields] = useState<ObjectField[]>([]);
 	const {
@@ -157,7 +178,7 @@ export default function EditObjectDefinition({
 				dbTableName={dbTableName}
 				errors={errors}
 				externalReferenceCode={externalReferenceCode}
-				fieldDropdownitems={fieldDropdownitems}
+				fieldDropdownItems={fieldDropdownItems}
 				fieldId={fieldId}
 				fieldUrl={fieldUrl}
 				fieldsApiURL={fieldsApiURL}
@@ -176,6 +197,11 @@ export default function EditObjectDefinition({
 				objectFields={objectFields}
 				pluralLabel={pluralLabel}
 				portletNamespace={portletNamespace}
+				relationshipCreationMenu={relationshipCreationMenu}
+				relationshipDropdownItems={relationshipDropdownItems}
+				relationshipId={relationshipId}
+				relationshipUrl={relationshipUrl}
+				relationshipsApiURL={relationshipsApiURL}
 				screenNavigationCategoryKey={screenNavigationCategoryKey}
 				setValues={setValues}
 				shortName={shortName}
@@ -183,6 +209,10 @@ export default function EditObjectDefinition({
 				storageTypes={storageTypes}
 				system={system}
 				values={values}
+				deletionTypes={deletionTypes}
+				objectRelationship={objectRelationship}
+				parameterEndpoint={parameterEndpoint}
+				parameterRequired={parameterRequired}
 			/>
 		</>
 	);
