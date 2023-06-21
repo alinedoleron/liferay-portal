@@ -24,11 +24,16 @@ import com.liferay.object.model.ObjectField;
 import com.liferay.object.rest.manager.v1_0.ObjectEntryManagerRegistry;
 import com.liferay.object.scope.ObjectScopeProviderRegistry;
 import com.liferay.object.service.ObjectDefinitionLocalService;
+import com.liferay.object.service.ObjectDefinitionService;
 import com.liferay.object.service.ObjectFieldLocalService;
+import com.liferay.object.service.ObjectFieldService;
 import com.liferay.object.service.ObjectFieldSettingLocalService;
 import com.liferay.object.service.ObjectRelationshipLocalService;
+import com.liferay.object.system.SystemObjectDefinitionManagerRegistry;
+import com.liferay.object.web.internal.configuration.activator.FFOneToOneRelationshipConfigurationActivator;
 import com.liferay.object.web.internal.object.definitions.display.context.ObjectDefinitionsDetailsDisplayContext;
 import com.liferay.object.web.internal.object.definitions.display.context.ObjectDefinitionsFieldsDisplayContext;
+import com.liferay.object.web.internal.object.definitions.display.context.ObjectDefinitionsRelationshipsDisplayContext;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.module.configuration.ConfigurationProvider;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCRenderCommand;
@@ -88,6 +93,14 @@ public class EditObjectDefinitionMVCRenderCommand implements MVCRenderCommand {
 					_objectFieldSettingLocalService,
 					_objectRelationshipLocalService));
 			renderRequest.setAttribute(
+				ObjectWebKeys.OBJECT_DEFINITIONS_RELATIONSHIPS_DISPLAY_CONTEXT,
+				new ObjectDefinitionsRelationshipsDisplayContext(
+					_ffOneToOneRelationshipConfigurationActivator,
+					_portal.getHttpServletRequest(renderRequest),
+					_objectDefinitionModelResourcePermission,
+					_objectDefinitionService, _objectFieldService,
+					_systemObjectDefinitionManagerRegistry));
+			renderRequest.setAttribute(
 				ObjectWebKeys.OBJECT_FIELDS,
 				_objectFieldLocalService.getObjectFields(objectDefinitionId));
 		}
@@ -102,6 +115,10 @@ public class EditObjectDefinitionMVCRenderCommand implements MVCRenderCommand {
 	private ConfigurationProvider _configurationProvider;
 
 	@Reference
+	private FFOneToOneRelationshipConfigurationActivator
+		_ffOneToOneRelationshipConfigurationActivator;
+
+	@Reference
 	private ListTypeDefinitionService _listTypeDefinitionService;
 
 	@Reference
@@ -114,6 +131,9 @@ public class EditObjectDefinitionMVCRenderCommand implements MVCRenderCommand {
 		_objectDefinitionModelResourcePermission;
 
 	@Reference
+	private ObjectDefinitionService _objectDefinitionService;
+
+	@Reference
 	private ObjectEntryManagerRegistry _objectEntryManagerRegistry;
 
 	@Reference
@@ -121,6 +141,9 @@ public class EditObjectDefinitionMVCRenderCommand implements MVCRenderCommand {
 
 	@Reference
 	private ObjectFieldLocalService _objectFieldLocalService;
+
+	@Reference
+	private ObjectFieldService _objectFieldService;
 
 	@Reference
 	private ObjectFieldSettingLocalService _objectFieldSettingLocalService;
@@ -136,5 +159,9 @@ public class EditObjectDefinitionMVCRenderCommand implements MVCRenderCommand {
 
 	@Reference
 	private Portal _portal;
+
+	@Reference
+	private SystemObjectDefinitionManagerRegistry
+		_systemObjectDefinitionManagerRegistry;
 
 }

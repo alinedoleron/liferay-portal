@@ -52,6 +52,14 @@ interface ObjectNavigationProps {
 	portletNamespace: string;
 	readOnly: boolean;
 	readOnlySidebarElements: SidebarCategory[];
+	relationshipDropdownItems: [];
+	relationshipCreationMenu: {
+		primaryItems?: any[];
+		secondaryItems?: any[];
+	};
+	relationshipsApiURL: string;
+	relationshipId: string;
+	relationshipUrl: string;
 	screenNavigationCategoryKey: string;
 	setValues: (values: Partial<ObjectDefinition>) => void;
 	shortName: string;
@@ -92,6 +100,11 @@ export declare function ObjectNavigationTabs({
 	portletNamespace,
 	readOnly,
 	readOnlySidebarElements,
+	relationshipCreationMenu,
+	relationshipDropdownItems,
+	relationshipId,
+	relationshipUrl,
+	relationshipsApiURL,
 	setValues,
 	shortName,
 	sidebarElements,

@@ -21,6 +21,7 @@ import EditObjectDetails, {
 	KeyValuePair,
 } from '../../ObjectDetails/EditObjectDetails';
 import Fields from '../../ObjectField/Fields';
+import Relationships from '../../ObjectRelationship/Relationships';
 
 interface ObjectNavigationProps {
 	creationLanguageId: Liferay.Language.Locale;
@@ -58,6 +59,14 @@ interface ObjectNavigationProps {
 	portletNamespace: string;
 	readOnly: boolean;
 	readOnlySidebarElements: SidebarCategory[];
+	relationshipDropdownItems: [];
+	relationshipCreationMenu: {
+		primaryItems?: any[];
+		secondaryItems?: any[];
+	};
+	relationshipsApiURL: string;
+	relationshipId: string;
+	relationshipUrl: string;
 	screenNavigationCategoryKey: string;
 	setValues: (values: Partial<ObjectDefinition>) => void;
 	shortName: string;
@@ -99,6 +108,11 @@ export function ObjectNavigationTabs({
 	portletNamespace,
 	readOnly,
 	readOnlySidebarElements,
+	relationshipCreationMenu,
+	relationshipDropdownItems,
+	relationshipId,
+	relationshipUrl,
+	relationshipsApiURL,
 	setValues,
 	shortName,
 	sidebarElements,
@@ -131,6 +145,14 @@ export function ObjectNavigationTabs({
 						}}
 					>
 						{Liferay.Language.get('fields')}
+					</ClayTabs.Item>
+
+					<ClayTabs.Item
+						innerProps={{
+							'aria-controls': 'tabpanel-3',
+						}}
+					>
+						{Liferay.Language.get('relationships')}
 					</ClayTabs.Item>
 				</ClayTabs>
 			</div>
@@ -191,6 +213,19 @@ export function ObjectNavigationTabs({
 							readOnlySidebarElements={readOnlySidebarElements}
 							sidebarElements={sidebarElements}
 							workflowStatusJSONArray={workflowStatusJSONArray}
+						/>
+					</ClayTabs.TabPane>
+
+					<ClayTabs.TabPane aria-labelledby="relationships-tab">
+						<Relationships
+							apiURL={relationshipsApiURL}
+							creationMenu={relationshipCreationMenu}
+							id={relationshipId}
+							items={relationshipDropdownItems}
+							objectDefinitionExternalReferenceCode={
+								externalReferenceCode
+							}
+							url={relationshipUrl}
 						/>
 					</ClayTabs.TabPane>
 				</ClayTabs.Content>
