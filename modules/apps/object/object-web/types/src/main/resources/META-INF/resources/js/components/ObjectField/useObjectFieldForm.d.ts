@@ -33,11 +33,11 @@ export declare function useObjectFieldForm({
 			function: unknown;
 			output: unknown;
 			script: unknown;
-			acceptedFileExtensions: unknown;
 			defaultValue: unknown;
+			filters: unknown;
+			acceptedFileExtensions: unknown;
 			defaultValueType: unknown;
 			fileSource: unknown;
-			filters: unknown;
 			maxLength: unknown;
 			maximumFileSize: unknown;
 			objectDefinition1ShortName: unknown;
