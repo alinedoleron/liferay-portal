@@ -164,39 +164,6 @@ public class ObjectDefinitionsFieldsDisplayContext
 					 includeRelationshipObjectFieldBusinessType)));
 	}
 
-	public List<Map<String, Object>> getObjectFieldCodeEditorElements() {
-		return ObjectCodeEditorUtil.getCodeEditorElements(
-			ddmExpressionFunction ->
-				!ObjectCodeEditorUtil.DDMExpressionFunction.OLD_VALUE.equals(
-					ddmExpressionFunction),
-			ddmExpressionOperator -> true, true,
-			objectRequestHelper.getLocale(), getObjectDefinitionId(),
-			objectField -> !objectField.compareBusinessType(
-				ObjectFieldConstants.BUSINESS_TYPE_AGGREGATION));
-	}
-
-	public List<Map<String, Object>> getObjectFieldCodeEditorElements(
-		String businessType) {
-
-		if (StringUtil.equals(
-				businessType, ObjectFieldConstants.BUSINESS_TYPE_FORMULA) &&
-			FeatureFlagManagerUtil.isEnabled("LPS-164948")) {
-
-			return ObjectCodeEditorUtil.getCodeEditorElements(
-				ddmExpressionFunction -> false,
-				ddmExpressionOperator ->
-					_filterableDDMExpressionOperators.contains(
-						ddmExpressionOperator),
-				false, objectRequestHelper.getLocale(), getObjectDefinitionId(),
-				objectField -> _filterableObjectFieldBusinessTypes.contains(
-					objectField.getBusinessType()));
-		}
-
-		return ObjectCodeEditorUtil.getCodeEditorElements(
-			true, false, objectRequestHelper.getLocale(),
-			getObjectDefinitionId(), objectField -> !objectField.isSystem());
-	}
-
 	public JSONObject getObjectFieldJSONObject(ObjectField objectField) {
 		return ObjectFieldUtil.toJSONObject(
 			_listTypeDefinitionService, objectField,

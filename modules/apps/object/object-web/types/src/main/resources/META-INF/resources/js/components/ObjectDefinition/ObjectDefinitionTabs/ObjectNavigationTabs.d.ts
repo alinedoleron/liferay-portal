@@ -21,7 +21,7 @@ interface ObjectNavigationProps {
 	dbTableName: string;
 	errors: FormError<ObjectDefinition>;
 	externalReferenceCode: string;
-	fieldDropdownitems: [];
+	fieldDropdownItems: [];
 	fieldId: string;
 	fieldUrl: string;
 	fieldsApiURL: string;
@@ -56,7 +56,7 @@ export declare function ObjectNavigationTabs({
 	dbTableName,
 	errors,
 	externalReferenceCode,
-	fieldDropdownitems,
+	fieldDropdownItems,
 	fieldId,
 	fieldUrl,
 	fieldsApiURL,

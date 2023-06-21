@@ -239,7 +239,6 @@ export default function Fields({
 										objectName=""
 										objectRelationshipId={0}
 										readOnly={false}
-										readOnlySidebarElements={[]}
 										sidebarElements={[]}
 										workflowStatusJSONArray={[]}
 									/>
