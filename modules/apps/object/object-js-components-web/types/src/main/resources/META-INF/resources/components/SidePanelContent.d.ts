@@ -27,6 +27,7 @@ export declare function SidePanelContent({
 	onSave,
 	readOnly,
 	title,
+	setVerticalBarVisible,
 }: IProps): JSX.Element;
 export declare function SidePanelForm({
 	children,
@@ -34,6 +35,7 @@ export declare function SidePanelForm({
 	onSubmit,
 	readOnly,
 	title,
+	setVerticalBarVisible,
 }: ISidePanelFormProps): JSX.Element;
 interface IContainerProps {
 	children: React.ReactNode;
@@ -46,6 +48,7 @@ interface CommonProps extends IContainerProps {
 	};
 	readOnly?: boolean;
 	title: string;
+	setVerticalBarVisible?: (values: boolean) => void;
 }
 interface IProps extends CommonProps {
 	onSave?: () => void;

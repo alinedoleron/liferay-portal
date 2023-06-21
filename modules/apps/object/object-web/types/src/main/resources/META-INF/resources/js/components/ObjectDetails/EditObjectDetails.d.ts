@@ -12,18 +12,19 @@
  * details.
  */
 
-/// <reference types="react" />
-
+import {FormError} from '@liferay/object-js-components-web';
+import React from 'react';
 import './ObjectDetails.scss';
 export declare type KeyValuePair = {
 	key: string;
 	value: string;
 };
 interface EditObjectDetailsProps {
-	backURL: string;
 	companyKeyValuePair: KeyValuePair[];
 	dbTableName: string;
+	errors: FormError<Partial<ObjectDefinition>>;
 	externalReferenceCode: string;
+	handleChange: React.ChangeEventHandler<HTMLInputElement>;
 	hasPublishObjectPermission: boolean;
 	hasUpdateObjectDefinitionPermission: boolean;
 	isApproved: boolean;
@@ -33,27 +34,27 @@ interface EditObjectDetailsProps {
 		name: string;
 	}[];
 	objectDefinitionId: number;
+	objectFields: ObjectField[];
 	pluralLabel: LocalizedValue<string>;
 	portletNamespace: string;
+	setValues: any;
 	shortName: string;
 	siteKeyValuePair: KeyValuePair[];
 	storageTypes: LabelValueObject[];
+	values: any;
 }
 export default function EditObjectDetails({
-	backURL,
 	companyKeyValuePair,
 	dbTableName,
-	externalReferenceCode,
-	hasPublishObjectPermission,
+	errors,
+	handleChange,
 	hasUpdateObjectDefinitionPermission,
 	isApproved,
-	label,
 	nonRelationshipObjectFieldsInfo,
-	objectDefinitionId,
-	pluralLabel,
-	portletNamespace,
-	shortName,
+	objectFields,
+	setValues,
 	siteKeyValuePair,
 	storageTypes,
+	values,
 }: EditObjectDetailsProps): JSX.Element;
 export {};

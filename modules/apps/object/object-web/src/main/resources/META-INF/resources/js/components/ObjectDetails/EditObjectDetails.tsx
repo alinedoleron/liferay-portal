@@ -12,21 +12,14 @@
  * details.
  */
 
-import {
-	API,
-	BetaButton,
-	getLocalizableLabel,
-	openToast,
-} from '@liferay/object-js-components-web';
-import React, {useEffect, useState} from 'react';
+import {BetaButton, FormError} from '@liferay/object-js-components-web';
+import React from 'react';
 
-import ObjectManagementToolbar from '../ObjectManagementToolbar';
 import {ConfigurationContainer} from './ConfigurationContainer';
 import {EntryDisplayContainer} from './EntryDisplayContainer';
 import {ObjectDataContainer} from './ObjectDataContainer';
 import {ScopeContainer} from './ScopeContainer';
 import Sheet from './Sheet';
-import {useObjectDetailsForm} from './useObjectDetailsForm';
 
 import './ObjectDetails.scss';
 import {AccountRestrictionContainer} from './AccountRestrictionContainer';
@@ -38,10 +31,11 @@ export type KeyValuePair = {
 	value: string;
 };
 interface EditObjectDetailsProps {
-	backURL: string;
 	companyKeyValuePair: KeyValuePair[];
 	dbTableName: string;
+	errors: FormError<Partial<ObjectDefinition>>;
 	externalReferenceCode: string;
+	handleChange: React.ChangeEventHandler<HTMLInputElement>;
 	hasPublishObjectPermission: boolean;
 	hasUpdateObjectDefinitionPermission: boolean;
 	isApproved: boolean;
@@ -51,270 +45,111 @@ interface EditObjectDetailsProps {
 		name: string;
 	}[];
 	objectDefinitionId: number;
+	objectFields: ObjectField[];
 	pluralLabel: LocalizedValue<string>;
 	portletNamespace: string;
+	setValues: any;
 	shortName: string;
 	siteKeyValuePair: KeyValuePair[];
 	storageTypes: LabelValueObject[];
-}
-
-function setAccountRelationshipFieldMandatory(
-	values: Partial<ObjectDefinition>
-) {
-	const {objectFields} = values;
-
-	const newObjectFields = objectFields?.map((field) => {
-		if (field.name === values.accountEntryRestrictedObjectFieldName) {
-			return {
-				...field,
-				required: true,
-			};
-		}
-
-		return field;
-	});
-
-	return {
-		...values,
-		objectFields: newObjectFields,
-	};
+	values: any;
 }
 
 export default function EditObjectDetails({
-	backURL,
 	companyKeyValuePair,
 	dbTableName,
-	externalReferenceCode,
-	hasPublishObjectPermission,
+	errors,
+	handleChange,
 	hasUpdateObjectDefinitionPermission,
 	isApproved,
-	label,
 	nonRelationshipObjectFieldsInfo,
-	objectDefinitionId,
-	pluralLabel,
-	portletNamespace,
-	shortName,
+	objectFields,
+	setValues,
 	siteKeyValuePair,
 	storageTypes,
+	values,
 }: EditObjectDetailsProps) {
-	const [objectFields, setObjectFields] = useState<ObjectField[]>([]);
-
-	const {
-		errors,
-		handleChange,
-		handleValidate,
-		setValues,
-		values,
-	} = useObjectDetailsForm({
-		initialValues: {
-			defaultLanguageId: 'en_US',
-			externalReferenceCode,
-			id: objectDefinitionId,
-			label,
-			name: shortName,
-			pluralLabel,
-		},
-		onSubmit: () => {},
-	});
-
-	const onSubmit = async (draft: boolean) => {
-		const validationErrors = handleValidate();
-
-		if (!Object.keys(validationErrors).length) {
-			delete values.objectRelationships;
-			delete values.objectActions;
-			delete values.objectLayouts;
-			delete values.objectViews;
-
-			let objectDefinition = values;
-
-			if (values.accountEntryRestricted) {
-				objectDefinition = setAccountRelationshipFieldMandatory(values);
-			}
-
-			const saveResponse = await API.putObjectDefinitionByExternalReferenceCode(
-				objectDefinition
-			);
-
-			if (!saveResponse.ok) {
-				const {title} = (await saveResponse.json()) as {
-					status: string;
-					title: string;
-				};
-
-				openToast({
-					message: title,
-					type: 'danger',
-				});
-
-				return;
-			}
-
-			if (!draft) {
-				const publishResponse = await API.publishObjectDefinitionById(
-					values.id as number
-				);
-
-				if (!publishResponse.ok) {
-					const {title} = (await publishResponse.json()) as {
-						status: string;
-						title: string;
-					};
-
-					openToast({
-						message: title,
-						type: 'danger',
-					});
-
-					return;
-				}
-
-				openToast({
-					message: Liferay.Language.get(
-						'the-object-was-published-successfully'
-					),
-					type: 'success',
-				});
-
-				setTimeout(() => window.location.reload(), 1000);
-
-				return;
-			}
-
-			openToast({
-				message: Liferay.Language.get(
-					'the-object-was-saved-successfully'
-				),
-				type: 'success',
-			});
-
-			setTimeout(() => window.location.reload(), 1000);
-		}
-	};
-
-	useEffect(() => {
-		const makeFetch = async () => {
-			const objectFieldsResponse = await API.getObjectFieldsByExternalReferenceCode(
-				externalReferenceCode
-			);
-			const objectDefinitionResponse = await API.getObjectDefinitionByExternalReferenceCode(
-				externalReferenceCode
-			);
-
-			setValues(objectDefinitionResponse);
-			setObjectFields(objectFieldsResponse);
-		};
-
-		makeFetch();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [objectDefinitionId]);
-
 	return (
 		<>
-			<div className="lfr-objects__object-definition-details-management-toolbar">
-				<ObjectManagementToolbar
-					backURL={backURL}
-					externalReferenceCode={externalReferenceCode}
-					hasPublishObjectPermission={hasPublishObjectPermission}
+			<Sheet title={Liferay.Language.get('basic-information')}>
+				<ObjectDataContainer
+					dbTableName={dbTableName}
+					errors={errors}
+					handleChange={handleChange}
 					hasUpdateObjectDefinitionPermission={
 						hasUpdateObjectDefinitionPermission
 					}
 					isApproved={isApproved}
-					label={getLocalizableLabel(
-						values.defaultLanguageId as Liferay.Language.Locale,
-						values.label,
-						values.name
-					)}
-					objectDefinitionId={objectDefinitionId}
-					onSubmit={onSubmit}
-					portletNamespace={portletNamespace}
-					screenNavigationCategoryKey="details"
 					setValues={setValues}
-					system={values.system as boolean}
+					values={values}
 				/>
-			</div>
 
-			<div className="lfr-objects__object-definition-details">
-				<Sheet title={Liferay.Language.get('basic-information')}>
-					<ObjectDataContainer
-						dbTableName={dbTableName}
+				<EntryDisplayContainer
+					errors={errors}
+					nonRelationshipObjectFieldsInfo={
+						nonRelationshipObjectFieldsInfo
+					}
+					objectFields={objectFields}
+					setValues={setValues}
+					values={values}
+				/>
+
+				{Liferay.FeatureFlags['LPS-135430'] && (
+					<div className="lfr__object-web-edit-object-details-external-data-source-container">
+						<ExternalDataSourceContainer
+							errors={errors}
+							setValues={setValues}
+							storageTypes={storageTypes}
+							values={values}
+						/>
+
+						<div className="lfr__object-web-edit-object-details-external-data-source-container-beta">
+							{values.storageType === 'salesforce' && (
+								<BetaButton />
+							)}
+						</div>
+					</div>
+				)}
+
+				<ScopeContainer
+					companyKeyValuePair={companyKeyValuePair}
+					errors={errors}
+					hasUpdateObjectDefinitionPermission={
+						hasUpdateObjectDefinitionPermission
+					}
+					isApproved={isApproved}
+					setValues={setValues}
+					siteKeyValuePair={siteKeyValuePair}
+					values={values}
+				/>
+
+				{(Liferay.FeatureFlags['LPS-167253']
+					? values.modifiable
+					: !values.system) && (
+					<AccountRestrictionContainer
 						errors={errors}
-						handleChange={handleChange}
-						hasUpdateObjectDefinitionPermission={
-							hasUpdateObjectDefinitionPermission
-						}
 						isApproved={isApproved}
-						setValues={setValues}
-						values={values}
-					/>
-
-					<EntryDisplayContainer
-						errors={errors}
-						nonRelationshipObjectFieldsInfo={
-							nonRelationshipObjectFieldsInfo
-						}
 						objectFields={objectFields}
 						setValues={setValues}
 						values={values}
 					/>
+				)}
 
-					{Liferay.FeatureFlags['LPS-135430'] && (
-						<div className="lfr__object-web-edit-object-details-external-data-source-container">
-							<ExternalDataSourceContainer
-								errors={errors}
-								setValues={setValues}
-								storageTypes={storageTypes}
-								values={values}
-							/>
+				<ConfigurationContainer
+					hasUpdateObjectDefinitionPermission={
+						hasUpdateObjectDefinitionPermission
+					}
+					setValues={setValues}
+					values={values}
+				/>
 
-							<div className="lfr__object-web-edit-object-details-external-data-source-container-beta">
-								{values.storageType === 'salesforce' && (
-									<BetaButton />
-								)}
-							</div>
-						</div>
-					)}
-
-					<ScopeContainer
-						companyKeyValuePair={companyKeyValuePair}
-						errors={errors}
-						hasUpdateObjectDefinitionPermission={
-							hasUpdateObjectDefinitionPermission
-						}
-						isApproved={isApproved}
-						setValues={setValues}
-						siteKeyValuePair={siteKeyValuePair}
-						values={values}
-					/>
-
-					{(Liferay.FeatureFlags['LPS-167253']
-						? values.modifiable
-						: !values.system) && (
-						<AccountRestrictionContainer
-							errors={errors}
-							isApproved={isApproved}
-							objectFields={objectFields}
-							setValues={setValues}
-							values={values}
-						/>
-					)}
-
-					<ConfigurationContainer
-						hasUpdateObjectDefinitionPermission={
-							hasUpdateObjectDefinitionPermission
-						}
+				{Liferay.FeatureFlags['LPS-146755'] && (
+					<TranslationsContainer
 						setValues={setValues}
 						values={values}
 					/>
-
-					{Liferay.FeatureFlags['LPS-146755'] && (
-						<TranslationsContainer
-							setValues={setValues}
-							values={values}
-						/>
-					)}
-				</Sheet>
-			</div>
+				)}
+			</Sheet>
 		</>
 	);
 }

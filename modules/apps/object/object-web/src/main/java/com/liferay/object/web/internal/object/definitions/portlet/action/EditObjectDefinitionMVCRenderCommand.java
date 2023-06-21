@@ -14,13 +14,25 @@
 
 package com.liferay.object.web.internal.object.definitions.portlet.action;
 
+import com.liferay.application.list.PanelCategoryRegistry;
+import com.liferay.list.type.service.ListTypeDefinitionService;
 import com.liferay.object.constants.ObjectPortletKeys;
 import com.liferay.object.constants.ObjectWebKeys;
+import com.liferay.object.field.business.type.ObjectFieldBusinessTypeRegistry;
 import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.rest.manager.v1_0.ObjectEntryManagerRegistry;
+import com.liferay.object.scope.ObjectScopeProviderRegistry;
 import com.liferay.object.service.ObjectDefinitionLocalService;
+import com.liferay.object.service.ObjectDefinitionService;
 import com.liferay.object.service.ObjectFieldLocalService;
+import com.liferay.object.service.ObjectFieldService;
+import com.liferay.object.service.ObjectFieldSettingLocalService;
+import com.liferay.object.service.ObjectRelationshipLocalService;
+import com.liferay.object.system.SystemObjectDefinitionManagerRegistry;
+import com.liferay.object.web.internal.configuration.activator.FFOneToOneRelationshipConfigurationActivator;
 import com.liferay.object.web.internal.object.definitions.display.context.ObjectDefinitionsDetailsDisplayContext;
+import com.liferay.object.web.internal.object.definitions.display.context.ObjectDefinitionsFieldsDisplayContext;
+import com.liferay.object.web.internal.object.definitions.display.context.ObjectDefinitionsRelationshipsDisplayContext;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.module.configuration.ConfigurationProvider;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCRenderCommand;
@@ -28,7 +40,6 @@ import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermi
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
-import com.liferay.portal.kernel.util.WebKeys;
 
 import javax.portlet.PortletException;
 import javax.portlet.RenderRequest;
@@ -64,15 +75,36 @@ public class EditObjectDefinitionMVCRenderCommand implements MVCRenderCommand {
 				_objectDefinitionLocalService.getObjectDefinition(
 					objectDefinitionId));
 			renderRequest.setAttribute(
-				ObjectWebKeys.OBJECT_FIELDS,
-				_objectFieldLocalService.getObjectFields(objectDefinitionId));
-			renderRequest.setAttribute(
-				WebKeys.PORTLET_DISPLAY_CONTEXT,
+				ObjectWebKeys.OBJECT_DEFINITIONS_DETAILS_DISPLAY_CONTEXT,
 				new ObjectDefinitionsDetailsDisplayContext(
 					_configurationProvider,
 					_portal.getHttpServletRequest(renderRequest),
 					_objectDefinitionModelResourcePermission,
-					_objectEntryManagerRegistry, null, null));
+					_objectEntryManagerRegistry, _objectScopeProviderRegistry,
+					_panelCategoryRegistry));
+			renderRequest.setAttribute(
+				ObjectWebKeys.OBJECT_DEFINITIONS_FIELDS_DISPLAY_CONTEXT,
+				new ObjectDefinitionsFieldsDisplayContext(
+					_portal.getHttpServletRequest(renderRequest),
+					_listTypeDefinitionService,
+					_objectDefinitionModelResourcePermission,
+					_objectFieldBusinessTypeRegistry,
+					_objectFieldSettingLocalService,
+					_objectRelationshipLocalService));
+			renderRequest.setAttribute(
+				ObjectWebKeys.OBJECT_DEFINITIONS_RELATIONSHIPS_DISPLAY_CONTEXT,
+				new ObjectDefinitionsRelationshipsDisplayContext(
+					_ffOneToOneRelationshipConfigurationActivator,
+					_portal.getHttpServletRequest(renderRequest),
+					_objectDefinitionModelResourcePermission,
+					_objectDefinitionService, _objectFieldService,
+					_systemObjectDefinitionManagerRegistry));
+			renderRequest.setAttribute(
+				ObjectWebKeys.OBJECT_FIELDS,
+				_objectFieldLocalService.getObjectFields(objectDefinitionId));
+			renderRequest.setAttribute(
+				ObjectWebKeys.OBJECT_FIELDS,
+				_objectFieldLocalService.getObjectFields(objectDefinitionId));
 		}
 		catch (PortalException portalException) {
 			SessionErrors.add(renderRequest, portalException.getClass());
@@ -85,6 +117,13 @@ public class EditObjectDefinitionMVCRenderCommand implements MVCRenderCommand {
 	private ConfigurationProvider _configurationProvider;
 
 	@Reference
+	private FFOneToOneRelationshipConfigurationActivator
+		_ffOneToOneRelationshipConfigurationActivator;
+
+	@Reference
+	private ListTypeDefinitionService _listTypeDefinitionService;
+
+	@Reference
 	private ObjectDefinitionLocalService _objectDefinitionLocalService;
 
 	@Reference(
@@ -94,12 +133,37 @@ public class EditObjectDefinitionMVCRenderCommand implements MVCRenderCommand {
 		_objectDefinitionModelResourcePermission;
 
 	@Reference
+	private ObjectDefinitionService _objectDefinitionService;
+
+	@Reference
 	private ObjectEntryManagerRegistry _objectEntryManagerRegistry;
+
+	@Reference
+	private ObjectFieldBusinessTypeRegistry _objectFieldBusinessTypeRegistry;
 
 	@Reference
 	private ObjectFieldLocalService _objectFieldLocalService;
 
 	@Reference
+	private ObjectFieldService _objectFieldService;
+
+	@Reference
+	private ObjectFieldSettingLocalService _objectFieldSettingLocalService;
+
+	@Reference
+	private ObjectRelationshipLocalService _objectRelationshipLocalService;
+
+	@Reference
+	private ObjectScopeProviderRegistry _objectScopeProviderRegistry;
+
+	@Reference
+	private PanelCategoryRegistry _panelCategoryRegistry;
+
+	@Reference
 	private Portal _portal;
+
+	@Reference
+	private SystemObjectDefinitionManagerRegistry
+		_systemObjectDefinitionManagerRegistry;
 
 }

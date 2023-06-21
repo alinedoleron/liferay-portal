@@ -12,23 +12,9 @@
  * details.
  */
 
-/// <reference types="react" />
-
-import './AddObjectField.scss';
-interface IProps {
-	apiURL: string;
-	creationLanguageId: Liferay.Language.Locale;
-	objectDefinitionExternalReferenceCode: string;
-	objectFieldTypes: ObjectFieldType[];
-	objectName: string;
-	onVisibilityChange: (value: boolean) => void;
-}
-export default function AddObjectField({
-	apiURL,
-	creationLanguageId,
-	objectDefinitionExternalReferenceCode,
-	objectFieldTypes,
-	objectName,
-	onVisibilityChange,
-}: IProps): JSX.Element;
-export {};
+import {FormError} from '@liferay/object-js-components-web';
+export declare function onSubmitObjectDefinition(
+	draft: boolean,
+	handleValidate: () => FormError<ObjectDefinition>,
+	values: Partial<ObjectDefinition>
+): Promise<void>;

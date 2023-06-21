@@ -86,7 +86,7 @@ export default function Relationships({
 	}: fdsItem<ItemData>) {
 		const handleEditField = () => {
 			openSidePanel({
-				url: formatActionURL(url, itemData.id),
+				url: formatActionURL(url as string, itemData.id),
 			});
 		};
 
@@ -168,6 +168,7 @@ export default function Relationships({
 						},
 					],
 				},
+				style: 'fluid' as 'fluid',
 				thumbnail: 'table',
 			},
 		],
