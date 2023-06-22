@@ -101,7 +101,6 @@ export function ObjectNavigationTabs({
 	objectDefinitionId,
 	objectFieldTypes,
 	objectFields,
-	objectRelationshipId,
 	pluralLabel,
 	portletNamespace,
 	readOnly,

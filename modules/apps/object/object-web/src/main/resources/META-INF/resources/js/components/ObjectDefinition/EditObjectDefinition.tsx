@@ -220,7 +220,6 @@ export default function EditObjectDefinition({
 				objectDefinitionId={objectDefinitionId}
 				objectFieldTypes={objectFieldTypes}
 				objectFields={objectFields}
-				objectRelationshipId={objectRelationshipId}
 				pluralLabel={pluralLabel}
 				portletNamespace={portletNamespace}
 				readOnly={readOnly}
