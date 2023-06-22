@@ -18,18 +18,19 @@ import {SidebarCategory} from '@liferay/object-js-components-web';
 import {KeyValuePair} from '../ObjectDetails/EditObjectDetails';
 interface EditObjectDefinitionProps {
 	backURL: string;
-	creationLanguageId: Liferay.Language.Locale;
 	companyKeyValuePair: KeyValuePair[];
+	creationLanguageId: Liferay.Language.Locale;
 	dbTableName: string;
 	externalReferenceCode: string;
+	ffOneToOneRelationshipConfigurationEnabled: boolean;
 	fieldDropdownItems: [];
+	fieldId: string;
+	fieldUrl: string;
 	fieldsApiURL: string;
 	fieldsCreationMenu: {
 		primaryItems?: any[];
 		secondaryItems?: any[];
 	};
-	fieldId: string;
-	fieldUrl: string;
 	filterOperators: TFilterOperators;
 	forbiddenChars: string[];
 	forbiddenLastChars: string[];
@@ -44,30 +45,31 @@ interface EditObjectDefinitionProps {
 		name: string;
 	}[];
 	objectDefinitionId: number;
+	objectFieldId: number;
 	objectFieldTypes: ObjectFieldType[];
 	objectRelationshipId: number;
-	objectFieldId: number;
 	onSubmit: (draft: boolean) => void;
+	parameterRequired: boolean;
 	pluralLabel: LocalizedValue<string>;
 	portletNamespace: string;
 	readOnly: boolean;
 	readOnlySidebarElements: SidebarCategory[];
-	relationshipDropdownItems: [];
-	relationshipsApiURL: string;
 	relationshipCreationMenu: {
 		primaryItems?: any[];
 		secondaryItems?: any[];
 	};
+	relationshipDropdownItems: [];
 	relationshipId: string;
 	relationshipUrl: string;
+	relationshipsApiURL: string;
 	screenNavigationCategoryKey: string;
 	setValues: (values: Partial<ObjectDefinition>) => void;
 	shortName: string;
 	sidebarElements: SidebarCategory[];
-	workflowStatusJSONArray: LabelValueObject[];
 	siteKeyValuePair: KeyValuePair[];
 	storageTypes: LabelValueObject[];
 	system: boolean;
+	workflowStatusJSONArray: LabelValueObject[];
 }
 export default function EditObjectDefinition({
 	backURL,
@@ -75,6 +77,7 @@ export default function EditObjectDefinition({
 	creationLanguageId,
 	dbTableName,
 	externalReferenceCode,
+	ffOneToOneRelationshipConfigurationEnabled,
 	fieldDropdownItems,
 	fieldId,
 	fieldsApiURL,
@@ -93,6 +96,7 @@ export default function EditObjectDefinition({
 	objectFieldId,
 	objectFieldTypes,
 	objectRelationshipId,
+	parameterRequired,
 	pluralLabel,
 	portletNamespace,
 	readOnly,

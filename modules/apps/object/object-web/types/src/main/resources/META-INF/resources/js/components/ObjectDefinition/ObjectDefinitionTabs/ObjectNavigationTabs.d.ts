@@ -17,11 +17,12 @@ import React from 'react';
 import './ObjectNavigationTabs.scss';
 import {KeyValuePair} from '../../ObjectDetails/EditObjectDetails';
 interface ObjectNavigationProps {
-	creationLanguageId: Liferay.Language.Locale;
 	companyKeyValuePair: KeyValuePair[];
+	creationLanguageId: Liferay.Language.Locale;
 	dbTableName: string;
 	errors: FormError<ObjectDefinition>;
 	externalReferenceCode: string;
+	ffOneToOneRelationshipConfigurationEnabled: boolean;
 	fieldDropdownItems: [];
 	fieldId: string;
 	fieldsApiURL: string;
@@ -36,38 +37,39 @@ interface ObjectNavigationProps {
 	handleChange: React.ChangeEventHandler<HTMLInputElement>;
 	hasPublishObjectPermission: boolean;
 	hasUpdateObjectDefinitionPermission: boolean;
-	isDefaultStorageType: boolean;
 	isApproved: boolean;
+	isDefaultStorageType: boolean;
 	label: LocalizedValue<string>;
 	nonRelationshipObjectFieldsInfo: {
 		label: LocalizedValue<string>;
 		name: string;
 	}[];
 	objectDefinitionId: number;
-	objectRelationshipId: number;
+	objectFieldId: number;
 	objectFieldTypes: ObjectFieldType[];
 	objectFields: ObjectField[];
-	objectFieldId: number;
+	objectRelationshipId: number;
+	parameterRequired: boolean;
 	pluralLabel: LocalizedValue<string>;
 	portletNamespace: string;
 	readOnly: boolean;
 	readOnlySidebarElements: SidebarCategory[];
-	relationshipDropdownItems: [];
 	relationshipCreationMenu: {
 		primaryItems?: any[];
 		secondaryItems?: any[];
 	};
-	relationshipsApiURL: string;
+	relationshipDropdownItems: [];
 	relationshipId: string;
 	relationshipUrl: string;
+	relationshipsApiURL: string;
 	screenNavigationCategoryKey: string;
 	setValues: (values: Partial<ObjectDefinition>) => void;
 	shortName: string;
+	sidebarElements: SidebarCategory[];
 	siteKeyValuePair: KeyValuePair[];
 	storageTypes: LabelValueObject[];
 	system: boolean;
 	values: Partial<ObjectDefinition>;
-	sidebarElements: SidebarCategory[];
 	workflowStatusJSONArray: LabelValueObject[];
 }
 export declare function ObjectNavigationTabs({
@@ -76,6 +78,7 @@ export declare function ObjectNavigationTabs({
 	dbTableName,
 	errors,
 	externalReferenceCode,
+	ffOneToOneRelationshipConfigurationEnabled,
 	fieldDropdownItems,
 	fieldId,
 	fieldsApiURL,
@@ -96,6 +99,7 @@ export declare function ObjectNavigationTabs({
 	objectFieldTypes,
 	objectFields,
 	objectRelationshipId,
+	parameterRequired,
 	pluralLabel,
 	portletNamespace,
 	readOnly,

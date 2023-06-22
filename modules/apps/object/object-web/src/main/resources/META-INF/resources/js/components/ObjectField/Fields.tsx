@@ -20,7 +20,6 @@ import {
 
 } from '@liferay/frontend-data-set-web';
 import {
-	API,
 	SidebarCategory,
 	getLocalizableLabel,
 } from '@liferay/object-js-components-web';
