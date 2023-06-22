@@ -208,6 +208,7 @@ export default function Fields({
 
 			if (action.data.id === 'editObjectField') {
 				setVerticalBarVisible(true);
+				settriggerSideBarAnimation(true);
 			}
 		},
 		portletId:

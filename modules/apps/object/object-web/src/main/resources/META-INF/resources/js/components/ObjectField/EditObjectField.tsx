@@ -42,7 +42,7 @@ interface EditObjectFieldProps {
 	objectName: string;
 	readOnly: boolean;
 	sidebarElements: SidebarCategory[];
-	setVerticalBarVisible: (values: boolean) => void;
+	closeVerticalBar: () => void;
 	workflowStatusJSONArray: LabelValueObject[];
 }
 
@@ -81,7 +81,6 @@ export default function EditObjectField({
 	objectFieldTypes,
 	objectName,
 	readOnly,
-	setVerticalBarVisible,
 	sidebarElements,
 	workflowStatusJSONArray,
 }: EditObjectFieldProps) {
@@ -190,7 +189,6 @@ export default function EditObjectField({
 			closeVerticalBar={closeVerticalBar}
 			onSubmit={handleSubmit}
 			readOnly={readOnly}
-			setVerticalBarVisible={setVerticalBarVisible}
 			title={Liferay.Language.get('field')}
 		>
 			{showAdvancedTab() ? (

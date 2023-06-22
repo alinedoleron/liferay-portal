@@ -31,7 +31,7 @@ interface EditObjectFieldProps {
 	objectName: string;
 	readOnly: boolean;
 	sidebarElements: SidebarCategory[];
-	setVerticalBarVisible: (values: boolean) => void;
+	closeVerticalBar: () => void;
 	workflowStatusJSONArray: LabelValueObject[];
 }
 export default function EditObjectField({
@@ -48,7 +48,7 @@ export default function EditObjectField({
 	objectFieldTypes,
 	objectName,
 	readOnly,
-	setVerticalBarVisible,
+	closeVerticalBar,
 	sidebarElements,
 	workflowStatusJSONArray,
 }: EditObjectFieldProps): JSX.Element;
