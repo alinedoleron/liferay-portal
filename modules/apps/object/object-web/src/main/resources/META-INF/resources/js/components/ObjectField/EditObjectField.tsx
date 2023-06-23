@@ -36,13 +36,12 @@ interface EditObjectFieldProps {
 	isApproved: boolean;
 	isDefaultStorageType: boolean;
 	objectDefinitionExternalReferenceCode: string;
-	objectField: ObjectField;
 	objectFieldId: number;
 	objectFieldTypes: ObjectFieldType[];
 	objectName: string;
 	objectRelationshipId: number;
 	readOnly: boolean;
-	readOnlySidebarElements: SidebarCategory[];
+	setVerticalBarVisible: (values: boolean) => void;
 	sidebarElements: SidebarCategory[];
 	workflowStatusJSONArray: LabelValueObject[];
 }
@@ -82,7 +81,7 @@ export default function EditObjectField({
 	objectName,
 	objectRelationshipId,
 	readOnly,
-	readOnlySidebarElements,
+	setVerticalBarVisible,
 	sidebarElements,
 	workflowStatusJSONArray,
 }: EditObjectFieldProps) {
@@ -153,6 +152,7 @@ export default function EditObjectField({
 			className="lfr-objects__edit-object-field"
 			onSubmit={handleSubmit}
 			readOnly={readOnly}
+			setVerticalBarVisible={setVerticalBarVisible}
 			title={Liferay.Language.get('field')}
 		>
 			{Liferay.FeatureFlags['LPS-170122'] ||
@@ -199,9 +199,6 @@ export default function EditObjectField({
 							<AdvancedTab
 								creationLanguageId={creationLanguageId}
 								errors={errors}
-								readOnlySidebarElements={
-									readOnlySidebarElements
-								}
 								setValues={setValues}
 								sidebarElements={sidebarElements}
 								values={values}

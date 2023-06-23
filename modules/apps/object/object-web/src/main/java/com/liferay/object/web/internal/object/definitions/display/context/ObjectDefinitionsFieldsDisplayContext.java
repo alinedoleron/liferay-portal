@@ -31,8 +31,6 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.language.LanguageUtil;
-import com.liferay.portal.kernel.portlet.LiferayWindowState;
-import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.SetUtil;
@@ -95,18 +93,6 @@ public class ObjectDefinitionsFieldsDisplayContext
 		return creationMenu;
 	}
 
-	public String getEditObjectFieldURL() throws Exception {
-		return PortletURLBuilder.create(
-			getPortletURL()
-		).setMVCRenderCommandName(
-			"/object_definitions/edit_object_field"
-		).setParameter(
-			"objectFieldId", "{id}"
-		).setWindowState(
-			LiferayWindowState.POP_UP
-		).buildString();
-	}
-
 	public List<FDSActionDropdownItem> getFDSActionDropdownItems()
 		throws Exception {
 
@@ -124,9 +110,9 @@ public class ObjectDefinitionsFieldsDisplayContext
 
 		return Arrays.asList(
 			new FDSActionDropdownItem(
-				getEditObjectFieldURL(), "view", "view",
+				"#", "view", "editObjectField",
 				LanguageUtil.get(objectRequestHelper.getRequest(), "view"),
-				"get", null, "sidePanel"),
+				"get", null, null),
 			fdsActionDropdownItem);
 	}
 
@@ -162,39 +148,6 @@ public class ObjectDefinitionsFieldsDisplayContext
 						objectFieldBusinessType.getName(),
 						ObjectFieldConstants.BUSINESS_TYPE_RELATIONSHIP) ||
 					 includeRelationshipObjectFieldBusinessType)));
-	}
-
-	public List<Map<String, Object>> getObjectFieldCodeEditorElements() {
-		return ObjectCodeEditorUtil.getCodeEditorElements(
-			ddmExpressionFunction ->
-				!ObjectCodeEditorUtil.DDMExpressionFunction.OLD_VALUE.equals(
-					ddmExpressionFunction),
-			ddmExpressionOperator -> true, true,
-			objectRequestHelper.getLocale(), getObjectDefinitionId(),
-			objectField -> !objectField.compareBusinessType(
-				ObjectFieldConstants.BUSINESS_TYPE_AGGREGATION));
-	}
-
-	public List<Map<String, Object>> getObjectFieldCodeEditorElements(
-		String businessType) {
-
-		if (StringUtil.equals(
-				businessType, ObjectFieldConstants.BUSINESS_TYPE_FORMULA) &&
-			FeatureFlagManagerUtil.isEnabled("LPS-164948")) {
-
-			return ObjectCodeEditorUtil.getCodeEditorElements(
-				ddmExpressionFunction -> false,
-				ddmExpressionOperator ->
-					_filterableDDMExpressionOperators.contains(
-						ddmExpressionOperator),
-				false, objectRequestHelper.getLocale(), getObjectDefinitionId(),
-				objectField -> _filterableObjectFieldBusinessTypes.contains(
-					objectField.getBusinessType()));
-		}
-
-		return ObjectCodeEditorUtil.getCodeEditorElements(
-			true, false, objectRequestHelper.getLocale(),
-			getObjectDefinitionId(), objectField -> !objectField.isSystem());
 	}
 
 	public JSONObject getObjectFieldJSONObject(ObjectField objectField) {

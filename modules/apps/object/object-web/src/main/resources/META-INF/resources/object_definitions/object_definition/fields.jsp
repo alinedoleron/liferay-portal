@@ -46,8 +46,6 @@ renderResponse.setTitle(objectDefinition.getLabel(locale, true));
 			).put(
 				"objectDefinitionExternalReferenceCode", objectDefinition.getExternalReferenceCode()
 			).put(
-				"style", "fluid"
-			).put(
 				"url", objectDefinitionsFieldsDisplayContext.getEditObjectFieldURL()
 			).build()
 		%>'
@@ -84,7 +82,7 @@ renderResponse.setTitle(objectDefinition.getLabel(locale, true));
 		module="js/components/ExpressionBuilderModal"
 		props='<%=
 			HashMapBuilder.<String, Object>put(
-				"sidebarElements", objectDefinitionsFieldsDisplayContext.getObjectFieldCodeEditorElements(ObjectFieldConstants.BUSINESS_TYPE_FORMULA)
+				"sidebarElements", objectDefinitionsFieldsDisplayContext.getObjectCodeEditorElements()
 			).build()
 		%>'
 	/>
