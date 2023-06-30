@@ -22,8 +22,10 @@ interface ObjectNavigationProps {
 	companyKeyValuePair: KeyValuePair[];
 	creationLanguageId: Liferay.Language.Locale;
 	dbTableName: string;
+	deletionTypes: any;
 	errors: FormError<ObjectDefinition>;
 	externalReferenceCode: string;
+	ffOneToOneRelationshipConfigurationEnabled: boolean;
 	fieldDropdownItems: [];
 	fieldId: string;
 	fieldsApiURL: string;
@@ -51,9 +53,18 @@ interface ObjectNavigationProps {
 	objectFieldTypes: ObjectFieldType[];
 	objectFields: ObjectField[];
 	objectFieldId: number;
+	parameterEndpoint: string;
+	parameterRequired: boolean;
 	pluralLabel: LocalizedValue<string>;
 	portletNamespace: string;
 	readOnly: boolean;
+	relationshipCreationMenu: {
+		primaryItems?: any[];
+		secondaryItems?: any[];
+	};
+	relationshipDropdownItems: [];
+	relationshipId: string;
+	relationshipsApiURL: string;
 	screenNavigationCategoryKey: string;
 	setValues: (values: Partial<ObjectDefinition>) => void;
 	shortName: string;
@@ -69,8 +80,10 @@ export declare function ObjectNavigationTabs({
 	companyKeyValuePair,
 	creationLanguageId,
 	dbTableName,
+	deletionTypes,
 	errors,
 	externalReferenceCode,
+	ffOneToOneRelationshipConfigurationEnabled,
 	fieldDropdownItems,
 	fieldId,
 	fieldsApiURL,
@@ -93,9 +106,15 @@ export declare function ObjectNavigationTabs({
 	objectDefinitionId,
 	objectFieldTypes,
 	objectFields,
+	parameterEndpoint,
+	parameterRequired,
 	pluralLabel,
 	portletNamespace,
 	readOnly,
+	relationshipCreationMenu,
+	relationshipDropdownItems,
+	relationshipId,
+	relationshipsApiURL,
 	setValues,
 	shortName,
 	sidebarElements,

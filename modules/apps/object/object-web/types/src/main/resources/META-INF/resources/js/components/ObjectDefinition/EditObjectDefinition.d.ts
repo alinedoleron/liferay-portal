@@ -26,7 +26,9 @@ interface EditObjectDefinitionProps {
 	companyKeyValuePair: KeyValuePair[];
 	creationLanguageId: Liferay.Language.Locale;
 	dbTableName: string;
+	deletionTypes: any;
 	externalReferenceCode: string;
+	ffOneToOneRelationshipConfigurationEnabled: boolean;
 	fieldDropdownItems: [];
 	fieldId: string;
 	fieldsApiURL: string;
@@ -51,9 +53,19 @@ interface EditObjectDefinitionProps {
 	objectDefinitionId: number;
 	objectFieldTypes: ObjectFieldType[];
 	onSubmit: (draft: boolean) => void;
+	parameterEndpoint: string;
+	parameterRequired: boolean;
 	pluralLabel: LocalizedValue<string>;
 	portletNamespace: string;
 	readOnly: boolean;
+	relationshipDropdownItems: [];
+	relationshipId: string;
+	relationshipParameterRequired: boolean;
+	relationshipsApiURL: string;
+	relationshipsCreationMenu: {
+		primaryItems?: any[];
+		secondaryItems?: any[];
+	};
 	screenNavigationCategoryKey: string;
 	setValues: (values: Partial<ObjectDefinition>) => void;
 	shortName: string;
@@ -69,7 +81,9 @@ export default function EditObjectDefinition({
 	companyKeyValuePair,
 	creationLanguageId,
 	dbTableName,
+	deletionTypes,
 	externalReferenceCode,
+	ffOneToOneRelationshipConfigurationEnabled,
 	fieldDropdownItems,
 	fieldId,
 	fieldsApiURL,
@@ -90,9 +104,16 @@ export default function EditObjectDefinition({
 	nonRelationshipObjectFieldsInfo,
 	objectDefinitionId,
 	objectFieldTypes,
+	parameterEndpoint,
+	parameterRequired,
 	pluralLabel,
 	portletNamespace,
 	readOnly,
+	relationshipDropdownItems,
+	relationshipId,
+	relationshipParameterRequired,
+	relationshipsApiURL,
+	relationshipsCreationMenu,
 	screenNavigationCategoryKey,
 	shortName,
 	sidebarElements,

@@ -14,25 +14,16 @@
 
 /// <reference types="react" />
 
-import {IFDSTableProps} from '../../utils/fds';
-interface IRelationship extends IFDSTableProps {
-	deletionTypes: any;
-	ffOneToOneRelationshipConfigurationEnabled: boolean;
-	hasUpdateObjectDefinitionPermission: boolean;
-	parameterEndpoint: any;
-	parameterRequired: boolean;
+interface ModalDeleteObjectRelationshipProps {
+	objectRelationship: ObjectRelationship;
+	setModalVisibility: (value: boolean) => void;
+	setObjectRelationship: (values: ObjectRelationship | null) => void;
+	showDeletionNotAllowedModal: boolean;
 }
-export default function Relationships({
-	apiURL,
-	creationMenu,
-	deletionTypes,
-	ffOneToOneRelationshipConfigurationEnabled,
-	formName,
-	hasUpdateObjectDefinitionPermission,
-	id,
-	items,
-	objectDefinitionExternalReferenceCode,
-	parameterEndpoint,
-	parameterRequired,
-}: IRelationship): JSX.Element;
+export default function ModalDeleteObjectRelationship({
+	objectRelationship,
+	setModalVisibility,
+	setObjectRelationship,
+	showDeletionNotAllowedModal,
+}: ModalDeleteObjectRelationshipProps): JSX.Element;
 export {};

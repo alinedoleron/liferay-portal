@@ -23,6 +23,7 @@ ObjectDefinition objectDefinition = (ObjectDefinition)request.getAttribute(Objec
 ObjectDefinitionsDetailsDisplayContext objectDefinitionsDetailsDisplayContext = (ObjectDefinitionsDetailsDisplayContext)request.getAttribute(ObjectWebKeys.OBJECT_DEFINITIONS_DETAILS_DISPLAY_CONTEXT);
 ObjectDefinitionsFieldsDisplayContext objectDefinitionsFieldsDisplayContext = (ObjectDefinitionsFieldsDisplayContext)request.getAttribute(ObjectWebKeys.OBJECT_DEFINITIONS_FIELDS_DISPLAY_CONTEXT);
 ObjectDefinitionsLayoutsDisplayContext objectDefinitionsLayoutsDisplayContext = (ObjectDefinitionsLayoutsDisplayContext)request.getAttribute(ObjectWebKeys.OBJECT_DEFINITIONS_LAYOUTS_DISPLAY_CONTEXT);
+ObjectDefinitionsRelationshipsDisplayContext objectDefinitionsRelationshipsDisplayContext = (ObjectDefinitionsRelationshipsDisplayContext)request.getAttribute(ObjectWebKeys.OBJECT_DEFINITIONS_RELATIONSHIPS_DISPLAY_CONTEXT);
 
 portletDisplay.setShowBackIcon(true);
 portletDisplay.setURLBack(backURL);
@@ -46,6 +47,10 @@ renderResponse.setTitle(LanguageUtil.format(request, "edit-x", objectDefinition.
 				"creationLanguageId", objectDefinition.getDefaultLanguageId()
 			).put(
 				"dbTableName", objectDefinition.getDBTableName()
+			).put(
+				"deletionTypes", objectDefinitionsRelationshipsDisplayContext.getObjectRelationshipDeletionTypesJSONArray()
+			).put(
+				"ffOneToOneRelationshipConfigurationEnabled", objectDefinitionsRelationshipsDisplayContext.isFFOneToOneRelationshipConfigurationEnabled()
 			).put(
 				"externalReferenceCode", objectDefinition.getExternalReferenceCode()
 			).put(
@@ -89,6 +94,10 @@ renderResponse.setTitle(LanguageUtil.format(request, "edit-x", objectDefinition.
 			).put(
 				"objectFieldTypes", objectDefinitionsFieldsDisplayContext.getObjectFieldBusinessTypeMaps(true, locale)
 			).put(
+				"parameterEndpoint", objectDefinitionsRelationshipsDisplayContext.getRESTContextPath(objectDefinition)
+			).put(
+				"parameterRequired", objectDefinitionsRelationshipsDisplayContext.isParameterRequired(objectDefinition)
+			).put(
 				"pluralLabel", LocalizationUtil.getLocalizationMap(objectDefinition.getPluralLabel())
 			).put(
 				"portletNamespace", liferayPortletResponse.getNamespace()
@@ -96,6 +105,16 @@ renderResponse.setTitle(LanguageUtil.format(request, "edit-x", objectDefinition.
 				"readOnly", !objectDefinitionsFieldsDisplayContext.hasUpdateObjectDefinitionPermission()
 			).put(
 				"readOnlySidebarElements", objectDefinitionsFieldsDisplayContext.getObjectCodeEditorElements()
+			).put(
+				"relationshipsApiURL", objectDefinitionsRelationshipsDisplayContext.getAPIURL()
+			).put(
+				"relationshipsCreationMenu", objectDefinitionsRelationshipsDisplayContext.getCreationMenu()
+			).put(
+				"relationshipDropdownItems", objectDefinitionsRelationshipsDisplayContext.getFDSActionDropdownItems()
+			).put(
+				"relationshipId", ObjectDefinitionsFDSNames.OBJECT_RELATIONSHIPS
+			).put(
+				"relationshipParameterRequired", objectDefinitionsRelationshipsDisplayContext.isParameterRequired(objectDefinition)
 			).put(
 				"screenNavigationCategoryKey", ParamUtil.getString(request, "screenNavigationCategoryKey")
 			).put(

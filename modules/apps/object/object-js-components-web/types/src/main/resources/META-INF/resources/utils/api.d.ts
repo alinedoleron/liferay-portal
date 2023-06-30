@@ -163,7 +163,7 @@ export declare function updatePickListItem({
 	name_i18n,
 }: Partial<PickListItem>): Promise<void>;
 export declare function updateRelationship({
-	objectRelationshipId,
+	id,
 	...others
 }: ObjectRelationship): Promise<void>;
 export {};

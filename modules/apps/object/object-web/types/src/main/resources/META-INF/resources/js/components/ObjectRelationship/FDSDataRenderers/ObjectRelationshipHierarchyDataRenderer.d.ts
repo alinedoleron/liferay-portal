@@ -14,8 +14,13 @@
 
 /// <reference types="react" />
 
-export default function ModalWithProvider({
-	isApproved,
+interface ItemData {
+	id: number;
+	reverse: boolean;
+}
+export default function ObjectRelationshipHierarchyDataRenderer({
+	itemData,
 }: {
-	isApproved: boolean;
+	itemData: ItemData;
 }): JSX.Element;
+export {};

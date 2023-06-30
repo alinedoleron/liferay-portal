@@ -23,14 +23,17 @@ import EditObjectDetails, {
 } from '../../ObjectDetails/EditObjectDetails';
 import Fields from '../../ObjectField/Fields';
 import {CreationMenu} from '../EditObjectDefinition';
+import Relationships from '../../ObjectRelationship/Relationships';
 
 interface ObjectNavigationProps {
 	baseResourceURL: string;
 	companyKeyValuePair: KeyValuePair[];
 	creationLanguageId: Liferay.Language.Locale;
 	dbTableName: string;
+	deletionTypes: any;
 	errors: FormError<ObjectDefinition>;
 	externalReferenceCode: string;
+	ffOneToOneRelationshipConfigurationEnabled: boolean;
 	fieldDropdownItems: [];
 	fieldId: string;
 	fieldsApiURL: string;
@@ -58,9 +61,18 @@ interface ObjectNavigationProps {
 	objectFieldTypes: ObjectFieldType[];
 	objectFields: ObjectField[];
 	objectFieldId: number;
+	parameterEndpoint: string;
+	parameterRequired: boolean;
 	pluralLabel: LocalizedValue<string>;
 	portletNamespace: string;
 	readOnly: boolean;
+	relationshipCreationMenu: {
+		primaryItems?: any[];
+		secondaryItems?: any[];
+	};
+	relationshipDropdownItems: [];
+	relationshipId: string;
+	relationshipsApiURL: string;
 	screenNavigationCategoryKey: string;
 	setValues: (values: Partial<ObjectDefinition>) => void;
 	shortName: string;
@@ -77,8 +89,10 @@ export function ObjectNavigationTabs({
 	companyKeyValuePair,
 	creationLanguageId,
 	dbTableName,
+	deletionTypes,
 	errors,
 	externalReferenceCode,
+	ffOneToOneRelationshipConfigurationEnabled,
 	fieldDropdownItems,
 	fieldId,
 	fieldsApiURL,
@@ -101,9 +115,15 @@ export function ObjectNavigationTabs({
 	objectDefinitionId,
 	objectFieldTypes,
 	objectFields,
+	parameterEndpoint,
+	parameterRequired,
 	pluralLabel,
 	portletNamespace,
 	readOnly,
+	relationshipCreationMenu,
+	relationshipDropdownItems,
+	relationshipId,
+	relationshipsApiURL,
 	setValues,
 	shortName,
 	sidebarElements,
@@ -112,7 +132,7 @@ export function ObjectNavigationTabs({
 	values,
 	workflowStatusJSONArray,
 }: ObjectNavigationProps) {
-	const [active, setActive] = useState(1);
+	const [active, setActive] = useState(2);
 
 	return (
 		<>
@@ -140,10 +160,18 @@ export function ObjectNavigationTabs({
 
 					<ClayTabs.Item
 						innerProps={{
-							'aria-controls': 'tabpanel-2',
+							'aria-controls': 'tabpanel-3',
 						}}
 					>
 						{Liferay.Language.get('layouts')}
+					</ClayTabs.Item>
+
+					<ClayTabs.Item
+						innerProps={{
+							'aria-controls': 'tabpanel-4',
+						}}
+					>
+						{Liferay.Language.get('relationships')}
 					</ClayTabs.Item>
 				</ClayTabs>
 			</div>
@@ -215,7 +243,27 @@ export function ObjectNavigationTabs({
 								externalReferenceCode
 							}
 							objectFieldTypes={objectFieldTypes}
-							readOnly={readOnly}
+							readOnly={readOnly}/>
+					</ClayTabs.TabPane>
+							
+					<ClayTabs.TabPane aria-labelledby="relationships-tab">
+						<Relationships
+							apiURL={relationshipsApiURL}
+							creationMenu={relationshipCreationMenu}
+							deletionTypes={deletionTypes}
+							ffOneToOneRelationshipConfigurationEnabled={
+								ffOneToOneRelationshipConfigurationEnabled
+							}
+							hasUpdateObjectDefinitionPermission={
+								hasPublishObjectPermission
+							}
+							id={relationshipId}
+							items={relationshipDropdownItems}
+							objectDefinitionExternalReferenceCode={
+								externalReferenceCode
+							}
+							parameterEndpoint={parameterEndpoint}
+							parameterRequired={parameterRequired}
 						/>
 					</ClayTabs.TabPane>
 				</ClayTabs.Content>

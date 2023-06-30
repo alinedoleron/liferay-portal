@@ -380,11 +380,11 @@ export async function updatePickListItem({
 }
 
 export async function updateRelationship({
-	objectRelationshipId,
+	id,
 	...others
 }: ObjectRelationship) {
 	return await save(
-		`/o/object-admin/v1.0/object-relationships/${objectRelationshipId}`,
+		`/o/object-admin/v1.0/object-relationships/${id}`,
 		others
 	);
 }

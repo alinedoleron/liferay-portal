@@ -12,26 +12,29 @@
  * details.
  */
 
-/// <reference types="react" />
+import classNames from 'classnames';
+import React from 'react';
 
-interface EditRelationshipProps {
-	closeVerticalBar: () => void;
-	deletionTypes: TDeletionType[];
-	hasUpdateObjectDefinitionPermission: boolean;
-	objectRelationshipEdited: ObjectRelationship;
-	parameterEndpoint: string;
-	parameterRequired: boolean;
+interface ItemData {
+	id: number;
+	reverse: boolean;
 }
-declare type TDeletionType = {
-	label: string;
-	value: string;
-};
-export default function EditRelationship({
-	closeVerticalBar,
-	deletionTypes,
-	hasUpdateObjectDefinitionPermission,
-	objectRelationshipEdited,
-	parameterEndpoint,
-	parameterRequired,
-}: EditRelationshipProps): JSX.Element;
-export {};
+
+export default function ObjectRelationshipHierarchyDataRenderer({
+    itemData,
+}: {
+    itemData: ItemData;
+}) {
+    return (
+        <strong
+            className={classNames(
+                itemData.reverse ? 'label-info' : 'label-success',
+                'label'
+            )}
+        >
+            {itemData.reverse
+                ? Liferay.Language.get('child')
+                : Liferay.Language.get('parent')}
+        </strong>
+    );
+}

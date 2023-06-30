@@ -18,35 +18,74 @@ import {
 	// @ts-ignore
 
 } from '@liferay/frontend-data-set-web';
-import {API, getLocalizableLabel} from '@liferay/object-js-components-web';
-import classNames from 'classnames';
+import {
+	API,
+	ObjectVerticalBar,
+	getLocalizableLabel,
+} from '@liferay/object-js-components-web';
 import React, {useEffect, useState} from 'react';
 
-import {
-	IFDSTableProps,
-	defaultDataSetProps,
-	fdsItem,
-	formatActionURL,
-} from '../../utils/fds';
+import {IFDSTableProps, defaultDataSetProps, fdsItem} from '../../utils/fds';
+import ModalDeleteObjectRelationship from './ModalDeleteObjectRelationship';
+import EditRelationship from './EditRelationship';
+import {ModalAddObjectRelationship} from './ModalAddObjectRelationship';
+import objectRelationshipHierarchyDataRenderer from './FDSDataRenderers/ObjectRelationshipHierarchyDataRenderer';
 
-interface ItemData {
-	id: number;
-	reverse: boolean;
+interface IRelationship extends IFDSTableProps {
+	deletionTypes: any;
+	ffOneToOneRelationshipConfigurationEnabled: boolean;
+	hasUpdateObjectDefinitionPermission: boolean;
+	parameterEndpoint: any;
+	parameterRequired: boolean;
 }
 
 export default function Relationships({
 	apiURL,
 	creationMenu,
+	deletionTypes,
+	ffOneToOneRelationshipConfigurationEnabled,
 	formName,
+	hasUpdateObjectDefinitionPermission,
 	id,
 	items,
 	objectDefinitionExternalReferenceCode,
-	style,
-	url,
-}: IFDSTableProps) {
+	parameterEndpoint,
+	parameterRequired,
+}: IRelationship) {
+	const [showAddModalRelationship, setShowAddModalRelationship] = useState<boolean>(false);
+	const [showVerticalBar, setShowVerticalBar] = useState<boolean>(false);
+	const [showDeletionModal, setShowDeletionModal] = useState<boolean>(false);
+	const [
+		showDeletionNotAllowedModal,
+		setShowDeletionNotAllowedModal,
+	] = useState<boolean>(false);
+	const [
+		deletedObjectRelationship,
+		setDeletedObjectRelationship,
+	] = useState<ObjectRelationship | null>(null);
+	const [triggerSideBarAnimation, setTriggerSideBarAnimation] = useState<
+		boolean
+	>(false);
+
 	const [creationLanguageId, setCreationLanguageId] = useState<
 		Liferay.Language.Locale
 	>();
+
+	const [objectRelationshipEdited, setObjectRelationshipEdited] = useState<
+		ObjectRelationship
+	>();
+
+	const verticalBarItems = [
+		{
+			title: 'editObjectFieldSideBar',
+		},
+	];
+
+	useEffect(() => {
+		Liferay.on('addObjectRelationship', () => setShowAddModalRelationship(true));
+
+		return () => Liferay.detach('addObjectRelationship');
+	}, []);
 
 	useEffect(() => {
 		const makeFetch = async () => {
@@ -60,39 +99,27 @@ export default function Relationships({
 		makeFetch();
 	}, [objectDefinitionExternalReferenceCode]);
 
-	function ObjectFieldHierarchyDataRenderer({
-		itemData,
-	}: {
-		itemData: ItemData;
-	}) {
-		return (
-			<strong
-				className={classNames(
-					itemData.reverse ? 'label-info' : 'label-success',
-					'label'
-				)}
-			>
-				{itemData.reverse
-					? Liferay.Language.get('child')
-					: Liferay.Language.get('parent')}
-			</strong>
-		);
+
+	function closeVerticalBar() {
+		setTriggerSideBarAnimation(false);
+		setTimeout(() => {
+			setShowVerticalBar(false);
+		}, 500);
 	}
 
-	function objectFieldLabelDataRenderer({
-		itemData,
-		openSidePanel,
-		value,
-	}: fdsItem<ItemData>) {
-		const handleEditField = () => {
-			openSidePanel({
-				url: formatActionURL(url as string, itemData.id),
-			});
-		};
+	const handleEditField = (itemData: ObjectRelationship) => {
+		setShowVerticalBar(true);
+		setTriggerSideBarAnimation(true);
+		setObjectRelationshipEdited(itemData);
+	};
 
+	function objectRelationshipLabelDataRenderer({
+		itemData,
+		value,
+	}: fdsItem<ObjectRelationship>) {
 		return (
 			<div className="table-list-title">
-				<a href="#" onClick={handleEditField}>
+				<a href="#" onClick={() => handleEditField(itemData)}>
 					{getLocalizableLabel(
 						creationLanguageId as Liferay.Language.Locale,
 						value
@@ -107,8 +134,8 @@ export default function Relationships({
 		apiURL,
 		creationMenu,
 		customDataRenderers: {
-			ObjectFieldHierarchyDataRenderer,
-			objectFieldLabelDataRenderer,
+			objectRelationshipHierarchyDataRenderer,
+			objectRelationshipLabelDataRenderer,
 		},
 		formName,
 		id,
@@ -123,12 +150,32 @@ export default function Relationships({
 			itemData: ObjectRelationship;
 		}) {
 			if (action.data.id === 'deleteObjectRelationship') {
-				Liferay.fire('deleteObjectRelationship', {itemData});
+				const makeFetch = async () => {
+						await API.deleteObjectRelationships(itemData.id);
+		
+						Liferay.Util.openToast({
+							message: Liferay.Language.get(
+								'relationship-was-deleted-successfully'
+							),
+						});
+		
+						setTimeout(() => window.location.reload(), 1500);
+					}
+
+				makeFetch();
+
+			}
+
+			if (action.data.id === 'editRelationship') {
+				handleEditField(itemData);
 			}
 		},
 		portletId:
 			'com_liferay_object_web_internal_object_definitions_portlet_ObjectDefinitionsPortlet',
-		style,
+		showManagementBar: true,
+		showPagination: true,
+		showSearch: true,
+		style: 'fluid' as 'fluid',
 		views: [
 			{
 				contentRenderer: 'table',
@@ -137,7 +184,7 @@ export default function Relationships({
 				schema: {
 					fields: [
 						{
-							contentRenderer: 'objectFieldLabelDataRenderer',
+							contentRenderer: 'objectRelationshipLabelDataRenderer',
 							expand: false,
 							fieldName: 'label',
 							label: Liferay.Language.get('label'),
@@ -159,7 +206,7 @@ export default function Relationships({
 							sortable: false,
 						},
 						{
-							contentRenderer: 'ObjectFieldHierarchyDataRenderer',
+							contentRenderer: 'objectRelationshipHierarchyDataRenderer',
 							expand: false,
 							fieldName: 'hierarchy',
 							label: Liferay.Language.get('hierarchy'),
@@ -173,5 +220,49 @@ export default function Relationships({
 		],
 	};
 
-	return <FrontendDataSet {...dataSetProps} />;
+	return (
+		<>
+			<FrontendDataSet {...dataSetProps} />
+			{showVerticalBar && (
+				<ObjectVerticalBar
+					triggerSideBarAnimation={triggerSideBarAnimation}
+					verticalBaritems={verticalBarItems}
+				>
+					<EditRelationship
+						closeVerticalBar={closeVerticalBar}
+						deletionTypes={deletionTypes}
+						hasUpdateObjectDefinitionPermission={
+							hasUpdateObjectDefinitionPermission
+						}
+						objectRelationshipEdited={
+							objectRelationshipEdited as ObjectRelationship
+						}
+						parameterEndpoint={parameterEndpoint}
+						parameterRequired={parameterRequired}
+					/>
+				</ObjectVerticalBar>
+			)}
+			{showAddModalRelationship && (
+				<ModalAddObjectRelationship
+					ffOneToOneRelationshipConfigurationEnabled={
+						ffOneToOneRelationshipConfigurationEnabled
+					}
+					objectDefinitionExternalReferenceCode={
+						objectDefinitionExternalReferenceCode
+					}
+					onVisibilityChange={setShowAddModalRelationship}
+					parameterRequired={parameterRequired}
+				/>
+			)}
+
+			{showDeletionModal && (
+				<ModalDeleteObjectRelationship
+					objectRelationship={deletedObjectRelationship as ObjectRelationship}
+					setModalVisibility={setShowDeletionModal}
+					setObjectRelationship={setDeletedObjectRelationship}
+					showDeletionNotAllowedModal={showDeletionNotAllowedModal}
+				/>
+			)}
+		</>
+	);
 }
