@@ -25,6 +25,10 @@ portletDisplay.setURLBack(backURL);
 			"deletionTypes", objectDefinitionsRelationshipsDisplayContext.getObjectRelationshipDeletionTypesJSONArray()
 		).put(
 			"siteKeyValuePair", objectDefinitionsDetailsDisplayContext.getScopeKeyValuePairs("site")
+		).put(
+			"storages", objectDefinitionsDetailsDisplayContext.getStoragesJSONArray()
+		).put(
+			"viewApiUrl", "/o/object-admin/v1.0/object-definitions"
 		).build()
 	%>'
 />

@@ -24,7 +24,15 @@ const TYPES_TO_SYMBOLS = {
 	objectFolder: 'diagram',
 };
 
-export default function LeftSidebar() {
+interface LeftSidebarProps {
+	selectedFolderName: string;
+	setShowModal: (value: boolean) => void;
+}
+
+export default function LeftSidebar({
+	selectedFolderName,
+	setShowModal,
+}: LeftSidebarProps) {
 	const [query, setQuery] = useState('');
 	const [{leftSidebarItems}, dispatch] = useFolderContext();
 	const {setCenter} = useZoomPanHelper();
@@ -58,7 +66,10 @@ export default function LeftSidebar() {
 						setQuery={(searchTerm) => setQuery(searchTerm)}
 					/>
 
-					<ClayButton className="lfr-objects__model-builder-left-sidebar-body-create-new-object-button">
+					<ClayButton
+						className="lfr-objects__model-builder-left-sidebar-body-create-new-object-button"
+						onClick={() => setShowModal(true)}
+					>
 						{Liferay.Language.get('create-new-object')}
 					</ClayButton>
 

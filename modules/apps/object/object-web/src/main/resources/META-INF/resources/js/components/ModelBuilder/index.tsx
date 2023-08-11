@@ -16,19 +16,25 @@ interface ICustomFolderWrapperProps extends React.HTMLAttributes<HTMLElement> {
 	deletionTypes: TDeletionType[];
 	objectDefinitions: ObjectDefinition[];
 	siteKeyValuePair: KeyValuePair[];
+	storages: LabelTypeObject[];
+	viewApiUrl: string;
 }
 
 const CustomFolderWrapper: React.FC<ICustomFolderWrapperProps> = ({
 	companyKeyValuePair,
 	deletionTypes,
 	siteKeyValuePair,
+	storages,
+	viewApiUrl,
 }) => {
 	const urlParams = new URLSearchParams(window.location.search);
 	const folderERC = urlParams.get('folderERC');
 
 	return (
 		<ReactFlowProvider>
-			<FolderContextProvider value={{selectedFolderERC: folderERC}}>
+			<FolderContextProvider
+				value={{selectedFolderERC: folderERC, storages, viewApiUrl}}
+			>
 				<EditObjectFolder
 					companyKeyValuePair={companyKeyValuePair}
 					deletionTypes={deletionTypes}
