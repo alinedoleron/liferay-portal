@@ -4,7 +4,7 @@
  */
 
 import {getLocalizableLabel} from '@liferay/object-js-components-web';
-import {Edge, Node} from 'react-flow-renderer';
+import {Edge, Node, useStore} from 'react-flow-renderer';
 
 import {defaultLanguageId} from '../../../utils/constants';
 import {manyMarkerId} from '../Edges/ManyMarkerEnd';
@@ -24,8 +24,148 @@ import {
 } from './objectFolderReducerUtil';
 import {TYPES} from './typesEnum';
 
-export function objectFolderReducer(state: TState, action: TAction) {
+export function ObjectFolderReducer(state: TState, action: TAction) {
+	const store = useStore();
+
 	switch (action.type) {
+		case TYPES.ADD_NEW_NODE_TO_FOLDER: {
+			const {newObjectDefinition, selectedFolderName} = action.payload;
+			const {nodes} = store.getState();
+
+			const {elements, leftSidebarItems} = state;
+
+			let newPosition = {
+				x: 2 * 300,
+				y: 2 * 400,
+			};
+
+			if (nodes.length) {
+				const yPositions = nodes.map((node) => node.position.y);
+				const maximumY = Math.max(...yPositions);
+				const maximumNodesYPosition = nodes.filter(
+					(node) => node.position.y === maximumY
+				);
+				const xPositions = maximumNodesYPosition.map(
+					(node) => node.position.x
+				);
+				const maximumX = Math.max(...xPositions);
+				const mostBottomRightNodePosition = maximumNodesYPosition.find(
+					(node) => node.position.x === maximumX
+				)!.position;
+
+				newPosition = {
+					x: mostBottomRightNodePosition!.x + 300,
+					y: mostBottomRightNodePosition!.y,
+				};
+			}
+
+			const newLeftSidebarItems = leftSidebarItems.map((item) => {
+				let newDefinition;
+
+				if (item.folderName === selectedFolderName) {
+					newDefinition = {
+						definitionName: newObjectDefinition.name,
+						name: getLocalizableLabel(
+							newObjectDefinition.defaultLanguageId,
+							newObjectDefinition.label,
+							newObjectDefinition.name
+						),
+						selected: true,
+						type: 'objectDefinition',
+					};
+
+					const updatedObjectDefinitions = item.objectDefinitions?.map(
+						(objectDefinition) => {
+							return {
+								...objectDefinition,
+								selected: false,
+							};
+						}
+					);
+
+					return {
+						...item,
+						objectDefinitions: [
+							...updatedObjectDefinitions!,
+							newDefinition,
+						],
+					};
+				}
+				else {
+					return {
+						...item,
+					};
+				}
+			}) as LeftSidebarItemType[];
+
+			const objectFields = newObjectDefinition.objectFields.map(
+				(field) => {
+					return {
+						businessType: field.businessType,
+						externalReferenceCode: field.externalReferenceCode,
+						label: getLocalizableLabel(
+							newObjectDefinition.defaultLanguageId,
+							field.label,
+							field.name
+						),
+						name: field.name,
+						primaryKey: field.name === 'id',
+						required: field.required,
+						selected: false,
+					} as ObjectFieldNode;
+				}
+			);
+
+			const updatedObjectDefinitionsNodes = elements.map((node) => {
+				return {
+					...node,
+					data: {
+						...node.data,
+						nodeSelected: false,
+					},
+				};
+			});
+
+			const newNode = {
+				data: {
+					creationLanguageId: newObjectDefinition.defaultLanguageId,
+					externalReferenceCode:
+						newObjectDefinition.externalReferenceCode,
+					hasObjectDefinitionDeleteResourcePermission: true,
+					hasObjectDefinitionManagePermissionsResourcePermission: true,
+					hasObjectDefinitionUpdateResourcePermission: true,
+					hasObjectDefinitionViewResourcePermission: true,
+					isLinkedNode: false,
+					label: getLocalizableLabel(
+						newObjectDefinition.defaultLanguageId!,
+						newObjectDefinition.label,
+						newObjectDefinition.name
+					),
+					name: newObjectDefinition.name,
+					nodeSelected: true,
+					objectFields: fieldsCustomSort(objectFields),
+					status: newObjectDefinition.status,
+					system: newObjectDefinition.system,
+				},
+				id: newObjectDefinition.name,
+				position: newPosition,
+				type: 'objectDefinition',
+			};
+
+			const newObjectDefinitionNodes = [
+				...updatedObjectDefinitionsNodes,
+				newNode,
+			] as Node<ObjectDefinitionNodeData>[];
+
+			return {
+				...state,
+				elements: [...newObjectDefinitionNodes],
+				leftSidebarItems: newLeftSidebarItems,
+				objectDefinitionNodes: newObjectDefinitionNodes,
+				selectedDefinitionNode: newNode,
+				showChangesSaved: true,
+			};
+		}
 		case TYPES.CREATE_MODEL_BUILDER_STRUCTURE: {
 			const {objectFolders} = action.payload;
 			const {selectedFolderERC} = state;
@@ -168,6 +308,38 @@ export function objectFolderReducer(state: TState, action: TAction) {
 				...state,
 				elements: [...newObjectDefinitionNodes, ...newEdges],
 				leftSidebarItems: newLeftSidebar,
+			};
+		}
+		case TYPES.DELETE_FOLDER_NODE: {
+			const {currentFolderName, newObjectDefinition} = action.payload;
+
+			const {leftSidebarItems} = state;
+
+			let updatedObjectDefinitions;
+
+			const newLeftSidebarItems = leftSidebarItems.map((item) => {
+				if (item.folderName === currentFolderName) {
+					updatedObjectDefinitions = item.objectDefinitions?.filter(
+						(definition) =>
+							definition.definitionName !==
+							newObjectDefinition.name
+					);
+
+					return {
+						...item,
+						objectDefinitions: [...updatedObjectDefinitions!],
+					};
+				}
+				else {
+					return {
+						...item,
+					};
+				}
+			}) as LeftSidebarItemType[];
+
+			return {
+				...state,
+				leftSidebarItems: newLeftSidebarItems,
 			};
 		}
 		case TYPES.SET_SELECTED_NODE: {

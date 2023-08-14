@@ -10,9 +10,23 @@ import {TYPES} from './ModelBuilderContext/typesEnum';
 export type TAction =
 	| {
 			payload: {
+				newObjectDefinition: ObjectDefinition;
+				selectedFolderName: string;
+			};
+			type: TYPES.ADD_NEW_NODE_TO_FOLDER;
+	  }
+	| {
+			payload: {
 				objectFolders: ObjectFolder[];
 			};
 			type: TYPES.CREATE_MODEL_BUILDER_STRUCTURE;
+	  }
+	| {
+			payload: {
+				currentFolderName: string;
+				newObjectDefinition: ObjectDefinition;
+			};
+			type: TYPES.DELETE_FOLDER_NODE;
 	  }
 	| {
 			payload: {
@@ -38,6 +52,7 @@ export type TState = {
 	selectedDefinitionNode: Node<ObjectDefinitionNodeData>;
 	selectedFolderERC: string;
 	selectedObjectRelationship: ObjectRelationship;
+	showChangesSaved: boolean;
 	storages: LabelTypeObject[];
 	viewApiUrl: string;
 };

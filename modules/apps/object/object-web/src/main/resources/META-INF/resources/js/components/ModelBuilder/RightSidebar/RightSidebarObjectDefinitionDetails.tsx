@@ -6,7 +6,7 @@
 import {API, getLocalizableLabel} from '@liferay/object-js-components-web';
 import {sub} from 'frontend-js-web';
 import React, {useEffect, useState} from 'react';
-import {Node, isNode} from 'react-flow-renderer';
+import {Node} from 'react-flow-renderer';
 
 import {AccountRestrictionContainer} from '../../ObjectDetails/AccountRestrictionContainer';
 import {ConfigurationContainer} from '../../ObjectDetails/ConfigurationContainer';
@@ -32,12 +32,10 @@ export function RightSidebarObjectDefinitionDetails({
 }: RightSidebarObjectDefinitionDetailsProps) {
 	const [{elements}] = useFolderContext();
 
-	const selectedNode = elements.find((element) => {
-		if (isNode(element)) {
-			return (element as Node<ObjectDefinitionNodeData>).data
-				?.nodeSelected;
-		}
-	}) as Node<ObjectDefinitionNodeData>;
+	const selectedNode = elements.find(
+		(element) =>
+			(element as Node<ObjectDefinitionNodeData>).data?.nodeSelected
+	) as Node<ObjectDefinitionNodeData>;
 
 	const [
 		nonRelationshipObjectFieldsInfo,

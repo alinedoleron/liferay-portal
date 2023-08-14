@@ -72,6 +72,20 @@ export default function EditObjectFolder({
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
+	useEffect(() => {
+		if (newObjectDefinition) {
+			dispatch({
+				payload: {
+					newObjectDefinition,
+					selectedFolderName,
+				},
+				type: TYPES.ADD_NEW_NODE_TO_FOLDER,
+			});
+		}
+
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [newObjectDefinition]);
+
 	return (
 		<>
 			{showModal && (

@@ -18,7 +18,7 @@ interface Header {
 }
 
 export default function ({hasDraftObjectDefinitions}: Header) {
-	const [{selectedFolderERC}] = useFolderContext();
+	const [{selectedFolderERC, showChangesSaved}] = useFolderContext();
 
 	return (
 		<div className="lfr-objects__model-builder-header">
@@ -55,6 +55,12 @@ export default function ({hasDraftObjectDefinitions}: Header) {
 						/>
 					)}
 				</div>
+
+				{showChangesSaved && (
+					<span className="lfr-objects__model-builder-header-changes-saved">
+						Changes saved <ClayIcon symbol="check-circle" />
+					</span>
+				)}
 
 				<div className="lfr-objects__model-builder-header-buttons-container">
 					<ClayButtonWithIcon

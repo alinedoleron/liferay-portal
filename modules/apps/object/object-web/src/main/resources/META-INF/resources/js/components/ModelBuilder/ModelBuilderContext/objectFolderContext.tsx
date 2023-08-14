@@ -14,7 +14,7 @@ import {
 	TAction,
 	TState,
 } from '../types';
-import {objectFolderReducer} from './objectFolderReducer';
+import {ObjectFolderReducer} from './objectFolderReducer';
 
 interface IFolderContextProps extends Array<TState | Function> {
 	0: typeof initialState;
@@ -37,6 +37,7 @@ const initialState = {
 	objectFolders: [] as ObjectFolder[],
 	rightSidebarType: 'empty' as RightSidebarType,
 	selectedFolderERC: '',
+	showChangesSaved: false,
 } as TState;
 
 export function FolderContextProvider({
@@ -44,7 +45,7 @@ export function FolderContextProvider({
 	value,
 }: IFolderContextProviderProps) {
 	const [state, dispatch] = useReducer<React.Reducer<TState, TAction>>(
-		objectFolderReducer,
+		ObjectFolderReducer,
 		{
 			...initialState,
 			...value,

@@ -7,22 +7,65 @@ import {Node} from 'react-flow-renderer';
 import {
 	LeftSidebarItemType,
 	ObjectDefinitionNodeData,
+	ObjectFieldNode,
 	RightSidebarType,
 	TAction,
 	TState,
 } from '../types';
-export declare function objectFolderReducer(
+export declare function ObjectFolderReducer(
 	state: TState,
 	action: TAction
-): {
-	elements: any;
-	leftSidebarItems: LeftSidebarItemType[];
-	objectDefinitions: ObjectDefinition[];
-	objectFolders: ObjectFolder[];
-	rightSidebarType: RightSidebarType;
-	selectedDefinitionNode: Node<ObjectDefinitionNodeData>;
-	selectedFolderERC: string;
-	selectedObjectRelationship: ObjectRelationship;
-	storages: LabelTypeObject[];
-	viewApiUrl: string;
-};
+):
+	| {
+			elements: Node<ObjectDefinitionNodeData>[];
+			leftSidebarItems: LeftSidebarItemType[];
+			objectDefinitionNodes: Node<ObjectDefinitionNodeData>[];
+			selectedDefinitionNode: {
+				data: {
+					creationLanguageId: Liferay.Language.Locale;
+					externalReferenceCode: string;
+					hasObjectDefinitionDeleteResourcePermission: boolean;
+					hasObjectDefinitionManagePermissionsResourcePermission: boolean;
+					hasObjectDefinitionUpdateResourcePermission: boolean;
+					hasObjectDefinitionViewResourcePermission: boolean;
+					isLinkedNode: boolean;
+					label: string;
+					name: string;
+					nodeSelected: boolean;
+					objectFields: ObjectFieldNode[];
+					status: {
+						code: number;
+						label: string;
+						label_i18n: string;
+					};
+					system: boolean;
+				};
+				id: string;
+				position: {
+					x: number;
+					y: number;
+				};
+				type: string;
+			};
+			showChangesSaved: boolean;
+			objectDefinitions: ObjectDefinition[];
+			objectFolders: ObjectFolder[];
+			rightSidebarType: RightSidebarType;
+			selectedFolderERC: string;
+			selectedObjectRelationship: ObjectRelationship;
+			storages: LabelTypeObject[];
+			viewApiUrl: string;
+	  }
+	| {
+			elements: any;
+			leftSidebarItems: LeftSidebarItemType[];
+			objectDefinitions: ObjectDefinition[];
+			objectFolders: ObjectFolder[];
+			rightSidebarType: RightSidebarType;
+			selectedDefinitionNode: Node<ObjectDefinitionNodeData>;
+			selectedFolderERC: string;
+			selectedObjectRelationship: ObjectRelationship;
+			showChangesSaved: boolean;
+			storages: LabelTypeObject[];
+			viewApiUrl: string;
+	  };
