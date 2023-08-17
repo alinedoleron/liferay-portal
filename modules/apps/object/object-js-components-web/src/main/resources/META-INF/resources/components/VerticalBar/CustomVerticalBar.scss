@@ -1,6 +1,10 @@
 .lfr__objects-custom-vertical-bar {
 	&-content {
-		overflow: auto;
+		// overflow: auto;
+
+		.c-slideout-show.sidebar {
+			overflow: auto;
+		}
 	}
 
 	&--left-closed {

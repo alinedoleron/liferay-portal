@@ -22,7 +22,7 @@ export declare type TAction =
 	| {
 			payload: {
 				currentFolderName: string;
-				newObjectDefinition: ObjectDefinition;
+				deletedNodeName: string;
 			};
 			type: TYPES.DELETE_FOLDER_NODE;
 	  }
@@ -30,7 +30,7 @@ export declare type TAction =
 			payload: {
 				edges: Edge<ObjectRelationshipEdgeData>[];
 				nodes: Node<ObjectDefinitionNodeData>[];
-				selectedObjectDefinitionName: string;
+				selectedObjectDefinitionId: string;
 			};
 			type: TYPES.SET_SELECTED_NODE;
 	  }
@@ -39,6 +39,13 @@ export declare type TAction =
 				newElements: any;
 			};
 			type: TYPES.SET_ELEMENTS;
+	  }
+	| {
+			payload: {
+				currentFolderName: string;
+				updatedNode: Partial<ObjectDefinition>;
+			};
+			type: TYPES.UPDATE_FOLDER_NODE;
 	  };
 export declare type TState = {
 	elements: Elements<ObjectDefinitionNodeData | ObjectRelationshipEdgeData>;
@@ -60,6 +67,7 @@ export declare type LeftSidebarItemType = {
 	type: 'objectFolder' | 'objectDefinition';
 };
 export declare type LeftSidebarDefinitionItemType = {
+	definitionId: string;
 	definitionName: string;
 	name: string;
 	selected: boolean;

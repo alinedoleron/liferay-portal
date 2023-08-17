@@ -13,6 +13,7 @@ export declare function DefinitionNode({
 		defaultLanguageId,
 		hasObjectDefinitionDeleteResourcePermission,
 		hasObjectDefinitionManagePermissionsResourcePermission,
+		id,
 		isLinkedNode,
 		label,
 		name,

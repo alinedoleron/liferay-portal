@@ -5,6 +5,7 @@
 
 import {API} from '@liferay/object-js-components-web';
 import React, {useEffect, useState} from 'react';
+import {useStore} from 'react-flow-renderer';
 
 import {KeyValuePair} from '../ObjectDetails/EditObjectDetails';
 import {TDeletionType} from '../ObjectRelationship/EditRelationship';
@@ -30,12 +31,11 @@ export default function EditObjectFolder({
 		{rightSidebarType, selectedFolderERC, storages, viewApiUrl},
 		dispatch,
 	] = useFolderContext();
-	const [newObjectDefinition, setNewObjectDefinition] = useState<
-		ObjectDefinition
-	>();
 	const [showModal, setShowModal] = useState(false);
 
 	const [selectedFolderName, setSelectedFolderName] = useState('');
+
+	const store = useStore();
 
 	useEffect(() => {
 		const makeFetch = async () => {
@@ -72,20 +72,6 @@ export default function EditObjectFolder({
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
-	useEffect(() => {
-		if (newObjectDefinition) {
-			dispatch({
-				payload: {
-					newObjectDefinition,
-					selectedFolderName,
-				},
-				type: TYPES.ADD_NEW_NODE_TO_FOLDER,
-			});
-		}
-
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [newObjectDefinition]);
-
 	return (
 		<>
 			{showModal && (
@@ -95,8 +81,28 @@ export default function EditObjectFolder({
 						setShowModal(false);
 					}}
 					objectFolderExternalReferenceCode={selectedFolderERC}
+					onAfterSubmit={(newObjectDefinition) => {
+						dispatch({
+							payload: {
+								newObjectDefinition,
+								selectedFolderName,
+							},
+							type: TYPES.ADD_NEW_NODE_TO_FOLDER,
+						});
+
+						const {edges, nodes} = store.getState();
+
+						// dispatch({
+						// 	payload: {
+						// 		edges,
+						// 		nodes,
+						// 		selectedObjectDefinitionId: (newObjectDefinition as ObjectDefinition).id.toString(),
+						// 	},
+						// 	type: TYPES.SET_SELECTED_NODE,
+						// });
+
+					}}
 					reload={false}
-					setNewNode={setNewObjectDefinition}
 					storages={storages}
 				/>
 			)}

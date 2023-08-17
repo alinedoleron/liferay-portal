@@ -19,7 +19,6 @@ export declare function ObjectFolderReducer(
 	| {
 			elements: Node<ObjectDefinitionNodeData>[];
 			leftSidebarItems: LeftSidebarItemType[];
-			objectDefinitionNodes: Node<ObjectDefinitionNodeData>[];
 			selectedDefinitionNode: {
 				data: {
 					creationLanguageId: Liferay.Language.Locale;
@@ -28,6 +27,7 @@ export declare function ObjectFolderReducer(
 					hasObjectDefinitionManagePermissionsResourcePermission: boolean;
 					hasObjectDefinitionUpdateResourcePermission: boolean;
 					hasObjectDefinitionViewResourcePermission: boolean;
+					id: number;
 					isLinkedNode: boolean;
 					label: string;
 					name: string;

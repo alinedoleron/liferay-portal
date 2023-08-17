@@ -98,7 +98,7 @@ export default function LeftSidebar({
 			dispatch({
 				payload: {
 					currentFolderName: currentFolder!.name,
-					newObjectDefinition,
+					deletedNodeName: newObjectDefinition.name,
 				},
 				type: TYPES.DELETE_FOLDER_NODE,
 			});
@@ -114,16 +114,6 @@ export default function LeftSidebar({
 				),
 				type: 'success',
 			});
-
-			// dispatch({
-			// 	payload: {
-			// 		edges,
-			// 		nodes,
-			// 		selectedObjectDefinitionName: movedObjectDefinition.name,
-			// 	},
-			// 	type: TYPES.SET_SELECTED_NODE,
-			// });
-
 		}
 		catch (error) {}
 	};
@@ -143,7 +133,10 @@ export default function LeftSidebar({
 					if (
 						item.type === 'objectDefinition' &&
 						selectedFolder.objectDefinitions?.find(
-							(definition) => definition.name === item.name
+							(definition) =>
+								definition.definitionId ===
+								(item as LeftSidebarDefinitionItemType)
+									.definitionId
 						)
 					) {
 						const {edges, nodes} = store.getState();
@@ -152,8 +145,7 @@ export default function LeftSidebar({
 							payload: {
 								edges,
 								nodes,
-								selectedObjectDefinitionName: (item as LeftSidebarDefinitionItemType)
-									.definitionName,
+								selectedObjectDefinitionId: (item as LeftSidebarDefinitionItemType).definitionId.toString(),
 							},
 							type: TYPES.SET_SELECTED_NODE,
 						});

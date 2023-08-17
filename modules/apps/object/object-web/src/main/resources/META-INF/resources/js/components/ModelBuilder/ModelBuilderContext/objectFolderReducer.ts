@@ -64,6 +64,7 @@ export function ObjectFolderReducer(state: TState, action: TAction) {
 
 				if (item.folderName === selectedFolderName) {
 					newDefinition = {
+						definitionId: newObjectDefinition.id,
 						definitionName: newObjectDefinition.name,
 						name: getLocalizableLabel(
 							newObjectDefinition.defaultLanguageId,
@@ -135,7 +136,8 @@ export function ObjectFolderReducer(state: TState, action: TAction) {
 					hasObjectDefinitionManagePermissionsResourcePermission: true,
 					hasObjectDefinitionUpdateResourcePermission: true,
 					hasObjectDefinitionViewResourcePermission: true,
-					isLinkedNode: false,
+					id: newObjectDefinition.id,
+					isLinkedNode: false, // se clicar no no e linked for true, desabilita os campos da rightsidebar
 					label: getLocalizableLabel(
 						newObjectDefinition.defaultLanguageId!,
 						newObjectDefinition.label,
@@ -147,7 +149,7 @@ export function ObjectFolderReducer(state: TState, action: TAction) {
 					status: newObjectDefinition.status,
 					system: newObjectDefinition.system,
 				},
-				id: newObjectDefinition.name,
+				id: newObjectDefinition.id.toString(),
 				position: newPosition,
 				type: 'objectDefinition',
 			};
@@ -161,7 +163,9 @@ export function ObjectFolderReducer(state: TState, action: TAction) {
 				...state,
 				elements: [...newObjectDefinitionNodes],
 				leftSidebarItems: newLeftSidebarItems,
-				objectDefinitionNodes: newObjectDefinitionNodes,
+
+				// objectDefinitionNodes: newObjectDefinitionNodes,
+
 				selectedDefinitionNode: newNode,
 				showChangesSaved: true,
 			};
@@ -175,6 +179,7 @@ export function ObjectFolderReducer(state: TState, action: TAction) {
 					(definition) => {
 						return {
 							definitionName: definition.name,
+							definitionId: definition.id,
 							name: getLocalizableLabel(
 								definition.defaultLanguageId,
 								definition.label,
@@ -279,6 +284,7 @@ export function ObjectFolderReducer(state: TState, action: TAction) {
 								hasObjectDefinitionManagePermissionsResourcePermission: true,
 								hasObjectDefinitionUpdateResourcePermission: true,
 								hasObjectDefinitionViewResourcePermission: true,
+								id: objectDefinition.id,
 								isLinkedNode: false,
 								label: getLocalizableLabel(
 									objectDefinition.defaultLanguageId,
@@ -291,7 +297,7 @@ export function ObjectFolderReducer(state: TState, action: TAction) {
 								status: objectDefinition.status,
 								system: objectDefinition.system,
 							},
-							id: objectDefinition.name,
+							id: objectDefinition.id.toString(),
 							position: {
 								x: positionColumn.x * 300,
 								y: positionColumn.y * 400,
@@ -311,7 +317,7 @@ export function ObjectFolderReducer(state: TState, action: TAction) {
 			};
 		}
 		case TYPES.DELETE_FOLDER_NODE: {
-			const {currentFolderName, newObjectDefinition} = action.payload;
+			const {currentFolderName, deletedNodeName} = action.payload;
 
 			const {leftSidebarItems} = state;
 
@@ -321,8 +327,7 @@ export function ObjectFolderReducer(state: TState, action: TAction) {
 				if (item.folderName === currentFolderName) {
 					updatedObjectDefinitions = item.objectDefinitions?.filter(
 						(definition) =>
-							definition.definitionName !==
-							newObjectDefinition.name
+							definition.definitionName !== deletedNodeName
 					);
 
 					return {
@@ -342,8 +347,52 @@ export function ObjectFolderReducer(state: TState, action: TAction) {
 				leftSidebarItems: newLeftSidebarItems,
 			};
 		}
+		case TYPES.UPDATE_FOLDER_NODE: {
+			const {currentFolderName, updatedNode} = action.payload;
+
+			const {leftSidebarItems} = state;
+
+			let updatedObjectDefinitions;
+
+			const newLeftSidebarItems = leftSidebarItems.map(
+				(item: LeftSidebarItemType) => {
+					if (item.folderName === currentFolderName) {
+						updatedObjectDefinitions = item.objectDefinitions?.map(
+							(definition) => {
+								if (
+									definition.definitionId.toString() ===
+									updatedNode.id?.toString()
+								) {
+									return {
+										...definition,
+										name: updatedNode.label,
+									};
+								}
+
+								return definition;
+							}
+						);
+
+						return {
+							...item,
+							objectDefinitions: [...updatedObjectDefinitions!],
+						};
+					}
+					else {
+						return {
+							...item,
+						};
+					}
+				}
+			) as LeftSidebarItemType[];
+
+			return {
+				...state,
+				leftSidebarItems: newLeftSidebarItems,
+			};
+		}
 		case TYPES.SET_SELECTED_NODE: {
-			const {edges, nodes, selectedObjectDefinitionName} = action.payload;
+			const {edges, nodes, selectedObjectDefinitionId} = action.payload;
 
 			const {leftSidebarItems} = state;
 
@@ -352,8 +401,8 @@ export function ObjectFolderReducer(state: TState, action: TAction) {
 				data: {
 					...definitionNode.data,
 					nodeSelected:
-						definitionNode.data?.name ===
-						selectedObjectDefinitionName,
+						definitionNode.id ===
+						selectedObjectDefinitionId.toString(),
 				},
 			}));
 
@@ -362,8 +411,8 @@ export function ObjectFolderReducer(state: TState, action: TAction) {
 					(sidebarDefinition) => ({
 						...sidebarDefinition,
 						selected:
-							selectedObjectDefinitionName ===
-							sidebarDefinition.definitionName,
+							selectedObjectDefinitionId ===
+							sidebarDefinition.definitionId.toString(),
 					})
 				);
 
