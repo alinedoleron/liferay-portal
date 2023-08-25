@@ -7,8 +7,8 @@ import {getLocalizableLabel} from '@liferay/object-js-components-web';
 import {ArrowHeadType, Edge, Node, useStore} from 'react-flow-renderer';
 
 import {defaultLanguageId} from '../../../utils/constants';
-import {manyMarkerId} from '../Edges/ManyMarkerEnd';
-import {oneMarkerId} from '../Edges/OneMarkerEnd';
+import {manyMarkerId} from '../Edges/ManyMarker';
+import {oneMarkerId} from '../Edges/OneMarker';
 import {
 	LeftSidebarItemType,
 	ObjectDefinitionNodeData,
@@ -466,7 +466,7 @@ export function ObjectFolderReducer(state: TState, action: TAction) {
 								hasObjectDefinitionUpdateResourcePermission: !!objectDefinition
 									.actions.update,
 								hasSelfRelationships:
-									selfRelationships?.length > 0,	
+									selfRelationships?.length > 0,
 								id: objectDefinition.id,
 								isLinkedNode: false,
 								label: getLocalizableLabel(

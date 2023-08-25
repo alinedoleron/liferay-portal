@@ -16,19 +16,22 @@ import {useFolderContext} from '../ModelBuilderContext/objectFolderContext';
 import {TYPES} from '../ModelBuilderContext/typesEnum';
 import {ObjectRelationshipEdgeData} from '../types';
 import {getEdgeParams} from '../utils';
-import ManyMarkerEnd from './ManyMarkerEnd';
-import OneMarkerEnd from './OneMarkerEnd';
+import ManyMarker from './ManyMarker';
+import OneMarker from './OneMarker';
+
+const defaultColor = '#80ACFF';
+const highlightColor = '#0B5FFF';
 
 export function getInitialEdgeStyle(edgeSelected: boolean) {
 	return {
-		stroke: edgeSelected ? '#0B5FFF' : '#80ACFF',
+		stroke: edgeSelected ? highlightColor : defaultColor,
 		strokeWidth: '2px',
 	};
 }
 
 export function getInitialLabelBgStyle(edgeSelected: boolean) {
 	return {
-		fill: edgeSelected ? '#0B5FFF' : '#80ACFF',
+		fill: edgeSelected ? highlightColor : defaultColor,
 		height: '24px',
 	};
 }
@@ -72,23 +75,23 @@ export default function DefaultEdge({
 	useEffect(() => {
 		if (edgeSelected) {
 			setEdgeStyle((style) => {
-				return {...style, stroke: '#0B5FFF'};
+				return {...style, stroke: highlightColor};
 			});
 			setLabelBgStyle((style) => {
 				return {
 					...style,
-					fill: '#0B5FFF',
+					fill: highlightColor,
 				};
 			});
 		}
 		else {
 			setEdgeStyle((style) => {
-				return {...style, stroke: '#80ACFF'};
+				return {...style, stroke: defaultColor};
 			});
 			setLabelBgStyle((style) => {
 				return {
 					...style,
-					fill: '#80ACFF',
+					fill: defaultColor,
 				};
 			});
 		}
@@ -115,33 +118,33 @@ export default function DefaultEdge({
 	const edgePath = getSmoothStepPath({
 		sourcePosition: sourcePos,
 		sourceX,
-		sourceY,
+		sourceY: sourceY + currentSourceY,
 		targetPosition: targetPos,
 		targetX,
-		targetY,
+		targetY: targetY + currentTargetY,
 	});
 
 	const reverseEdgePath = getSmoothStepPath({
 		sourcePosition: targetPos,
-		sourceX,
-		sourceY,
+		sourceX: targetX,
+		sourceY: targetY + currentTargetY,
 		targetPosition: sourcePos,
-		targetX,
-		targetY,
+		targetX: sourceX,
+		targetY: sourceY + currentSourceY,
 	});
 
 	const [edgeCenterX, edgeCenterY] = getEdgeCenter({
 		sourceX,
-		sourceY,
+		sourceY: sourceY + currentSourceY,
 		targetX,
-		targetY,
+		targetY: targetY + currentTargetY,
 	});
 
 	return (
 		<g className="react-flow__connection">
-			<OneMarkerEnd />
+			<OneMarker />
 
-			<ManyMarkerEnd />
+			<ManyMarker />
 
 			<path
 				className="react-flow__edge-path"
