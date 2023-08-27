@@ -3,19 +3,168 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
-export declare type TState = {
-	objectDefinitions: ObjectDefinition[];
-	rightSidebarType:
-		| 'objectDefinitionDetails'
-		| 'objectRelationshipDetails'
-		| 'empty';
-	selectedDefinitionNode: DefinitionNode;
-	selectedObjectRelationship: ObjectRelationship;
+/// <reference types="react" />
+
+import {Edge, Elements, Node} from 'react-flow-renderer';
+import {TYPES} from './ModelBuilderContext/typesEnum';
+declare type TDropDownType =
+	| 'checkbox'
+	| 'contextual'
+	| 'group'
+	| 'item'
+	| 'radio'
+	| 'radiogroup'
+	| 'divider';
+export declare type DropDownItems = {
+	active?: boolean;
+	checked?: boolean;
+	disabled?: boolean;
+	href?: string;
+	items?: Array<IItem>;
+	label?: string;
+	name?: string;
+	onChange?: Function;
+	onClick?: (event: React.MouseEvent<HTMLElement, MouseEvent>) => void;
+	symbolLeft?: string;
+	symbolRight?: string;
+	type?: TDropDownType;
+	value?: string;
 };
-export interface FieldNode extends ObjectField {
+export declare type TAction =
+	| {
+			payload: {
+				newObjectDefinition: ObjectDefinition;
+				selectedFolderName: string;
+			};
+			type: TYPES.ADD_NEW_NODE_TO_FOLDER;
+	  }
+	| {
+			payload: {
+				hiddenFolderNodes: boolean;
+				leftSidebarItem: LeftSidebarItemType;
+			};
+			type: TYPES.BOOK_CHANGE_NODE_VIEW;
+	  }
+	| {
+			payload: {
+				definitionId: number;
+				definitionName: string;
+				hiddenNode: boolean;
+				leftSidebarItem: LeftSidebarItemType;
+			};
+			type: TYPES.CHANGE_NODE_VIEW;
+	  }
+	| {
+			payload: {
+				objectFolders: ObjectFolder[];
+			};
+			type: TYPES.CREATE_MODEL_BUILDER_STRUCTURE;
+	  }
+	| {
+			payload: {
+				currentFolderName: string;
+				deletedNodeName: string;
+			};
+			type: TYPES.DELETE_FOLDER_NODE;
+	  }
+	| {
+			payload: {
+				newElements: any;
+			};
+			type: TYPES.SET_ELEMENTS;
+	  }
+	| {
+			payload: {
+				edges: Edge<ObjectRelationshipEdgeData>[];
+				nodes: Node<ObjectDefinitionNodeData>[];
+				selectedObjectRelationshipId: string;
+			};
+			type: TYPES.SET_SELECTED_EDGE;
+	  }
+	| {
+			payload: {
+				edges: Edge<ObjectRelationshipEdgeData>[];
+				nodes: Node<ObjectDefinitionNodeData>[];
+				selectedObjectDefinitionId: string;
+			};
+			type: TYPES.SET_SELECTED_NODE;
+	  }
+	| {
+			payload: {
+				currentFolderName: string;
+				updatedNode: Partial<ObjectDefinition>;
+			};
+			type: TYPES.UPDATE_FOLDER_NODE;
+	  };
+export declare type TState = {
+	baseResourceURL: string;
+	editObjectDefinitionURL: string;
+	elements: Elements<ObjectDefinitionNodeData | ObjectRelationshipEdgeData>;
+	leftSidebarItems: LeftSidebarItemType[];
+	objectDefinitionPermissionsURL: string;
+	objectDefinitions: ObjectDefinition[];
+	objectFolders: ObjectFolder[];
+	rightSidebarType: RightSidebarType;
+	selectedDefinitionNode: Node<ObjectDefinitionNodeData>;
+	selectedFolderERC: string;
+	selectedObjectRelationship: ObjectRelationship;
+	showChangesSaved: boolean;
+	storages: LabelTypeObject[];
+	viewApiUrl: string;
+};
+export declare type LeftSidebarItemType = {
+	folderName: string;
+	hiddenFolderNodes: boolean;
+	name: string;
+	objectDefinitions?: LeftSidebarDefinitionItemType[];
+	type: 'objectFolder' | 'objectDefinition';
+};
+export declare type LeftSidebarDefinitionItemType = {
+	definitionId: number;
+	definitionName: string;
+	hiddenNode: boolean;
+	name: string;
+	selected: boolean;
+	type: 'objectDefinition';
+};
+export declare type ObjectDefinitionNodeTypes = 'objectDefinition';
+export interface ObjectFieldNode extends Partial<ObjectField> {
+	primaryKey: boolean;
+	required: boolean;
 	selected: boolean;
 }
-export interface DefinitionNode extends ObjectDefinition {
-	hasUpdateObjectDefinitionPermission: boolean;
-	selected: boolean;
+export interface ObjectDefinitionNodeData
+	extends Omit<ObjectDefinition, 'objectFields' | 'label'> {
+	editObjectDefinitionURL: string;
+	hasObjectDefinitionDeleteResourcePermission: boolean;
+	hasObjectDefinitionManagePermissionsResourcePermission: boolean;
+	hasObjectDefinitionUpdateResourcePermission: boolean;
+	hasObjectDefinitionViewResourcePermission: boolean;
+	hasSelfRelationships: boolean;
+	isLinkedNode: boolean;
+	label: string;
+	nodeSelected: boolean;
+	objectDefinitionPermissionsURL: string;
+	objectFields: ObjectFieldNode[];
 }
+export interface ObjectRelationshipEdgeData {
+	defaultLanguageId?: Liferay.Language.Locale;
+	edgeSelected: boolean;
+	label: string;
+	markerEndId: string;
+	markerStartId: string;
+	objectRelationshipId: number;
+	selfRelationships?: ObjectRelationship[];
+	sourceY: number;
+	targetY: number;
+	type: string;
+}
+export declare type nonRelationshipObjectFieldsInfo = {
+	label: LocalizedValue<string>;
+	name: string;
+};
+export declare type RightSidebarType =
+	| 'empty'
+	| 'objectDefinitionDetails'
+	| 'objectRelationshipDetails';
+export {};

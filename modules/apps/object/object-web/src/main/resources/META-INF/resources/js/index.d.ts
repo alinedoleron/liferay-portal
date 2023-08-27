@@ -117,10 +117,23 @@ interface ObjectFieldView extends ObjectField {
 	type?: string;
 }
 
+type DefinitionAction = {
+	href: string;
+	method: string;
+};
+
+type DefinitionActions = {
+	delete: DefinitionAction;
+	get: DefinitionAction;
+	permissions: DefinitionAction;
+	update: DefinitionAction;
+};
+
 interface ObjectDefinition {
 	accountEntryRestricted: boolean;
 	accountEntryRestrictedObjectFieldId: string;
 	accountEntryRestrictedObjectFieldName: string;
+	actions: DefinitionActions;
 	active: boolean;
 	dateCreated: string;
 	dateModified: string;
@@ -139,7 +152,7 @@ interface ObjectDefinition {
 	objectFields: ObjectField[];
 	objectFolderExternalReferenceCode: string;
 	objectLayouts: [];
-	objectRelationships: [];
+	objectRelationships: ObjectRelationship[];
 	objectViews: [];
 	panelCategoryKey: string;
 	parameterRequired?: boolean;
@@ -311,6 +324,17 @@ type ObjectValidationType = {
 	name: string;
 };
 
+interface ObjectFolder {
+	actions: [];
+	dateCreated: string;
+	dateModified: string;
+	definitions?: ObjectDefinition[];
+	externalReferenceCode: string;
+	id: number;
+	label: LocalizedValue<string>;
+	name: string;
+}
+
 interface PickList {
 	actions: Actions;
 	externalReferenceCode: string;
@@ -361,7 +385,7 @@ interface LabelNameObject {
 
 interface LabelTypeObject {
 	label: string;
-	type: string;
+	value: string;
 }
 
 interface NameValueObject {
