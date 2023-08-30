@@ -56,7 +56,10 @@ export function ObjectFolderReducer(state: TState, action: TAction) {
 
 			const linkedDefinition = elements.filter((element) => {
 				if (isEdge(element)) {
-					return element.target === newObjectDefinition.id.toString();
+					return (
+						element.target === newObjectDefinition.id.toString() ||
+						element.source === newObjectDefinition.id.toString()
+					);
 				}
 			});
 
@@ -68,6 +71,8 @@ export function ObjectFolderReducer(state: TState, action: TAction) {
 				if (item.folderName === selectedFolderName) {
 					if (!isLinkedDefinition) {
 						newDefinition = {
+							defaultLanguageId:
+								newObjectDefinition.defaultLanguageId,
 							definitionId: newObjectDefinition.id,
 							definitionName: newObjectDefinition.name,
 							name: getLocalizableLabel(
@@ -355,10 +360,11 @@ export function ObjectFolderReducer(state: TState, action: TAction) {
 				const folderDefinitions = folder.definitions?.map(
 					(definition) => {
 						return {
+							defaultLanguageId: definition.defaultLanguageId,
 							definitionId: definition.id,
 							definitionName: definition.name,
 							hiddenNode: false,
-							name: definition.label,
+							label: definition.label,
 							selected: false,
 							type: definition.linkedDefinition
 								? 'objectLink'
@@ -370,7 +376,7 @@ export function ObjectFolderReducer(state: TState, action: TAction) {
 				return {
 					folderName: folder.name,
 					hiddenFolderNodes: false,
-					name: getLocalizableLabel(
+					label: getLocalizableLabel(
 						defaultLanguageId,
 						folder.label,
 						folder.name

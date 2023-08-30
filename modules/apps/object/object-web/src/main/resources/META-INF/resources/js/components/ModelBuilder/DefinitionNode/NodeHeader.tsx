@@ -10,12 +10,16 @@ import ClayLabel from '@clayui/label';
 import React from 'react';
 
 import './NodeHeader.scss';
+
+import {getLocalizableLabel} from '@liferay/object-js-components-web';
+
 import {DropDownItems} from '../types';
 
 interface NodeHeaderProps {
+	defaultLanguageId: Liferay.Language.Locale;
 	dropDownItems: DropDownItems[];
 	isLinkedNode: boolean;
-	objectDefinitionLabel: string;
+	objectDefinitionLabel: LocalizedValue<string>;
 	status: {
 		code: number;
 		label: string;
@@ -25,6 +29,7 @@ interface NodeHeaderProps {
 }
 
 export default function NodeHeader({
+	defaultLanguageId,
 	dropDownItems,
 	isLinkedNode,
 	objectDefinitionLabel,
@@ -40,7 +45,12 @@ export default function NodeHeader({
 							<ClayIcon className="c-pt-1 text-4" symbol="link" />
 						)}
 
-						<span>{objectDefinitionLabel}</span>
+						<span>
+							{getLocalizableLabel(
+								defaultLanguageId,
+								objectDefinitionLabel
+							)}
+						</span>
 					</div>
 
 					<ClayDropDownWithItems

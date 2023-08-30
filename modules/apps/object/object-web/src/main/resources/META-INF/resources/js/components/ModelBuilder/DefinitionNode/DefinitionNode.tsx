@@ -126,6 +126,7 @@ export function DefinitionNode({
 				}}
 			>
 				<NodeHeader
+					defaultLanguageId={defaultLanguageId}
 					dropDownItems={getDefinitionNodeActions(
 						baseResourceURL,
 						id,

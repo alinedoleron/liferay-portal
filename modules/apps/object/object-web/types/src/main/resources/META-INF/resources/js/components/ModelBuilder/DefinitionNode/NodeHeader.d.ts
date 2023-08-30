@@ -8,9 +8,10 @@
 import './NodeHeader.scss';
 import {DropDownItems} from '../types';
 interface NodeHeaderProps {
+	defaultLanguageId: Liferay.Language.Locale;
 	dropDownItems: DropDownItems[];
 	isLinkedNode: boolean;
-	objectDefinitionLabel: string;
+	objectDefinitionLabel: LocalizedValue<string>;
 	status: {
 		code: number;
 		label: string;
@@ -19,6 +20,7 @@ interface NodeHeaderProps {
 	system: boolean;
 }
 export default function NodeHeader({
+	defaultLanguageId,
 	dropDownItems,
 	isLinkedNode,
 	objectDefinitionLabel,

@@ -126,17 +126,18 @@ export type TState = {
 export type LeftSidebarItemType = {
 	folderName: string;
 	hiddenFolderNodes: boolean;
-	name: string;
+	label: string;
 	objectDefinitions?: LeftSidebarDefinitionItemType[];
 	type: 'objectFolder' | 'objectDefinition';
 };
 
 export type LeftSidebarDefinitionItemType = {
+	defaultLanguageId: Liferay.Language.Locale;
 	definitionId: number;
 	definitionName: string;
 	hiddenNode: boolean;
 	linked?: boolean;
-	name: string;
+	label: LocalizedValue<string>;
 	selected: boolean;
 	type: 'objectDefinition' | 'objectLink';
 };

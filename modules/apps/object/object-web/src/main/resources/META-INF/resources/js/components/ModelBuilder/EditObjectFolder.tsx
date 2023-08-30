@@ -105,11 +105,7 @@ export default function EditObjectFolder({
 									hasObjectDefinitionViewResourcePermission: !!objectDefinition
 										.actions.get,
 									hasSelfRelationships: false,
-									label: getLocalizableLabel(
-										objectDefinition.defaultLanguageId,
-										objectDefinition.label,
-										objectDefinition.name
-									),
+									label: objectDefinition.label,
 									linkedDefinition: isLinked,
 									nodeSelected: false,
 									objectFields: objectDefinition.objectFields.map(

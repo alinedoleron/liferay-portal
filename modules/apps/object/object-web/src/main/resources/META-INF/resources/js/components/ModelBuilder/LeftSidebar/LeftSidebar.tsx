@@ -12,6 +12,7 @@ import {
 	API,
 	CustomVerticalBar,
 	ManagementToolbarSearch,
+	getLocalizableLabel,
 	stringIncludesQuery,
 } from '@liferay/object-js-components-web';
 import classNames from 'classnames';
@@ -71,7 +72,13 @@ export default function LeftSidebar({
 
 			const newObjectDefinitions = sidebarItem.objectDefinitions.filter(
 				(objectDefinition) =>
-					stringIncludesQuery(objectDefinition.name, query)
+					stringIncludesQuery(
+						getLocalizableLabel(
+							objectDefinition.defaultLanguageId,
+							objectDefinition.label
+						),
+						query
+					)
 			);
 
 			return {
@@ -98,12 +105,41 @@ export default function LeftSidebar({
 			`filter=objectFolderExternalReferenceCode eq '${currentFolder?.externalReferenceCode}'`
 		);
 
-		const objectDefinition = folderDefinitions.find(
+		let objectDefinition = folderDefinitions.find(
 			(definition) => definition.id === definitionId
 		) as ObjectDefinitionNodeData;
 
+		if (!objectDefinition) {
+			const folders = leftSidebarItems.filter(
+				(sidebarItem) => sidebarItem.folderName !== currentFolder?.name
+			);
+			const definitionFolder = folders
+				.map((folder) => {
+					if (
+						folder.objectDefinitions?.find(
+							(def) => def.definitionId === definitionId
+						)
+					) {
+						return folder;
+					}
+				})
+				.find((folder) => folder !== undefined);
+
+			const definitionFolderERC = folderResponse.find(
+				(folder) => folder.name === definitionFolder?.folderName
+			)?.externalReferenceCode;
+
+			const folderDefinitions = await API.getObjectDefinitions(
+				`filter=objectFolderExternalReferenceCode eq '${definitionFolderERC}'`
+			);
+
+			objectDefinition = folderDefinitions.find(
+				(definition) => definition.id === definitionId
+			) as ObjectDefinitionNodeData;
+		}
+
 		if (objectDefinition) {
-			const movedObjectDefinition: ObjectDefinitionNodeData = {
+			const movedObjectDefinition = {
 				...objectDefinition,
 				objectFolderExternalReferenceCode:
 					selectedFolder.externalReferenceCode,
@@ -159,6 +195,24 @@ export default function LeftSidebar({
 			(definition) => definition.type === 'objectLink'
 		);
 
+		const updatedSelectedFolder = selectedFolder.objectDefinitions!.map(
+			(definition) => {
+				const objectLinked = linkedDefinitions?.find(
+					(linkedDefinition) =>
+						linkedDefinition.definitionId ===
+						definition.definitionId
+				);
+				if (objectLinked) {
+					return {
+						...definition,
+						linked: true,
+					};
+				}
+
+				return definition;
+			}
+		);
+
 		const newOtherFolders = otherFolders.map((folder) => {
 			const definitions = folder.objectDefinitions?.map((definition) => {
 				const objectLinked = linkedDefinitions?.find(
@@ -184,11 +238,10 @@ export default function LeftSidebar({
 
 		return (
 			<TreeView<LeftSidebarItemType | LeftSidebarDefinitionItemType>
-				items={showActions ? newOtherFolders : [selectedFolder]}
+				items={showActions ? newOtherFolders : updatedSelectedFolder}
 				nestedKey="objectDefinitions"
 				onSelect={(item) => {
 					if (
-						item.type === 'objectDefinition' &&
 						selectedFolder.objectDefinitions?.find(
 							(definition) =>
 								definition.definitionId ===
@@ -238,7 +291,7 @@ export default function LeftSidebar({
 										symbol={TYPES_TO_SYMBOLS[item.type]}
 									/>
 
-									<Text weight="semi-bold">{item.name}</Text>
+									<Text weight="semi-bold">{item.label}</Text>
 								</div>
 
 								{!showActions &&
@@ -263,41 +316,52 @@ export default function LeftSidebar({
 								definitionId,
 								definitionName,
 								hiddenNode,
+								label,
 								linked,
-								name,
 								selected,
 								type,
 							}) => (
 								<TreeView.Item
 									actions={
 										showActions ? (
-											<>
-												<ClayDropDownWithItems
-													items={[
-														{
-															label: Liferay.Language.get(
-																'move-to-current-folder'
-															),
-															onClick: () =>
-																handleMove({
-																	definitionId,
-																	folderName:
-																		item.folderName,
-																}),
-															symbolLeft:
-																'move-folder',
-														},
-													]}
-													trigger={
-														<ClayButton
-															displayType={null}
-															monospaced
-														>
-															<Icon symbol="ellipsis-v" />
-														</ClayButton>
-													}
-												/>
-											</>
+											type === 'objectLink' &&
+											selectedFolder.objectDefinitions?.find(
+												(definition) =>
+													definition.definitionId ===
+													definitionId
+											) ? (
+												<></>
+											) : (
+												<>
+													<ClayDropDownWithItems
+														items={[
+															{
+																label: Liferay.Language.get(
+																	'move-to-current-folder'
+																),
+																onClick: () =>
+																	handleMove({
+																		definitionId,
+																		folderName:
+																			item.folderName,
+																	}),
+																symbolLeft:
+																	'move-folder',
+															},
+														]}
+														trigger={
+															<ClayButton
+																displayType={
+																	null
+																}
+																monospaced
+															>
+																<Icon symbol="ellipsis-v" />
+															</ClayButton>
+														}
+													/>
+												</>
+											)
 										) : (
 											changeNodeViewButton(
 												hiddenNode,
