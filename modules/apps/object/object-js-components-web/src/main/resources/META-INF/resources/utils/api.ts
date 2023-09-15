@@ -24,16 +24,6 @@ interface ErrorDetails extends Error {
 	detail?: string;
 }
 
-interface Folder {
-	actions: [];
-	dateCreated: string;
-	dateModified: string;
-	externalReferenceCode: string;
-	id: number;
-	label: LocalizedValue<string>;
-	name: string;
-}
-
 type NotificationTemplateType = 'email' | 'userNotification';
 
 type RecipientType = 'role' | 'term' | 'user';
@@ -188,10 +178,6 @@ export async function fetchJSON<T>(input: RequestInfo, init?: RequestInit) {
 	return (await result.json()) as T;
 }
 
-export async function getAllFolders() {
-	return await getList<ObjectFolder>('/o/object-admin/v1.0/object-folders');
-}
-
 export async function getAllObjectDefinitions() {
 	return await getList<ObjectDefinition>(
 		'/o/object-admin/v1.0/object-definitions?page=-1'
@@ -199,20 +185,9 @@ export async function getAllObjectDefinitions() {
 }
 
 export async function getAllObjectFolders() {
-	return await getList<Folder>(
+	return await getList<ObjectFolder>(
 		'/o/object-admin/v1.0/object-folders?pageSize=-1'
 	);
-}
-
-export async function getFolderByERC(folderERC: string) {
-	const folderResponse = await fetch(
-		`/o/object-admin/v1.0/object-folders/by-external-reference-code/${folderERC}`,
-		{method: 'GET'}
-	);
-
-	const folder = (await folderResponse.json()) as ObjectFolder;
-
-	return folder;
 }
 
 export async function getList<T>(url: string) {
@@ -291,6 +266,17 @@ export async function getObjectFieldsById(objectDefinitionId: number) {
 	);
 }
 
+export async function getObjectFolderByERC(folderERC: string) {
+	const folderResponse = await fetch(
+		`/o/object-admin/v1.0/object-folders/by-external-reference-code/${folderERC}`,
+		{method: 'GET'}
+	);
+
+	const folder = (await folderResponse.json()) as ObjectFolder;
+
+	return folder;
+}
+
 export async function getObjectRelationshipsByExternalReferenceCode(
 	externalReferenceCode: string
 ) {
@@ -353,6 +339,17 @@ export async function putObjectDefinitionByExternalReferenceCode(
 		`/o/object-admin/v1.0/object-definitions/by-external-reference-code/${values.externalReferenceCode}`,
 		{
 			body: JSON.stringify(values),
+			headers,
+			method: 'PUT',
+		}
+	);
+}
+
+export async function putObjectFolderByERC(folder: Partial<ObjectFolder>) {
+	return await fetch(
+		`/o/object-admin/v1.0/object-folders/by-external-reference-code/${folder.externalReferenceCode}`,
+		{
+			body: JSON.stringify(folder),
 			headers,
 			method: 'PUT',
 		}
@@ -447,7 +444,7 @@ export async function updatePickListItem({
 export async function updateRelationship({
 	objectRelationshipId,
 	...others
-}: ObjectRelationship) {
+}: Partial<ObjectRelationship>) {
 	return await save({
 		item: others,
 		url: `/o/object-admin/v1.0/object-relationships/${objectRelationshipId}`,

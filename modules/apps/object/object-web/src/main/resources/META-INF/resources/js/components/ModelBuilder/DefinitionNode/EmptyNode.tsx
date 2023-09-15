@@ -12,7 +12,7 @@ import './DefinitionNode.scss';
 import './EmptyNode.scss';
 
 interface EmptyNodeProps {
-	setShowModal: (value: boolean) => void;
+	setShowModal: (value: React.SetStateAction<ModelBuilderModals>) => void;
 }
 
 export function EmptyNode({data: {setShowModal}}: NodeProps<EmptyNodeProps>) {
@@ -33,7 +33,12 @@ export function EmptyNode({data: {setShowModal}}: NodeProps<EmptyNodeProps>) {
 
 				<ClayButton
 					displayType="primary"
-					onClick={() => setShowModal(true)}
+					onClick={() =>
+						setShowModal((previousState: ModelBuilderModals) => ({
+							...previousState,
+							addObjectDefinition: true,
+						}))
+					}
 				>
 					<span>{Liferay.Language.get('create-new-object')}</span>
 				</ClayButton>

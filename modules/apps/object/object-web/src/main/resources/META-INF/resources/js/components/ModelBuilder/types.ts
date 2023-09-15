@@ -36,44 +36,62 @@ export type TAction =
 	| {
 			payload: {
 				newObjectDefinition: ObjectDefinition;
-				selectedFolderName: string;
+				nodes: Node<ObjectDefinitionNodeData>[];
+				selectedObjectFolderName: string;
 			};
-			type: TYPES.ADD_NEW_NODE_TO_FOLDER;
+			type: TYPES.ADD_NEW_NODE_TO_OBJECT_FOLDER;
 	  }
 	| {
 			payload: {
-				hiddenFolderNodes: boolean;
+				edges: Edge<ObjectRelationshipEdgeData>[];
+				newObjectField: ObjectField;
+				nodes: Node<ObjectDefinitionNodeData>[];
+				objectDefinitionExternalReferenceCode: string;
+			};
+			type: TYPES.ADD_NEW_OBJECT_FIELD;
+	  }
+	| {
+			payload: {
+				edges: Edge<ObjectRelationshipEdgeData>[];
+				hiddenObjectFolderNodes: boolean;
 				leftSidebarItem: LeftSidebarItemType;
+				nodes: Node<ObjectDefinitionNodeData>[];
 			};
 			type: TYPES.BULK_CHANGE_NODE_VIEW;
 	  }
 	| {
 			payload: {
-				definitionId: number;
-				definitionName: string;
+				edges: Edge<ObjectRelationshipEdgeData>[];
 				hiddenNode: boolean;
 				leftSidebarItem: LeftSidebarItemType;
+				nodes: Node<ObjectDefinitionNodeData>[];
+				objectDefinitionId: number;
+				objectDefinitionName: string;
 			};
 			type: TYPES.CHANGE_NODE_VIEW;
 	  }
 	| {
 			payload: {
 				objectFolders: ObjectFolder[];
+				selectedObjectFolder: ObjectFolder;
 			};
-			type: TYPES.CREATE_MODEL_BUILDER_STRUCTURE;
+			type: TYPES.UPDATE_MODEL_BUILDER_STRUCTURE;
 	  }
 	| {
 			payload: {
-				currentFolderName: string;
-				deletedNodeName: string;
-			};
-			type: TYPES.DELETE_FOLDER_NODE;
-	  }
-	| {
-			payload: {
-				newElements: any;
+				newElements: Elements<
+					ObjectDefinitionNodeData | ObjectRelationshipEdgeData
+				>;
 			};
 			type: TYPES.SET_ELEMENTS;
+	  }
+	| {
+			payload: {
+				edges: Edge<ObjectRelationshipEdgeData>[];
+				nodes: Node<ObjectDefinitionNodeData>[];
+				selectedObjectRelationshipId: string;
+			};
+			type: TYPES.SET_SELECTED_EDGE;
 	  }
 	| {
 			payload: {
@@ -85,10 +103,16 @@ export type TAction =
 	  }
 	| {
 			payload: {
-				currentFolderName: string;
+				updatedShowChangesSaved: boolean;
+			};
+			type: TYPES.SET_SHOW_CHANGES_SAVED;
+	  }
+	| {
+			payload: {
+				currentObjectFolderName: string;
 				updatedNode: Partial<ObjectDefinition>;
 			};
-			type: TYPES.UPDATE_FOLDER_NODE;
+			type: TYPES.UPDATE_OBJECT_FOLDER_NODE;
 	  };
 
 export type TState = {
@@ -100,8 +124,8 @@ export type TState = {
 	objectDefinitions: ObjectDefinition[];
 	objectFolders: ObjectFolder[];
 	rightSidebarType: RightSidebarType;
-	selectedDefinitionNode: Node<ObjectDefinitionNodeData>;
-	selectedFolderERC: string;
+	selectedObjectDefinitionNode: Node<ObjectDefinitionNodeData> | null;
+	selectedObjectFolder: ObjectFolder;
 	selectedObjectRelationship: ObjectRelationship;
 	showChangesSaved: boolean;
 	storages: LabelValueObject[];
@@ -109,58 +133,34 @@ export type TState = {
 };
 
 export type LeftSidebarItemType = {
-	folderName: string;
-	hiddenFolderNodes: boolean;
+	hiddenObjectFolderNodes: boolean;
+	id?: string;
 	name: string;
-	objectDefinitions?: LeftSidebarDefinitionItemType[];
+	objectDefinitions?: LeftSidebarObjectDefinitionItemType[];
+	objectFolderName: string;
 	type: 'objectFolder' | 'objectDefinition';
 };
 
-export type LeftSidebarDefinitionItemType = {
-	definitionId: number;
-	definitionName: string;
+export type LeftSidebarObjectDefinitionItemType = {
 	hiddenNode: boolean;
+	id: number;
+	label: string;
+	linked?: boolean;
 	name: string;
 	selected: boolean;
-	type: 'objectDefinition';
+	type: 'objectDefinition' | 'objectLink';
 };
 
 export type ObjectDefinitionNodeTypes = 'objectDefinition';
 
-export interface ObjectFieldNode extends Partial<ObjectField> {
-	primaryKey: boolean;
-	required: boolean;
-	selected: boolean;
-}
-
-export interface ObjectDefinitionNodeData
-	extends Partial<Omit<ObjectDefinition, 'objectFields' | 'label'>> {
-	defaultLanguageId: Liferay.Language.Locale;
-	editObjectDefinitionURL: string;
-	hasObjectDefinitionDeleteResourcePermission: boolean;
-	hasObjectDefinitionManagePermissionsResourcePermission: boolean;
-	hasObjectDefinitionUpdateResourcePermission: boolean;
-	hasObjectDefinitionViewResourcePermission: boolean;
-	id: number;
-	isLinkedNode: boolean;
-	label: string;
-	name: string;
-	nodeSelected: boolean;
-	objectDefinitionPermissionsURL: string;
-	objectFields: ObjectFieldNode[];
-	objectRelationships: ObjectRelationship[];
-	status: {
-		code: number;
-		label: string;
-		label_i18n: string;
-	};
-	system: boolean;
-}
-
 export interface ObjectRelationshipEdgeData {
+	defaultLanguageId?: Liferay.Language.Locale;
+	edgeSelected: boolean;
 	label: string;
 	markerEndId: string;
 	markerStartId: string;
+	objectRelationshipId: number;
+	selfRelationships?: ObjectRelationship[];
 	sourceY: number;
 	targetY: number;
 	type: string;

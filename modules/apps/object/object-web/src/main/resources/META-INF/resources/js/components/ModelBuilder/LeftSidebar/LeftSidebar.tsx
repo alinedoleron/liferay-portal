@@ -7,6 +7,7 @@ import ClayButton, {ClayButtonWithIcon} from '@clayui/button';
 import {Text, TreeView} from '@clayui/core';
 import {ClayDropDownWithItems} from '@clayui/drop-down';
 import Icon from '@clayui/icon';
+import ClayLoadingIndicator from '@clayui/loading-indicator';
 import ClayPanel from '@clayui/panel';
 import {
 	API,
@@ -18,34 +19,46 @@ import {
 import classNames from 'classnames';
 import {openToast, sub} from 'frontend-js-web';
 import React, {useMemo, useState} from 'react';
-import {useStore, useZoomPanHelper} from 'react-flow-renderer';
+import {Node, useStoreState, useZoomPanHelper} from 'react-flow-renderer';
 
 import './LeftSidebar.scss';
-import {useFolderContext} from '../ModelBuilderContext/objectFolderContext';
+import {getUpdateModelBuilderStructurePayload} from '../../ViewObjectDefinitions/objectDefinitionUtil';
+import {useObjectFolderContext} from '../ModelBuilderContext/objectFolderContext';
 import {TYPES} from '../ModelBuilderContext/typesEnum';
-import {LeftSidebarDefinitionItemType, LeftSidebarItemType} from '../types';
+import {
+	LeftSidebarItemType,
+	LeftSidebarObjectDefinitionItemType,
+} from '../types';
+import {LeftSidebarEmptySearch} from './LeftSidebarEmptySearch';
 
 const TYPES_TO_SYMBOLS = {
 	objectDefinition: 'catalog',
 	objectFolder: 'folder',
+	objectLink: 'link',
 };
 
 interface LeftSidebarProps {
-	selectedFolderName: string;
-	setShowModal: (value: boolean) => void;
+	selectedObjectFolderName: string;
+	setShowModal: (value: React.SetStateAction<ModelBuilderModals>) => void;
 }
 
 export default function LeftSidebar({
-	selectedFolderName,
+	selectedObjectFolderName,
 	setShowModal,
 }: LeftSidebarProps) {
+	const [emptySearch, setEmptySearch] = useState(false);
+	const [expandedKeys, setExpandedKeys] = useState<Set<React.Key>>(
+		new Set(['uncategorized'])
+	);
+	const [loading, setLoading] = useState(true);
 	const [query, setQuery] = useState('');
 	const [
-		{leftSidebarItems, selectedFolderERC},
+		{leftSidebarItems, selectedObjectFolder},
 		dispatch,
-	] = useFolderContext();
+	] = useObjectFolderContext();
 	const {setCenter} = useZoomPanHelper();
-	const store = useStore();
+
+	const {edges, nodes} = useStoreState((state) => state);
 
 	const changeNodeViewButton = (hiddenNode: boolean, dispatch: Function) => (
 		<ClayButtonWithIcon
@@ -64,241 +77,333 @@ export default function LeftSidebar({
 	);
 
 	const filteredItems = useMemo(() => {
-		return leftSidebarItems.map((sidebarItem) => {
+		setEmptySearch(false);
+
+		const keys = [] as string[];
+
+		const newLeftSidebarItems = leftSidebarItems.map((sidebarItem) => {
 			if (!sidebarItem.objectDefinitions) {
 				return sidebarItem;
 			}
 
 			const newObjectDefinitions = sidebarItem.objectDefinitions.filter(
 				(objectDefinition) =>
-					stringIncludesQuery(objectDefinition.name, query)
+					stringIncludesQuery(objectDefinition.label, query)
 			);
+
+			keys.push(sidebarItem.name);
 
 			return {
 				...sidebarItem,
+				id: sidebarItem.name,
 				objectDefinitions: newObjectDefinitions,
 			};
 		});
+
+		setExpandedKeys(new Set(keys));
+
+		return newLeftSidebarItems;
 	}, [query, leftSidebarItems]);
 
 	const handleMove = async ({
-		definitionName,
-		folderName,
+		objectDefinitionId,
+		objectFolderName,
 	}: {
-		definitionName: string;
-		folderName: string;
+		objectDefinitionId: number;
+		objectFolderName: string;
 	}) => {
-		const folderResponse = await API.getAllFolders();
+		const objectFoldersResponse = await API.getAllObjectFolders();
 
-		const currentFolder = folderResponse.find(
-			(folder) => folder.name === folderName
+		const currentObjectFolder = objectFoldersResponse.find(
+			(objectFolder) => objectFolder.name === objectFolderName
 		);
 
-		const folderDefinitions = await API.getObjectDefinitions(
-			`filter=objectFolderExternalReferenceCode eq '${currentFolder?.externalReferenceCode}'`
+		const objectDefinitionsFilteredByObjectFolder = await API.getObjectDefinitions(
+			`filter=objectFolderExternalReferenceCode eq '${currentObjectFolder?.externalReferenceCode}'`
 		);
 
-		const objectDefinition = folderDefinitions.find(
-			(definition) => definition.name === definitionName
-		) as ObjectDefinition;
+		const objectDefinition = objectDefinitionsFilteredByObjectFolder.find(
+			(objectDefinition) => objectDefinition.id === objectDefinitionId
+		) as ObjectDefinitionNodeData;
 
-		const movedObjectDefinition: ObjectDefinition = {
-			...objectDefinition,
-			objectFolderExternalReferenceCode: selectedFolderERC,
-		};
+		if (objectDefinition) {
+			const movedObjectDefinition: ObjectDefinitionNodeData = {
+				...objectDefinition,
+				objectFolderExternalReferenceCode:
+					selectedObjectFolder.externalReferenceCode,
+			};
 
-		try {
-			const newObjectDefinition = (await API.save({
-				item: movedObjectDefinition,
-				method: 'PATCH',
-				returnValue: true,
-				url: `/o/object-admin/v1.0/object-definitions/${objectDefinition?.id}`,
-			})) as ObjectDefinition;
+			try {
+				(await API.save({
+					item: movedObjectDefinition,
+					method: 'PATCH',
+					returnValue: true,
+					url: `/o/object-admin/v1.0/object-definitions/${objectDefinition?.id}`,
+				})) as ObjectDefinition;
 
-			dispatch({
-				payload: {
-					newObjectDefinition,
-					selectedFolderName,
-				},
-				type: TYPES.ADD_NEW_NODE_TO_FOLDER,
-			});
+				setTimeout(
+					async () => {
+						const payload = await getUpdateModelBuilderStructurePayload(
+							selectedObjectFolderName
+						);
 
-			dispatch({
-				payload: {
-					currentFolderName: currentFolder!.name,
-					deletedNodeName: newObjectDefinition.name,
-				},
-				type: TYPES.DELETE_FOLDER_NODE,
-			});
+						dispatch({
+							payload,
+							type: TYPES.UPDATE_MODEL_BUILDER_STRUCTURE,
+						});
+					},
 
-			openToast({
-				message: sub(
-					Liferay.Language.get('x-was-moved-successfully'),
-					`<strong>${getLocalizableLabel(
-						movedObjectDefinition.defaultLanguageId,
-						movedObjectDefinition.label,
-						movedObjectDefinition.name
-					)}</strong>`
-				),
-				type: 'success',
-			});
+					200
+				);
+
+				openToast({
+					message: sub(
+						Liferay.Language.get('x-was-moved-successfully'),
+						`<strong>${getLocalizableLabel(
+							objectDefinition.defaultLanguageId,
+							movedObjectDefinition.label
+						)}</strong>`
+					),
+					type: 'success',
+				});
+			}
+			catch (error) {}
 		}
-		catch (error) {}
 	};
 
 	const TreeViewComponent = ({showActions}: {showActions?: boolean}) => {
-		const otherFolders = filteredItems.filter(
-			(item) => item.folderName !== selectedFolderName
+		const otherObjectFolders = filteredItems.filter(
+			(item) =>
+				item.objectFolderName !== selectedObjectFolderName &&
+				item.objectDefinitions?.length !== 0
 		);
 
-		const selectedFolder = filteredItems.find(
-			(item) => item.folderName === selectedFolderName
+		otherObjectFolders.sort((a, b) =>
+			a.objectFolderName > b.objectFolderName
+				? 1
+				: b.objectFolderName > a.objectFolderName
+				? -1
+				: 0
+		);
+
+		const selectedObjectFolder = filteredItems.find(
+			(item) => item.objectFolderName === selectedObjectFolderName
 		) as LeftSidebarItemType;
 
-		return (
-			<TreeView<LeftSidebarItemType | LeftSidebarDefinitionItemType>
-				items={showActions ? otherFolders : [selectedFolder]}
-				nestedKey="objectDefinitions"
-				onSelect={(item) => {
-					if (
-						item.type === 'objectDefinition' &&
-						selectedFolder.objectDefinitions?.find(
-							(definition) =>
-								definition.definitionId ===
-								(item as LeftSidebarDefinitionItemType)
-									.definitionId
-						)
-					) {
-						const {edges, nodes} = store.getState();
+		const linkedObjectDefinitions = selectedObjectFolder.objectDefinitions?.filter(
+			(objectDefinition) => objectDefinition.type === 'objectLink'
+		);
 
-						dispatch({
-							payload: {
-								edges,
-								nodes,
-								selectedObjectDefinitionId: (item as LeftSidebarDefinitionItemType).definitionId.toString(),
-							},
-							type: TYPES.SET_SELECTED_NODE,
-						});
-
-						const selectedNode = nodes.find(
-							(definitionNode) =>
-								definitionNode.data.name ===
-								(item as LeftSidebarDefinitionItemType)
-									.definitionName
-						);
-
-						if (selectedNode) {
-							const x =
-								selectedNode.__rf.position.x +
-								selectedNode.__rf.width / 2;
-							const y =
-								selectedNode.__rf.position.y +
-								selectedNode.__rf.height / 2;
-							setCenter(x, y, 1.2);
-						}
+		const newOtherObjectFolders = otherObjectFolders.map((objectFolder) => {
+			const objectDefinitions = objectFolder.objectDefinitions?.map(
+				(objectDefinition) => {
+					const linkedObjectDefinition = linkedObjectDefinitions?.find(
+						(linkedObjectDefinition) =>
+							linkedObjectDefinition.id === objectDefinition.id
+					);
+					if (linkedObjectDefinition) {
+						return {
+							...objectDefinition,
+							linked: true,
+						};
 					}
-				}}
-				showExpanderOnHover={false}
-			>
-				{(item: LeftSidebarItemType) => (
-					<TreeView.Item>
-						<TreeView.ItemStack>
-							<div className="lfr-objects__model-builder-left-sidebar-current-folder-container">
-								<div className="lfr-objects__model-builder-left-sidebar-current-folder-content">
-									<Icon
-										symbol={TYPES_TO_SYMBOLS[item.type]}
-									/>
 
-									<Text weight="semi-bold">{item.name}</Text>
-								</div>
+					return objectDefinition;
+				}
+			);
 
-								{!showActions &&
-									changeNodeViewButton(
-										item.hiddenFolderNodes,
-										() =>
-											dispatch({
-												payload: {
-													hiddenFolderNodes:
-														item.hiddenFolderNodes,
-													leftSidebarItem: item,
-												},
-												type:
-													TYPES.BULK_CHANGE_NODE_VIEW,
-											})
-									)}
-							</div>
-						</TreeView.ItemStack>
+			return {
+				...objectFolder,
+				objectDefinitions,
+			};
+		});
 
-						<TreeView.Group items={item.objectDefinitions}>
-							{({
-								definitionId,
-								definitionName,
-								hiddenNode,
-								name,
-								selected,
-								type,
-							}) => (
-								<TreeView.Item
-									actions={
-										showActions ? (
-											<>
-												<ClayDropDownWithItems
-													items={[
-														{
-															label: Liferay.Language.get(
-																'move-to-current-folder'
-															),
-															onClick: () =>
-																handleMove({
-																	definitionName,
-																	folderName:
-																		item.folderName,
-																}),
-															symbolLeft:
-																'move-folder',
-														},
-													]}
-													trigger={
-														<ClayButton
-															displayType={null}
-															monospaced
-														>
-															<Icon symbol="ellipsis-v" />
-														</ClayButton>
-													}
-												/>
-											</>
-										) : (
+		setLoading(false);
+
+		setEmptySearch(
+			!newOtherObjectFolders.length &&
+				selectedObjectFolder.objectDefinitions?.length === 0
+		);
+
+		return (
+			<>
+				{loading ? (
+					<ClayLoadingIndicator displayType="secondary" size="sm" />
+				) : (
+					<TreeView<
+						| LeftSidebarItemType
+						| LeftSidebarObjectDefinitionItemType
+					>
+						expandedKeys={expandedKeys}
+						items={
+							showActions
+								? newOtherObjectFolders
+								: [selectedObjectFolder]
+						}
+						nestedKey="objectDefinitions"
+						onExpandedChange={setExpandedKeys}
+						onSelect={(item) => {
+							if (
+								!showActions &&
+								selectedObjectFolder.objectDefinitions?.find(
+									(objectDefinition) =>
+										objectDefinition.id ===
+										(item as LeftSidebarObjectDefinitionItemType)
+											.id
+								)
+							) {
+								dispatch({
+									payload: {
+										edges,
+										nodes,
+										selectedObjectDefinitionId: (item as LeftSidebarObjectDefinitionItemType).id.toString(),
+									},
+									type: TYPES.SET_SELECTED_NODE,
+								});
+
+								const selectedNode = (nodes as Node<
+									ObjectDefinitionNodeData
+								>[]).find(
+									(definitionNode) =>
+										definitionNode.data?.name ===
+										(item as LeftSidebarObjectDefinitionItemType)
+											.name
+								);
+
+								if (selectedNode) {
+									const x =
+										selectedNode.__rf.position.x +
+										selectedNode.__rf.width / 2;
+									const y =
+										selectedNode.__rf.position.y +
+										selectedNode.__rf.height / 2;
+									setCenter(x, y, 1.2);
+								}
+							}
+						}}
+						showExpanderOnHover={false}
+					>
+						{(item: LeftSidebarItemType) => (
+							<TreeView.Item>
+								<TreeView.ItemStack>
+									<div className="lfr-objects__model-builder-left-sidebar-current-folder-container">
+										<div className="lfr-objects__model-builder-left-sidebar-current-folder-content">
+											<Icon
+												symbol={
+													TYPES_TO_SYMBOLS[item.type]
+												}
+											/>
+
+											<Text weight="semi-bold">
+												{item.name}
+											</Text>
+										</div>
+
+										{!showActions &&
 											changeNodeViewButton(
-												hiddenNode,
+												item.hiddenObjectFolderNodes,
 												() =>
 													dispatch({
 														payload: {
-															definitionId,
-															definitionName,
-															hiddenNode,
+															edges,
+															hiddenObjectFolderNodes:
+																item.hiddenObjectFolderNodes,
 															leftSidebarItem: item,
+															nodes,
 														},
 														type:
-															TYPES.CHANGE_NODE_VIEW,
+															TYPES.BULK_CHANGE_NODE_VIEW,
 													})
-											)
-										)
-									}
-									active={selected}
-									className={classNames({
-										'lfr-objects__model-builder-left-sidebar-item': selected,
-									})}
-								>
-									<Icon symbol={TYPES_TO_SYMBOLS[type]} />
+											)}
+									</div>
+								</TreeView.ItemStack>
 
-									{name}
-								</TreeView.Item>
-							)}
-						</TreeView.Group>
-					</TreeView.Item>
+								<TreeView.Group items={item.objectDefinitions}>
+									{({
+										hiddenNode,
+										id,
+										label,
+										linked,
+										name,
+										selected,
+										type,
+									}) => (
+										<TreeView.Item
+											actions={
+												showActions ? (
+													type === 'objectLink' ? (
+														<></>
+													) : (
+														<>
+															<ClayDropDownWithItems
+																items={[
+																	{
+																		label: Liferay.Language.get(
+																			'move-to-current-folder'
+																		),
+																		onClick: () =>
+																			handleMove(
+																				{
+																					objectDefinitionId: id,
+																					objectFolderName:
+																						item.objectFolderName,
+																				}
+																			),
+																		symbolLeft:
+																			'move-folder',
+																	},
+																]}
+																trigger={
+																	<ClayButton
+																		displayType={
+																			null
+																		}
+																		monospaced
+																	>
+																		<Icon symbol="ellipsis-v" />
+																	</ClayButton>
+																}
+															/>
+														</>
+													)
+												) : (
+													changeNodeViewButton(
+														hiddenNode,
+														() =>
+															dispatch({
+																payload: {
+																	edges,
+																	hiddenNode,
+																	leftSidebarItem: item,
+																	nodes,
+																	objectDefinitionId: id,
+																	objectDefinitionName: name,
+																},
+																type:
+																	TYPES.CHANGE_NODE_VIEW,
+															})
+													)
+												)
+											}
+											active={selected}
+											className={classNames({
+												'lfr-objects__model-builder-left-sidebar-item': selected,
+												'lfr-objects__model-builder-left-sidebar-item-linked': linked,
+											})}
+										>
+											<Icon
+												symbol={TYPES_TO_SYMBOLS[type]}
+											/>
+
+											{label}
+										</TreeView.Item>
+									)}
+								</TreeView.Group>
+							</TreeView.Item>
+						)}
+					</TreeView>
 				)}
-			</TreeView>
+			</>
 		);
 	};
 
@@ -318,7 +423,12 @@ export default function LeftSidebar({
 			<div className="lfr-objects__model-builder-left-sidebar">
 				<ClayButton
 					className="lfr-objects__model-builder-left-sidebar-body-create-new-object-button"
-					onClick={() => setShowModal(true)}
+					onClick={() =>
+						setShowModal((previousState: ModelBuilderModals) => ({
+							...previousState,
+							addObjectDefinition: true,
+						}))
+					}
 				>
 					{Liferay.Language.get('create-new-object')}
 				</ClayButton>
@@ -328,24 +438,30 @@ export default function LeftSidebar({
 					setQuery={(searchTerm) => setQuery(searchTerm)}
 				/>
 
-				{!!leftSidebarItems.length && (
-					<>
-						<TreeViewComponent></TreeViewComponent>
-						<ClayPanel
-							className="lfr-objects__model-builder-left-sidebar-body-panel"
-							collapsable
-							defaultExpanded
-							displayTitle={Liferay.Language.get('other-folders')}
-							displayType="unstyled"
-							showCollapseIcon={true}
-						>
-							<ClayPanel.Body>
-								<TreeViewComponent
-									showActions
-								></TreeViewComponent>
-							</ClayPanel.Body>
-						</ClayPanel>
-					</>
+				{emptySearch ? (
+					<LeftSidebarEmptySearch />
+				) : (
+					!!leftSidebarItems.length && (
+						<>
+							<TreeViewComponent></TreeViewComponent>
+							<ClayPanel
+								className="lfr-objects__model-builder-left-sidebar-body-panel"
+								collapsable
+								defaultExpanded
+								displayTitle={Liferay.Language.get(
+									'other-folders'
+								)}
+								displayType="unstyled"
+								showCollapseIcon={true}
+							>
+								<ClayPanel.Body>
+									<TreeViewComponent
+										showActions
+									></TreeViewComponent>
+								</ClayPanel.Body>
+							</ClayPanel>
+						</>
+					)
 				)}
 			</div>
 		</CustomVerticalBar>

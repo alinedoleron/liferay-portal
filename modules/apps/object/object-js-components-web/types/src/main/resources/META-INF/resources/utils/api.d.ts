@@ -13,15 +13,6 @@ interface Actions {
 	permissions: HTTPMethod;
 	update: HTTPMethod;
 }
-interface Folder {
-	actions: [];
-	dateCreated: string;
-	dateModified: string;
-	externalReferenceCode: string;
-	id: number;
-	label: LocalizedValue<string>;
-	name: string;
-}
 declare type NotificationTemplateType = 'email' | 'userNotification';
 declare type RecipientType = 'role' | 'term' | 'user';
 declare type Recipient = {
@@ -116,12 +107,8 @@ export declare function fetchJSON<T>(
 	input: RequestInfo,
 	init?: RequestInit
 ): Promise<T>;
-export declare function getAllFolders(): Promise<ObjectFolder[]>;
 export declare function getAllObjectDefinitions(): Promise<ObjectDefinition[]>;
-export declare function getAllObjectFolders(): Promise<Folder[]>;
-export declare function getFolderByERC(
-	folderERC: string
-): Promise<ObjectFolder>;
+export declare function getAllObjectFolders(): Promise<ObjectFolder[]>;
 export declare function getList<T>(url: string): Promise<T[]>;
 export declare function getNotificationTemplateByExternalReferenceCode(
 	notificationTemplateExternalReferenceCode: string
@@ -150,6 +137,9 @@ export declare function getObjectFieldsByExternalReferenceCode(
 export declare function getObjectFieldsById(
 	objectDefinitionId: number
 ): Promise<ObjectField[]>;
+export declare function getObjectFolderByERC(
+	folderERC: string
+): Promise<ObjectFolder>;
 export declare function getObjectRelationshipsByExternalReferenceCode(
 	externalReferenceCode: string
 ): Promise<ObjectRelationship[]>;
@@ -172,6 +162,9 @@ export declare function publishObjectDefinitionById(
 ): Promise<Response>;
 export declare function putObjectDefinitionByExternalReferenceCode(
 	values: Partial<ObjectDefinition>
+): Promise<Response>;
+export declare function putObjectFolderByERC(
+	folder: Partial<ObjectFolder>
 ): Promise<Response>;
 export declare function save({
 	item,
@@ -198,5 +191,5 @@ export declare function updatePickListItem({
 export declare function updateRelationship({
 	objectRelationshipId,
 	...others
-}: ObjectRelationship): Promise<any>;
+}: Partial<ObjectRelationship>): Promise<any>;
 export {};

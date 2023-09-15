@@ -37,6 +37,31 @@ interface LabelNameObject {
 	name: string;
 }
 
+interface ViewObjectDefinitionsModals {
+	addObjectDefinition: boolean;
+	addObjectField: boolean;
+	addObjectFolder: boolean;
+	bindToRootObjectDefinition: boolean;
+	deleteObjectDefinition: boolean;
+	deleteObjectFolder: boolean;
+	deletionNotAllowed: boolean;
+	editObjectFolder: boolean;
+	moveObjectDefinition: boolean;
+	unbindFromRootObjectDefinition: boolean;
+}
+
+interface ModelBuilderModals
+	extends Omit<
+		ViewObjectDefinitionsModals,
+		| 'bindToRootObjectDefinition'
+		| 'deletionNotAllowed'
+		| 'unbindFromRootObjectDefinition'
+	> {
+	addObjectRelationship: boolean;
+	editObjectDefinitionERC: boolean;
+	redirectEditObjectDefinition: boolean;
+}
+
 interface NameValueObject {
 	name: string;
 	value: string;
@@ -310,15 +335,23 @@ interface ObjectFieldView extends ObjectField {
 	type?: string;
 }
 
+interface ObjectFolderItem {
+	linkedObjectDefinition: boolean;
+	objectDefinitionExternalReferenceCode: string;
+	positionX: number;
+	positionY: number;
+}
+
 interface ObjectFolder {
-	actions: {};
+	actions: Actions;
 	dateCreated: string;
 	dateModified: string;
-	definitions?: ObjectDefinition[];
 	externalReferenceCode: string;
 	id: number;
 	label: LocalizedValue<string>;
 	name: string;
+	objectDefinitions?: ObjectDefinitionNodeData[];
+	objectFolderItems: ObjectFolderItem[];
 }
 
 interface ObjectState {
@@ -341,6 +374,24 @@ interface ObjectValidation {
 	}[];
 	outputType?: string;
 	script: string;
+}
+
+interface ObjectFieldNode extends Partial<ObjectField> {
+	primaryKey: boolean;
+	required: boolean;
+	selected: boolean;
+}
+
+interface ObjectDefinitionNodeData
+	extends Omit<ObjectDefinition, 'objectFields'> {
+	hasObjectDefinitionDeleteResourcePermission: boolean;
+	hasObjectDefinitionManagePermissionsResourcePermission: boolean;
+	hasObjectDefinitionUpdateResourcePermission: boolean;
+	hasObjectDefinitionViewResourcePermission: boolean;
+	hasSelfRelationships: boolean;
+	linked: boolean;
+	nodeSelected: boolean;
+	objectFields: ObjectFieldNode[];
 }
 
 interface PickListItem {

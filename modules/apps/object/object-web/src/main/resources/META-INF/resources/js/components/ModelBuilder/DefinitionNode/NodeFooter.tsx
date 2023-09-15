@@ -7,59 +7,88 @@ import ClayButton from '@clayui/button';
 import DropDown from '@clayui/drop-down';
 import ClayIcon from '@clayui/icon';
 import {sub} from 'frontend-js-web';
-import React from 'react';
+import React, {SetStateAction} from 'react';
 
 import './NodeFooter.scss';
 
 interface NodeFooterProps {
+	isLinkedObjectDefinition: boolean;
 	setShowAllFields: (value: boolean) => void;
+	setShowModal: (value: SetStateAction<Partial<ModelBuilderModals>>) => void;
 	showAllFields: boolean;
 }
 
 export default function NodeFooter({
+	isLinkedObjectDefinition,
 	setShowAllFields,
+	setShowModal,
 	showAllFields,
 }: NodeFooterProps) {
 	return (
 		<>
 			<div className="lfr-objects__model-builder-node-button-container">
-				<DropDown
-					alignmentPosition={4}
-					trigger={
-						<ClayButton displayType="secondary">
-							<span>
+				{!isLinkedObjectDefinition && (
+					<DropDown
+						alignmentPosition={4}
+						trigger={
+							<ClayButton
+								displayType="secondary"
+								onClick={(event) => event.stopPropagation()}
+							>
+								<span>
+									{sub(
+										Liferay.Language.get('x-or-x'),
+										Liferay.Language.get('add-field'),
+										Liferay.Language.get('relationship')
+									)}
+								</span>
+							</ClayButton>
+						}
+					>
+						<DropDown.ItemList>
+							<DropDown.Item
+								onClick={() =>
+									setShowModal((prevState) => ({
+										...prevState,
+										addObjectField: true,
+									}))
+								}
+							>
+								<ClayIcon
+									className="c-mr-3 text-4"
+									symbol="custom-field"
+								/>
+
+								{Liferay.Language.get('add-field')}
+							</DropDown.Item>
+
+							<DropDown.Item
+								onClick={() => {
+									setShowModal(
+										(
+											previousState: Partial<
+												ModelBuilderModals
+											>
+										) => ({
+											...previousState,
+											addObjectRelationship: true,
+										})
+									);
+								}}
+							>
+								<ClayIcon
+									className="c-mr-3 text-4"
+									symbol="nodes"
+								/>
+
 								{sub(
-									Liferay.Language.get('x-or-x'),
-									Liferay.Language.get('add-field'),
+									Liferay.Language.get('add-x'),
 									Liferay.Language.get('relationship')
 								)}
-							</span>
-						</ClayButton>
-					}
-				>
-					<DropDown.ItemList>
-						<DropDown.Item>
-							<ClayIcon
-								className="c-mr-3 text-4"
-								symbol="custom-field"
-							/>
-
-							{Liferay.Language.get('add-field')}
-						</DropDown.Item>
-
-						<DropDown.Item>
-							<ClayIcon
-								className="c-mr-3 text-4"
-								symbol="nodes"
-							/>
-
-							{sub(
-								Liferay.Language.get('add-x'),
-								Liferay.Language.get('relationship')
-							)}
-						</DropDown.Item>
-					</DropDown.ItemList>
-				</DropDown>
+							</DropDown.Item>
+						</DropDown.ItemList>
+					</DropDown>
+				)}
 			</div>
 
 			<div className="lfr-objects__model-builder-node-show-all-fields-container">

@@ -5,10 +5,7 @@
 
 import {SetStateAction} from 'react';
 import {DropDownItems} from '../ModelBuilder/types';
-import {
-	DeletedObjectDefinition,
-	ViewObjectDefinitionsModals,
-} from './ViewObjectDefinitions';
+import {DeletedObjectDefinition} from './ViewObjectDefinitions';
 declare type DefinitionNodeActionsProps = {
 	baseResourceURL: string;
 	handleShowDeleteModal: () => void;
@@ -95,5 +92,11 @@ export declare function getFolderActions(
 			type?: undefined;
 	  }
 )[];
+export declare function getUpdateModelBuilderStructurePayload(
+	currentObjectFolderName: string
+): Promise<{
+	objectFolders: ObjectFolder[];
+	selectedObjectFolder: ObjectFolder;
+}>;
 export declare function normalizeName(str: string): string;
 export {};

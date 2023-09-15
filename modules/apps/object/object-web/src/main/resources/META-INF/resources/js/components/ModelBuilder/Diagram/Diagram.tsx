@@ -6,11 +6,13 @@
 import ReactFlow, {
 	Background,
 	Connection,
+	ConnectionLineType,
 	ConnectionMode,
 	Controls,
 	Edge,
 	MiniMap,
-	addEdge,
+	Node,
+	isNode,
 } from 'react-flow-renderer';
 
 import {DefinitionNode} from '../DefinitionNode/DefinitionNode';
@@ -18,10 +20,13 @@ import {EmptyNode} from '../DefinitionNode/EmptyNode';
 
 import './Diagram.scss';
 
-import React, {useCallback} from 'react';
+import {API} from '@liferay/object-js-components-web';
+import React, {MouseEvent, useCallback, useState} from 'react';
 
+import {ModalAddObjectRelationship} from '../../ObjectRelationship/ModalAddObjectRelationship';
 import DefaultEdge from '../Edges/DefaultEdge';
-import {useFolderContext} from '../ModelBuilderContext/objectFolderContext';
+import SelfEdge from '../Edges/SelfEdge';
+import {useObjectFolderContext} from '../ModelBuilderContext/objectFolderContext';
 import {TYPES} from '../ModelBuilderContext/typesEnum';
 
 const NODE_TYPES = {
@@ -31,14 +36,29 @@ const NODE_TYPES = {
 
 const EDGE_TYPES = {
 	default: DefaultEdge,
+	self: SelfEdge,
 };
 
 function DiagramBuilder({
 	setShowModal,
 }: {
-	setShowModal: (value: boolean) => void;
+	setShowModal: (value: React.SetStateAction<ModelBuilderModals>) => void;
 }) {
-	const [{elements}, dispatch] = useFolderContext();
+	const [
+		{baseResourceURL, elements, selectedObjectFolder, showChangesSaved},
+		dispatch,
+	] = useObjectFolderContext();
+
+	const [showAddModal, setShowAddModal] = useState(false);
+	const [nodesProps, setNodesProps] = useState<{
+		parameterRequired: boolean;
+		sourceNode: {
+			erc: string;
+		};
+		targetNode: {
+			erc: string;
+		};
+	}>();
 
 	const emptyNode = [
 		{
@@ -56,25 +76,111 @@ function DiagramBuilder({
 
 	const onConnect = useCallback(
 		(connection: Connection | Edge) => {
-			const newElements = addEdge(connection, elements);
+			const sourceNode = elements.find(
+				(node) => isNode(node) && node.id === connection.source
+			) as Node<ObjectDefinitionNodeData>;
 
-			dispatch({
-				payload: {newElements},
-				type: TYPES.SET_ELEMENTS,
+			const targetNode = elements.find(
+				(node) => isNode(node) && node.id === connection.target
+			) as Node<ObjectDefinitionNodeData>;
+
+			if (
+				(sourceNode.data?.modifiable === false &&
+					targetNode.data?.modifiable === false) ||
+				(sourceNode.data?.system && targetNode.data?.system) ||
+				sourceNode.data?.storageType === 'salesforce' ||
+				targetNode.data?.storageType === 'salesforce' ||
+				targetNode.data?.name === 'Address' ||
+				sourceNode.data?.linked
+			) {
+				return;
+			}
+
+			setShowAddModal(true);
+			setNodesProps({
+				parameterRequired: sourceNode?.data?.parameterRequired!,
+				sourceNode: {
+					erc: sourceNode?.data?.externalReferenceCode!,
+				},
+				targetNode: {
+					erc: targetNode?.data?.externalReferenceCode!,
+				},
 			});
 		},
-		[dispatch, elements]
+		[elements]
 	);
+
+	const onNodeDragStop = async (
+		event: MouseEvent,
+		node: Node<ObjectDefinitionNodeData>
+	) => {
+		const objectFolder = await API.getObjectFolderByERC(
+			selectedObjectFolder.externalReferenceCode
+		);
+
+		const updatedObjectFolderItems = objectFolder.objectFolderItems.map(
+			(objectFolderItem) => {
+				if (
+					objectFolderItem.objectDefinitionExternalReferenceCode ===
+					node.data?.externalReferenceCode
+				) {
+					return {
+						...objectFolderItem,
+						positionX: node.position.x,
+						positionY: node.position.y,
+					};
+				}
+
+				return objectFolderItem;
+			}
+		);
+
+		const updatedObjectFolder = {
+			externalReferenceCode: selectedObjectFolder.externalReferenceCode,
+			id: selectedObjectFolder.id,
+			label: selectedObjectFolder.label,
+			name: selectedObjectFolder.name,
+			objectFolderItems: updatedObjectFolderItems,
+		};
+
+		API.putObjectFolderByERC(updatedObjectFolder);
+
+		if (!showChangesSaved) {
+			dispatch({
+				payload: {updatedShowChangesSaved: true},
+				type: TYPES.SET_SHOW_CHANGES_SAVED,
+			});
+		}
+	};
+
+	const connectionLineStyle = {stroke: '#0B5FFF'};
 
 	return (
 		<div className="lfr-objects__model-builder-diagram-area">
+			{showAddModal && (
+				<ModalAddObjectRelationship
+					baseResourceURL={baseResourceURL}
+					handleOnClose={() => setShowAddModal(false)}
+					objectDefinitionExternalReferenceCode1={
+						nodesProps?.sourceNode.erc!
+					}
+					objectDefinitionExternalReferenceCode2={
+						nodesProps?.targetNode.erc!
+					}
+					parameterRequired={nodesProps?.parameterRequired!}
+				/>
+			)}
+
 			<ReactFlow
+				connectionLineStyle={connectionLineStyle}
+				connectionLineType={ConnectionLineType.SmoothStep}
 				connectionMode={ConnectionMode.Loose}
 				edgeTypes={EDGE_TYPES}
 				elements={elements.length ? elements : emptyNode}
 				minZoom={0.1}
 				nodeTypes={NODE_TYPES}
 				onConnect={onConnect}
+				onNodeDragStop={onNodeDragStop}
 			>
 				<Background size={1} />
 

@@ -5,60 +5,114 @@
 
 import ClayButton, {ClayButtonWithIcon} from '@clayui/button';
 import ClayIcon from '@clayui/icon';
-import React from 'react';
+import {useModal} from '@clayui/modal';
+import {ClayTooltipProvider} from '@clayui/tooltip';
+import classNames from 'classnames';
+import {sub} from 'frontend-js-web';
+import React, {useState} from 'react';
+
+import {useObjectFolderContext} from '../ModelBuilderContext/objectFolderContext';
+import {ModalPublishObjectDefinitions} from './ModalPublishObjectDefinitions';
 
 import './Header.scss';
 
-import {sub} from 'frontend-js-web';
-
-import {useFolderContext} from '../ModelBuilderContext/objectFolderContext';
-
 interface Header {
-	folderExternalReferenceCode: string;
-	folderName: string;
 	hasDraftObjectDefinitions: boolean;
+	objectFolder: ObjectFolder;
+	setShowModal: (value: React.SetStateAction<ModelBuilderModals>) => void;
 }
 
 export default function ({
-	folderExternalReferenceCode,
-	folderName,
 	hasDraftObjectDefinitions,
+	objectFolder,
+	setShowModal,
 }: Header) {
-	const [{showChangesSaved}] = useFolderContext();
+	const [{elements, showChangesSaved}, dispatch] = useObjectFolderContext();
+	const [
+		showModalPublishObjectDefinitions,
+		setShowModalPublishObjectDefinitions,
+	] = useState<boolean>(false);
+	const {observer, onClose} = useModal({
+		onClose: () => setShowModalPublishObjectDefinitions(false),
+	});
 
 	return (
 		<div className="lfr-objects__model-builder-header">
 			<div className="lfr-objects__model-builder-header-container">
-				<div className="lfr-objects__model-builder-header-folder-info">
-					<div className="lfr-objects__model-builder-header-folder-info-name">
-						<span>{folderName}</span>
+				<div className="lfr-objects__model-builder-header-object-folder-info">
+					<div
+						className={classNames(
+							'lfr-objects__model-builder-header-object-folder-info-name',
+							{
+								'lfr-objects__model-builder-header-object-folder-info-name-changes-saved': showChangesSaved,
+							}
+						)}
+					>
+						<ClayTooltipProvider>
+							<span
+								title={
+									Liferay.Language.get('folder-name') +
+									`: ${objectFolder.name}`
+								}
+							>
+								{objectFolder.name}
+							</span>
+						</ClayTooltipProvider>
 					</div>
 
-					<span className="lfr-objects__model-builder-header-folder-info-erc">
+					<span className="lfr-objects__model-builder-header-object-folder-info-erc-title">
 						{Liferay.Language.get('erc')}:
 					</span>
 
-					<strong>{folderExternalReferenceCode}</strong>
-
-					<span
-						role="tooltip"
-						title={Liferay.Language.get(
-							'unique-key-for-referencing-the-object-folder'
-						)}
-					>
-						<ClayIcon symbol="question-circle" />
-					</span>
-
-					{folderExternalReferenceCode !== 'uncategorized' && (
-						<ClayButtonWithIcon
-							aria-label={sub(
-								Liferay.Language.get('edit-x'),
-								Liferay.Language.get('external-reference-code')
+					<ClayTooltipProvider>
+						<span
+							className={classNames(
+								'lfr-objects__model-builder-header-object-folder-info-erc-content',
+								{
+									'lfr-objects__model-builder-header-object-folder-info-erc-content-changes-saved': showChangesSaved,
+								}
 							)}
-							displayType="unstyled"
-							symbol="pencil"
-						/>
-					)}
+							title={
+								Liferay.Language.get('erc') +
+								`: ${objectFolder.externalReferenceCode}`
+							}
+						>
+							<strong>
+								{objectFolder.externalReferenceCode}
+							</strong>
+						</span>
+					</ClayTooltipProvider>
+
+					<ClayTooltipProvider>
+						<span
+							title={Liferay.Language.get(
+								'unique-key-for-referencing-the-object-folder'
+							)}
+						>
+							<ClayIcon symbol="question-circle" />
+						</span>
+					</ClayTooltipProvider>
+
+					{objectFolder.externalReferenceCode !== 'uncategorized' &&
+						objectFolder.actions?.update && (
+							<ClayButtonWithIcon
+								aria-label={Liferay.Language.get(
+									'edit-label-and-erc'
+								)}
+								displayType="unstyled"
+								onClick={() =>
+									setShowModal(
+										(
+											previousState: ModelBuilderModals
+										) => ({
+											...previousState,
+											editObjectFolder: true,
+										})
+									)
+								}
+								symbol="pencil"
+							/>
+						)}
 				</div>
 
 				{showChangesSaved && (
@@ -91,7 +145,20 @@ export default function ({
 					<ClayButton
 						disabled={!hasDraftObjectDefinitions}
 						displayType="primary"
+						onClick={() => {
+							setShowModalPublishObjectDefinitions(true);
+						}}
 					>
+						{showModalPublishObjectDefinitions && (
+							<ModalPublishObjectDefinitions
+								disableAutoClose={false}
+								dispatch={dispatch}
+								elements={elements}
+								observer={observer}
+								onClose={onClose}
+							/>
+						)}
+
 						{Liferay.Language.get('publish')}
 					</ClayButton>
 				</div>

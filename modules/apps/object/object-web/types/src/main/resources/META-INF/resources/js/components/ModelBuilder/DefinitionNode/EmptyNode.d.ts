@@ -3,13 +3,12 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
-/// <reference types="react" />
-
+import React from 'react';
 import {NodeProps} from 'react-flow-renderer';
 import './DefinitionNode.scss';
 import './EmptyNode.scss';
 interface EmptyNodeProps {
-	setShowModal: (value: boolean) => void;
+	setShowModal: (value: React.SetStateAction<ModelBuilderModals>) => void;
 }
 export declare function EmptyNode({
 	data: {setShowModal},

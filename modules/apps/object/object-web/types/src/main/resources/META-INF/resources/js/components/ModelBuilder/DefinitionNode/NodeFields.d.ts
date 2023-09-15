@@ -5,7 +5,6 @@
 
 /// <reference types="react" />
 
-import {ObjectFieldNode} from '../types';
 import './NodeFields.scss';
 interface NodeFieldsProps {
 	defaultLanguageId: Liferay.Language.Locale;
@@ -13,6 +12,7 @@ interface NodeFieldsProps {
 	showAll: boolean;
 }
 export default function NodeFields({
+	defaultLanguageId,
 	objectFields,
 	showAll,
 }: NodeFieldsProps): JSX.Element;

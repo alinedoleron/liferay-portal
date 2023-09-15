@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
+import ClayButton from '@clayui/button';
 import {
 	API,
 	getLocalizableLabel,
@@ -10,7 +11,7 @@ import {
 } from '@liferay/object-js-components-web';
 import {sub} from 'frontend-js-web';
 import React, {useEffect, useState} from 'react';
-import {Node, isNode} from 'react-flow-renderer';
+import {Elements, Node, isNode} from 'react-flow-renderer';
 
 import {AccountRestrictionContainer} from '../../ObjectDetails/AccountRestrictionContainer';
 import {ConfigurationContainer} from '../../ObjectDetails/ConfigurationContainer';
@@ -18,14 +19,11 @@ import {KeyValuePair} from '../../ObjectDetails/EditObjectDetails';
 import {EntryDisplayContainer} from '../../ObjectDetails/EntryDisplayContainer';
 import {ObjectDataContainer} from '../../ObjectDetails/ObjectDataContainer';
 import {ScopeContainer} from '../../ObjectDetails/ScopeContainer';
-import {
-	ObjectDefinitionNodeData,
-	nonRelationshipObjectFieldsInfo,
-} from '../types';
+import {nonRelationshipObjectFieldsInfo} from '../types';
 
 import './RightSidebarObjectDefinitionDetails.scss';
 import {useObjectDetailsForm} from '../../ObjectDetails/useObjectDetailsForm';
-import {useFolderContext} from '../ModelBuilderContext/objectFolderContext';
+import {useObjectFolderContext} from '../ModelBuilderContext/objectFolderContext';
 import {TYPES} from '../ModelBuilderContext/typesEnum';
 interface RightSidebarObjectDefinitionDetailsProps {
 	companyKeyValuePair: KeyValuePair[];
@@ -58,7 +56,10 @@ export function RightSidebarObjectDefinitionDetails({
 	companyKeyValuePair,
 	siteKeyValuePair,
 }: RightSidebarObjectDefinitionDetailsProps) {
-	const [{elements, selectedFolderERC}, dispatch] = useFolderContext();
+	const [
+		{elements, selectedObjectFolder},
+		dispatch,
+	] = useObjectFolderContext();
 
 	const selectedNode = elements.find((element) => {
 		if (isNode(element)) {
@@ -121,12 +122,6 @@ export function RightSidebarObjectDefinitionDetails({
 	const onSubmit = async () => {
 		const validationErrors = handleValidate();
 
-		const folderResponse = await API.getAllFolders();
-
-		const selectedFolderName = folderResponse.find(
-			(folder) => folder.externalReferenceCode === selectedFolderERC
-		)!.name;
-
 		if (!Object.keys(validationErrors).length) {
 			delete values.objectRelationships;
 			delete values.objectActions;
@@ -139,9 +134,22 @@ export function RightSidebarObjectDefinitionDetails({
 				objectDefinition = setAccountRelationshipFieldMandatory(values);
 			}
 
-			const saveResponse = await API.putObjectDefinitionByExternalReferenceCode(
-				objectDefinition
-			);
+			try {
+				await API.putObjectDefinitionByExternalReferenceCode(
+					objectDefinition
+				);
+				openToast({
+					message: Liferay.Language.get(
+						'the-object-was-saved-successfully'
+					),
+					type: 'success',
+				});
+			}
+			catch (error: unknown) {
+				const {message} = error as Error;
+
+				openToast({message, type: 'danger'});
+			}
 
 			let newObjectDefinition = {};
 
@@ -158,10 +166,6 @@ export function RightSidebarObjectDefinitionDetails({
 							objectDefinition.label,
 							objectDefinition.name
 						),
-						name: objectDefinition.name,
-						pluralLabel: {
-							[objectDefinition.defaultLanguageId!]: objectDefinition.pluralLabel,
-						},
 					};
 
 					return {
@@ -171,21 +175,7 @@ export function RightSidebarObjectDefinitionDetails({
 				}
 
 				return element;
-			});
-
-			if (!saveResponse.ok) {
-				const {title} = (await saveResponse.json()) as {
-					status: string;
-					title: string;
-				};
-
-				openToast({
-					message: title,
-					type: 'danger',
-				});
-
-				return;
-			}
+			}) as Elements<ObjectDefinitionNodeData>;
 
 			dispatch({
 				payload: {
@@ -196,37 +186,43 @@ export function RightSidebarObjectDefinitionDetails({
 
 			dispatch({
 				payload: {
-					currentFolderName: selectedFolderName,
+					currentObjectFolderName: selectedObjectFolder.name,
 					updatedNode: newObjectDefinition,
 				},
-				type: TYPES.UPDATE_FOLDER_NODE,
-			});
-
-			openToast({
-				message: Liferay.Language.get(
-					'the-object-was-saved-successfully'
-				),
-				type: 'success',
+				type: TYPES.UPDATE_OBJECT_FOLDER_NODE,
 			});
 		}
 	};
 
 	return (
-		<div onBlur={onSubmit}>
-			<div className="lfr-objects__model-builder-right-sidebar-definition-node-title">
-				<span>
-					{sub(
-						Liferay.Language.get('x-details'),
-						getLocalizableLabel(
-							values.defaultLanguageId as Liferay.Language.Locale,
-							values?.label,
-							values?.name
-						)
-					)}
-				</span>
+		<>
+			<div className="lfr-objects__model-builder-right-sidebar-object-definition-node-title-container">
+				<div className="lfr-objects__model-builder-right-sidebar-object-definition-node-title">
+					<span>
+						{sub(
+							Liferay.Language.get('x-details'),
+							getLocalizableLabel(
+								values.defaultLanguageId as Liferay.Language.Locale,
+								values?.label,
+								values?.name
+							)
+						)}
+					</span>
+				</div>
+
+				<div className="lfr-objects__model-builder-right-sidebar-details-title-buttons-container">
+					<ClayButton
+						aria-label={Liferay.Language.get('save-definition')}
+						className="lfr-objects__model-builder-right-sidebar-relationship-title-save-button"
+						displayType="primary"
+						onClick={() => onSubmit()}
+					>
+						{Liferay.Language.get('save')}
+					</ClayButton>
+				</div>
 			</div>
 
-			<div className="lfr-objects__model-builder-right-sidebar-definition-node-content">
+			<div className="lfr-objects__model-builder-right-sidebar-object-definition-node-content">
 				<ObjectDataContainer
 					dbTableName=""
 					errors={errors}
@@ -235,16 +231,16 @@ export function RightSidebarObjectDefinitionDetails({
 						!!values.actions?.update
 					}
 					isApproved={values.status?.label === 'approved'}
-					isLinkedNode={selectedNode.data!.isLinkedNode}
+					isLinkedObjectDefinition={selectedNode?.data!.linked}
 					setValues={setValues}
 					values={values as ObjectDefinition}
 				/>
 			</div>
 
-			<div className="lfr-objects__model-builder-right-sidebar-definition-node-content">
+			<div className="lfr-objects__model-builder-right-sidebar-object-definition-node-content">
 				<EntryDisplayContainer
 					errors={errors}
-					isLinkedNode={selectedNode.data!.isLinkedNode}
+					isLinkedObjectDefinition={selectedNode?.data!.linked}
 					nonRelationshipObjectFieldsInfo={
 						nonRelationshipObjectFieldsInfo ?? []
 					}
@@ -258,7 +254,7 @@ export function RightSidebarObjectDefinitionDetails({
 					errors={errors}
 					hasUpdateObjectDefinitionPermission={true}
 					isApproved={values.status?.label === 'approved'}
-					isLinkedNode={selectedNode.data!.isLinkedNode}
+					isLinkedObjectDefinition={selectedNode?.data!.linked}
 					isRootDescendantNode={false}
 					setValues={setValues}
 					siteKeyValuePair={siteKeyValuePair}
@@ -269,11 +265,11 @@ export function RightSidebarObjectDefinitionDetails({
 			{(Liferay.FeatureFlags['LPS-167253']
 				? values?.modifiable
 				: !values?.system) && (
-				<div className="lfr-objects__model-builder-right-sidebar-definition-node-content">
+				<div className="lfr-objects__model-builder-right-sidebar-object-definition-node-content">
 					<AccountRestrictionContainer
 						errors={errors}
 						isApproved={values?.status?.label === 'approved'}
-						isLinkedNode={selectedNode.data!.isLinkedNode}
+						isLinkedObjectDefinition={selectedNode?.data!.linked}
 						isRootDescendantNode={false}
 						objectFields={
 							(values?.objectFields as ObjectField[]) ?? []
@@ -284,17 +280,17 @@ export function RightSidebarObjectDefinitionDetails({
 				</div>
 			)}
 
-			<div className="lfr-objects__model-builder-right-sidebar-definition-node-content">
+			<div className="lfr-objects__model-builder-right-sidebar-object-definition-node-content">
 				<ConfigurationContainer
 					hasUpdateObjectDefinitionPermission={
 						!!values.actions?.update
 					}
-					isLinkedNode={selectedNode.data!.isLinkedNode}
+					isLinkedObjectDefinition={selectedNode?.data!.linked}
 					isRootDescendantNode={false}
 					setValues={setValues}
 					values={values as ObjectDefinition}
 				/>
 			</div>
-		</div>
+		</>
 	);
 }

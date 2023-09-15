@@ -4,8 +4,9 @@
  */
 
 import classNames from 'classnames';
-import React, {useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
+	Elements,
 	Handle,
 	Node,
 	NodeProps,
@@ -19,51 +20,93 @@ import './DefinitionNode.scss';
 import {
 	API,
 	ModalEditExternalReferenceCode,
+	getLocalizableLabel,
+	openToast,
 } from '@liferay/object-js-components-web';
+import {createResourceURL} from 'frontend-js-web';
 
 import {formatActionURL} from '../../../utils/fds';
+import {ModalAddObjectField} from '../../ObjectField/ModalAddObjectField';
+import {ModalAddObjectRelationship} from '../../ObjectRelationship/ModalAddObjectRelationship';
 import {ModalDeleteObjectDefinition} from '../../ViewObjectDefinitions/ModalDeleteObjectDefinition';
-import {
-	DeletedObjectDefinition,
-	ViewObjectDefinitionsModals,
-} from '../../ViewObjectDefinitions/ViewObjectDefinitions';
+import {DeletedObjectDefinition} from '../../ViewObjectDefinitions/ViewObjectDefinitions';
 import {getDefinitionNodeActions} from '../../ViewObjectDefinitions/objectDefinitionUtil';
-import {useFolderContext} from '../ModelBuilderContext/objectFolderContext';
+import {useObjectFolderContext} from '../ModelBuilderContext/objectFolderContext';
 import {TYPES} from '../ModelBuilderContext/typesEnum';
-import {ObjectDefinitionNodeData} from '../types';
 import NodeFields from './NodeFields';
 import NodeFooter from './NodeFooter';
 import NodeHeader from './NodeHeader';
 import {RedirectModal} from './RedirectModal';
 
+const selfRelationshipHandleStyle = {
+	background: 'transparent',
+	border: '2px transparent',
+	borderRadius: '50%',
+};
+
 export function DefinitionNode({
 	data: {
 		defaultLanguageId,
-		editObjectDefinitionURL,
 		externalReferenceCode,
 		hasObjectDefinitionDeleteResourcePermission,
 		hasObjectDefinitionManagePermissionsResourcePermission,
+		hasSelfRelationships,
 		id,
-		isLinkedNode,
 		label,
+		linked,
 		name,
 		nodeSelected,
-		objectDefinitionPermissionsURL,
 		objectFields,
 		status,
 		system,
 	},
 }: NodeProps<ObjectDefinitionNodeData>) {
 	const [showAllFields, setShowAllFields] = useState<boolean>(false);
-	const [{elements}, dispatch] = useFolderContext();
+	const [
+		{
+			baseResourceURL,
+			editObjectDefinitionURL,
+			elements,
+			objectDefinitionPermissionsURL,
+			selectedObjectDefinitionNode,
+		},
+		dispatch,
+	] = useObjectFolderContext();
 	const store = useStore();
 
-	const [showModal, setShowModal] = useState<
-		Partial<ViewObjectDefinitionsModals>
-	>({
+	const handlePosition: {
+		[key: string]: Position;
+	} = {
+		bottom: Position.Bottom,
+		left: Position.Left,
+		right: Position.Right,
+		top: Position.Top,
+	};
+
+	const handleRefs: {
+		[key: string]: React.RefObject<HTMLDivElement>;
+	} = {
+		bottom: useRef<HTMLDivElement>(null),
+		left: useRef<HTMLDivElement>(null),
+		right: useRef<HTMLDivElement>(null),
+		top: useRef<HTMLDivElement>(null),
+	};
+
+	const displayHandles = (display: boolean) => {
+		for (const key in handleRefs) {
+			const handleRef = handleRefs[key].current;
+			if (handleRef) {
+				handleRef.style.opacity = display ? '1' : '0';
+			}
+		}
+	};
+
+	const [showModal, setShowModal] = useState<Partial<ModelBuilderModals>>({
+		addObjectRelationship: false,
 		deleteObjectDefinition: false,
-		editERC: false,
+		editObjectDefinitionERC: false,
 	});
+	const [parameterRequired, setParameterRequired] = useState(false);
 	const [
 		deletedObjectDefinition,
 		setDeletedObjectDefinition,
@@ -73,8 +116,6 @@ export function DefinitionNode({
 		externalReferenceCode
 	);
 
-	const [{baseResourceURL}] = useFolderContext();
-
 	const handleShowDeleteModal = () => {
 		setShowModal({
 			deleteObjectDefinition: true,
@@ -83,7 +124,7 @@ export function DefinitionNode({
 
 	const handleShowEditERCModal = () => {
 		setShowModal({
-			editERC: true,
+			editObjectDefinitionERC: true,
 		});
 	};
 
@@ -95,12 +136,34 @@ export function DefinitionNode({
 
 	const viewDetailsURL = formatActionURL(editObjectDefinitionURL, id);
 
+	useEffect(() => {
+		const makeFetch = async () => {
+			if (selectedObjectDefinitionNode) {
+				const url = createResourceURL(baseResourceURL, {
+					objectDefinitionId: selectedObjectDefinitionNode.id,
+					p_p_resource_id:
+						'/object_definitions/get_object_relationship_info',
+				}).href;
+
+				const {parameterRequired} = await API.fetchJSON<{
+					parameterRequired: boolean;
+				}>(url);
+
+				setParameterRequired(parameterRequired);
+			}
+		};
+
+		makeFetch();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [selectedObjectDefinitionNode]);
+
 	return (
 		<>
 			<div
 				className={classNames(
 					'lfr-objects__model-builder-node-container',
 					{
+						'lfr-objects__model-builder-node-container--link': linked,
 						'lfr-objects__model-builder-node-container--selected': nodeSelected,
 					}
 				)}
@@ -111,10 +174,16 @@ export function DefinitionNode({
 						payload: {
 							edges,
 							nodes,
-							selectedObjectDefinitionId: id!.toString(),
+							selectedObjectDefinitionId: id.toString(),
 						},
 						type: TYPES.SET_SELECTED_NODE,
 					});
+				}}
+				onMouseEnter={() => {
+					displayHandles(true);
+				}}
+				onMouseLeave={() => {
+					displayHandles(false);
 				}}
 			>
 				<NodeHeader
@@ -131,8 +200,12 @@ export function DefinitionNode({
 						setDeletedObjectDefinition,
 						status,
 					})}
-					isLinkedNode={isLinkedNode}
-					objectDefinitionLabel={label}
+					isLinkedObjectDefinition={linked}
+					objectDefinitionLabel={getLocalizableLabel(
+						defaultLanguageId,
+						label,
+						name
+					)}
 					status={status!}
 					system={system}
 				/>
@@ -144,31 +217,133 @@ export function DefinitionNode({
 				/>
 
 				<NodeFooter
+					isLinkedObjectDefinition={linked}
 					setShowAllFields={setShowAllFields}
+					setShowModal={setShowModal}
 					showAllFields={showAllFields}
 				/>
 
-				<Handle
-					className="lfr-objects__model-builder-node-handle"
-					hidden
-					id={name}
-					position={Position.Left}
-					style={{
-						background: '#80ACFF',
-						height: '12px',
-						left: '-30px',
-						width: '12px',
-					}}
-					type="source"
-				/>
+				<>
+					{Object.keys(handleRefs).map((position, index) => (
+						<Handle
+							className="lfr-objects__model-builder-node-handle"
+							id={id.toString()}
+							key={index}
+							position={handlePosition[position]}
+							ref={handleRefs[position]}
+							style={{
+								background: '#80ACFF',
+								height: '12px',
+								opacity: 0,
+								[position]: '-18px',
+								width: '12px',
+							}}
+							type="source"
+						/>
+					))}
+				</>
+
+				{hasSelfRelationships && (
+					<>
+						<Handle
+							className="lfr-objects__model-builder-node-handle"
+							id="fixedLeftHandle"
+							position={Position.Left}
+							style={{
+								...selfRelationshipHandleStyle,
+								left: '10px',
+								top: '50%',
+							}}
+							type="source"
+						/>
+
+						<Handle
+							className="lfr-objects__model-builder-node-handle"
+							id="fixedRightHandle"
+							position={Position.Right}
+							style={{
+								...selfRelationshipHandleStyle,
+								right: '4px',
+								top: '50%',
+							}}
+							type="target"
+						/>
+					</>
+				)}
 			</div>
+
+			{showModal.addObjectField && (
+				<ModalAddObjectField
+					creationLanguageId={defaultLanguageId}
+					objectDefinitionExternalReferenceCode={
+						externalReferenceCode
+					}
+					objectFieldTypes={[]}
+					objectName={name}
+					onAfterSubmit={(newObjectField) => {
+						const {edges, nodes} = store.getState();
+
+						dispatch({
+							payload: {
+								edges,
+								newObjectField,
+								nodes,
+								objectDefinitionExternalReferenceCode: externalReferenceCode,
+							},
+							type: TYPES.ADD_NEW_OBJECT_FIELD,
+						});
+
+						openToast({
+							message: Liferay.Language.get(
+								'field-successfully-added'
+							),
+							type: 'success',
+						});
+
+						setShowModal((prevState) => ({
+							...prevState,
+							addObjectField: false,
+						}));
+
+						setShowAllFields(true);
+					}}
+					setVisibility={() =>
+						setShowModal((prevState) => ({
+							...prevState,
+							addObjectField: false,
+						}))
+					}
+				/>
+			)}
+
+			{showModal.addObjectRelationship && (
+				<ModalAddObjectRelationship
+					baseResourceURL={baseResourceURL}
+					handleOnClose={() => {
+						setShowModal(
+							(previousState: Partial<ModelBuilderModals>) => ({
+								...previousState,
+								addObjectRelationship: false,
+							})
+						);
+					}}
+					objectDefinitionExternalReferenceCode1={
+						selectedObjectDefinitionNode?.data
+							?.externalReferenceCode as string
+					}
+					parameterRequired={parameterRequired}
+				/>
+			)}
 
 			{showModal.deleteObjectDefinition && (
 				<ModalDeleteObjectDefinition
 					handleOnClose={() => {
-						setShowModal({
-							deleteObjectDefinition: false,
-						});
+						setShowModal(
+							(previousState: Partial<ModelBuilderModals>) => ({
+								...previousState,
+								deleteObjectDefinition: false,
+							})
+						);
 					}}
 					objectDefinition={
 						deletedObjectDefinition as DeletedObjectDefinition
@@ -177,18 +352,14 @@ export function DefinitionNode({
 				/>
 			)}
 
-			{showModal.editERC && (
+			{showModal.editObjectDefinitionERC && (
 				<ModalEditExternalReferenceCode
 					externalReferenceCode={newExternalReferenceCode as string}
 					handleOnClose={() => {
 						setShowModal(
-							(
-								previousState: Partial<
-									ViewObjectDefinitionsModals
-								>
-							) => ({
+							(previousState: Partial<ModelBuilderModals>) => ({
 								...previousState,
-								editERC: false,
+								editObjectDefinitionERC: false,
 							})
 						);
 					}}
@@ -214,7 +385,7 @@ export function DefinitionNode({
 							}
 
 							return element;
-						});
+						}) as Elements<ObjectDefinitionNodeData>;
 
 						dispatch({
 							payload: {

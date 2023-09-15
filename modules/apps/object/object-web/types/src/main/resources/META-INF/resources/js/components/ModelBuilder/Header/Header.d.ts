@@ -3,17 +3,16 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
-/// <reference types="react" />
-
+import React from 'react';
 import './Header.scss';
 interface Header {
-	folderExternalReferenceCode: string;
-	folderName: string;
 	hasDraftObjectDefinitions: boolean;
+	objectFolder: ObjectFolder;
+	setShowModal: (value: React.SetStateAction<ModelBuilderModals>) => void;
 }
 export default function ({
-	folderExternalReferenceCode,
-	folderName,
 	hasDraftObjectDefinitions,
+	objectFolder,
+	setShowModal,
 }: Header): JSX.Element;
 export {};

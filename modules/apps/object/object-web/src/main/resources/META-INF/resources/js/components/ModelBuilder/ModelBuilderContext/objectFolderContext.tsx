@@ -8,7 +8,6 @@ import {Elements} from 'react-flow-renderer';
 
 import {
 	LeftSidebarItemType,
-	ObjectDefinitionNodeData,
 	ObjectRelationshipEdgeData,
 	RightSidebarType,
 	TAction,
@@ -16,17 +15,17 @@ import {
 } from '../types';
 import {ObjectFolderReducer} from './objectFolderReducer';
 
-interface IFolderContextProps extends Array<TState | Function> {
+interface ObjectFolderContextProps extends Array<TState | Function> {
 	0: typeof initialState;
 	1: React.Dispatch<React.ReducerAction<React.Reducer<TState, TAction>>>;
 }
 
-interface IFolderContextProviderProps
+interface ObjectFolderContextProviderProps
 	extends React.HTMLAttributes<HTMLElement> {
 	value: {};
 }
 
-const FolderContext = createContext({} as IFolderContextProps);
+const ObjectFolderContext = createContext({} as ObjectFolderContextProps);
 
 const initialState = {
 	elements: [] as Elements<
@@ -36,14 +35,14 @@ const initialState = {
 	objectDefinitions: [] as ObjectDefinition[],
 	objectFolders: [] as ObjectFolder[],
 	rightSidebarType: 'empty' as RightSidebarType,
-	selectedFolderERC: '',
+	selectedObjectFolder: {},
 	showChangesSaved: false,
 } as TState;
 
-export function FolderContextProvider({
+export function ObjectFolderContextProvider({
 	children,
 	value,
-}: IFolderContextProviderProps) {
+}: ObjectFolderContextProviderProps) {
 	const [state, dispatch] = useReducer<React.Reducer<TState, TAction>>(
 		ObjectFolderReducer,
 		{
@@ -53,12 +52,12 @@ export function FolderContextProvider({
 	);
 
 	return (
-		<FolderContext.Provider value={[state, dispatch]}>
+		<ObjectFolderContext.Provider value={[state, dispatch]}>
 			{children}
-		</FolderContext.Provider>
+		</ObjectFolderContext.Provider>
 	);
 }
 
-export function useFolderContext() {
-	return useContext(FolderContext);
+export function useObjectFolderContext() {
+	return useContext(ObjectFolderContext);
 }

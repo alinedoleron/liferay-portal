@@ -7,20 +7,18 @@
 
 import {NodeProps} from 'react-flow-renderer';
 import './DefinitionNode.scss';
-import {ObjectDefinitionNodeData} from '../types';
 export declare function DefinitionNode({
 	data: {
 		defaultLanguageId,
-		editObjectDefinitionURL,
 		externalReferenceCode,
 		hasObjectDefinitionDeleteResourcePermission,
 		hasObjectDefinitionManagePermissionsResourcePermission,
+		hasSelfRelationships,
 		id,
-		isLinkedNode,
 		label,
+		linked,
 		name,
 		nodeSelected,
-		objectDefinitionPermissionsURL,
 		objectFields,
 		status,
 		system,

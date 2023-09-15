@@ -53,7 +53,6 @@ export default function Fields({
 	] = useState<ObjectField | null>(null);
 
 	const [showAddFieldModal, setShowAddFieldModal] = useState(false);
-
 	const [showDeletionModal, setShowDeletionModal] = useState<boolean>(false);
 
 	const [
@@ -243,7 +242,6 @@ export default function Fields({
 
 			{showAddFieldModal && (
 				<ModalAddObjectField
-					apiURL={apiURL as string}
 					creationLanguageId={
 						creationLanguageId as Liferay.Language.Locale
 					}
@@ -251,6 +249,10 @@ export default function Fields({
 						objectDefinitionExternalReferenceCode
 					}
 					objectFieldTypes={objectFieldTypes}
+					onAfterSubmit={() => {
+						setShowAddFieldModal(false);
+						window.location.reload();
+					}}
 					setVisibility={setShowAddFieldModal}
 				/>
 			)}
