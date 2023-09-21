@@ -25,6 +25,7 @@ import {firstLetterUppercase} from '../../../utils/string';
 import {ModalDeleteObjectRelationship} from '../../ObjectRelationship/ModalDeleteObjectRelationship';
 import {useObjectRelationshipForm} from '../../ObjectRelationship/ObjectRelationshipFormBase';
 import SelectObjectRelationship from '../../ObjectRelationship/SelectObjectRelationship';
+import {getUpdatedModelBuilderStructurePayload} from '../../ViewObjectDefinitions/objectDefinitionUtil';
 import {useObjectFolderContext} from '../ModelBuilderContext/objectFolderContext';
 import {ObjectRelationshipEdgeData} from '../types';
 
@@ -35,7 +36,10 @@ interface RightSidebarObjectRelationshipDetailsProps {
 export function RightSidebarObjectRelationshipDetails({
 	objectRelationshipDeletionTypes,
 }: RightSidebarObjectRelationshipDetailsProps) {
-	const [{baseResourceURL, elements}, dispatch] = useObjectFolderContext();
+	const [
+		{baseResourceURL, elements, selectedObjectFolder},
+		dispatch,
+	] = useObjectFolderContext();
 	const [objectDefinition1, setObjectDefinition1] = useState<
 		Partial<ObjectDefinition>
 	>();
@@ -197,6 +201,17 @@ export function RightSidebarObjectRelationshipDetails({
 		}
 	};
 
+	const updateModelBuilderStructure = async () => {
+		const payload = await getUpdatedModelBuilderStructurePayload(
+			selectedObjectFolder.name
+		);
+
+		dispatch({
+			payload: {...payload, rightSidebarType: 'empty'},
+			type: TYPES.UPDATE_MODEL_BUILDER_STRUCTURE,
+		});
+	};
+
 	return (
 		<>
 			<div className="lfr-objects__model-builder-right-sidebar-relationship-title-container">
@@ -313,6 +328,8 @@ export function RightSidebarObjectRelationshipDetails({
 						setShowModalDeleteObjectRelationship(false)
 					}
 					objectRelationship={values as ObjectRelationship}
+					onAfterSubmit={() => updateModelBuilderStructure()}
+					reload={false}
 				/>
 			)}
 		</>
