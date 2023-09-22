@@ -30,7 +30,10 @@ import {ModalAddObjectField} from '../../ObjectField/ModalAddObjectField';
 import {ModalAddObjectRelationship} from '../../ObjectRelationship/ModalAddObjectRelationship';
 import {ModalDeleteObjectDefinition} from '../../ViewObjectDefinitions/ModalDeleteObjectDefinition';
 import {DeletedObjectDefinition} from '../../ViewObjectDefinitions/ViewObjectDefinitions';
-import {getObjectDefinitionNodeActions} from '../../ViewObjectDefinitions/objectDefinitionUtil';
+import {
+	getObjectDefinitionNodeActions,
+	getUpdatedModelBuilderStructurePayload,
+} from '../../ViewObjectDefinitions/objectDefinitionUtil';
 import {useObjectFolderContext} from '../ModelBuilderContext/objectFolderContext';
 import {TYPES} from '../ModelBuilderContext/typesEnum';
 import ObjectDefinitionNodeFooter from './ObjectDefinitionNodeFooter';
@@ -71,6 +74,7 @@ export function ObjectDefinitionNode({
 			elements,
 			objectDefinitionPermissionsURL,
 			selectedObjectDefinitionNode,
+			selectedObjectFolder,
 		},
 		dispatch,
 	] = useObjectFolderContext();
@@ -161,6 +165,23 @@ export function ObjectDefinitionNode({
 		makeFetch();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [selectedObjectDefinitionNode]);
+
+	const updateModelBuilderStructure = async (
+		newObjectRelationshipId: number
+	) => {
+		const payload = await getUpdatedModelBuilderStructurePayload(
+			selectedObjectFolder.name
+		);
+
+		dispatch({
+			payload: {
+				...payload,
+				rightSidebarType: 'objectRelationshipDetails',
+				selectedObjectRelationshipEdgeId: newObjectRelationshipId,
+			},
+			type: TYPES.UPDATE_MODEL_BUILDER_STRUCTURE,
+		});
+	};
 
 	return (
 		<>
@@ -339,6 +360,10 @@ export function ObjectDefinitionNode({
 					objectRelationshipParameterRequired={
 						objectRelationshipParameterRequired
 					}
+					onAfterSubmit={(newObjectRelationshipId: number) =>
+						updateModelBuilderStructure(newObjectRelationshipId)
+					}
+					reload={false}
 				/>
 			)}
 
