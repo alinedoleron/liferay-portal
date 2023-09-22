@@ -183,6 +183,7 @@ function DiagramBuilder({
 				<ModalAddObjectRelationship
 					baseResourceURL={baseResourceURL}
 					handleOnClose={() => setShowAddModal(false)}
+					hasDefinedObjectDefinitionTarget
 					objectDefinitionExternalReferenceCode1={
 						nodesProps?.sourceNode.erc!
 					}
