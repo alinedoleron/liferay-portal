@@ -28,7 +28,11 @@ interface ModalAddObjectRelationshipProps {
 	objectDefinitionExternalReferenceCode1: string;
 	objectDefinitionExternalReferenceCode2?: string;
 	objectRelationshipParameterRequired: boolean;
-	onAfterSubmit?: (objectRelationshipId: number) => void;
+	onAfterSubmit?: (
+		objectRelationshipId: number,
+		sourceNodeId: string,
+		targetNodeId: string
+	) => void;
 	reload?: boolean;
 }
 
@@ -81,7 +85,15 @@ export function ModalAddObjectRelationship({
 			}
 
 			if (onAfterSubmit) {
-				setTimeout(() => onAfterSubmit(objectRelationship.id), 200);
+				setTimeout(
+					() =>
+						onAfterSubmit(
+							objectRelationship.id,
+							objectDefinitionExternalReferenceCode1,
+							others.objectDefinitionExternalReferenceCode2
+						),
+					200
+				);
 			}
 		}
 		catch (error: unknown) {

@@ -390,7 +390,9 @@ export function ObjectFolderReducer(state: TState, action: TAction): TState {
 
 		case TYPES.UPDATE_MODEL_BUILDER_STRUCTURE: {
 			const {
+				newPosition,
 				objectFolders,
+				repositionedObjectDefinitionErc,
 				rightSidebarType,
 				selectedObjectFolder,
 				selectedObjectRelationshipEdgeId,
@@ -547,10 +549,11 @@ export function ObjectFolderReducer(state: TState, action: TAction): TState {
 								),
 							},
 							id: objectDefinition.id.toString(),
-							position: {
-								x: positionX,
-								y: positionY,
-							},
+							position:
+								repositionedObjectDefinitionErc ===
+								objectDefinition.externalReferenceCode
+									? newPosition
+									: {x: positionX, y: positionY},
 							type: 'objectDefinitionNode',
 						} as Node<ObjectDefinitionNodeData>;
 					}

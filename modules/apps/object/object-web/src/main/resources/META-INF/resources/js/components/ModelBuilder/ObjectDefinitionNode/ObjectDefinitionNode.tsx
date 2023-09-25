@@ -11,6 +11,7 @@ import {
 	Node,
 	NodeProps,
 	Position,
+	XYPosition,
 	isNode,
 	useStore,
 } from 'react-flow-renderer';
@@ -167,7 +168,9 @@ export function ObjectDefinitionNode({
 	}, [selectedObjectDefinitionNode]);
 
 	const updateModelBuilderStructure = async (
-		newObjectRelationshipId: number
+		repositionedObjectDefinitionErc: string,
+		newObjectRelationshipId: number,
+		newPosition: XYPosition
 	) => {
 		const payload = await getUpdatedModelBuilderStructurePayload(
 			selectedObjectFolder.name
@@ -176,6 +179,8 @@ export function ObjectDefinitionNode({
 		dispatch({
 			payload: {
 				...payload,
+				newPosition,
+				repositionedObjectDefinitionErc,
 				rightSidebarType: 'objectRelationshipDetails',
 				selectedObjectRelationshipEdgeId: newObjectRelationshipId,
 			},
@@ -349,7 +354,7 @@ export function ObjectDefinitionNode({
 						setShowModal(
 							(previousState: Partial<ModelBuilderModals>) => ({
 								...previousState,
-								addObjectRelationship: false,
+								addObjectRelationSship: false,
 							})
 						);
 					}}
@@ -360,9 +365,28 @@ export function ObjectDefinitionNode({
 					objectRelationshipParameterRequired={
 						objectRelationshipParameterRequired
 					}
-					onAfterSubmit={(newObjectRelationshipId: number) =>
-						updateModelBuilderStructure(newObjectRelationshipId)
-					}
+					onAfterSubmit={(
+						newObjectRelationshipId: number,
+						sourceNodeErc: string,
+						targetNodeId: string
+					) => {
+						const {nodes} = store.getState();
+						console.log(nodes);
+						const sourcePosition = nodes.find(
+							(node) =>
+								node.data.externalReferenceCode ===
+								sourceNodeErc
+						)?.position;
+						const newPosition = {
+							...sourcePosition,
+							y: sourcePosition?.y! + 400,
+						} as XYPosition;
+						updateModelBuilderStructure(
+							targetNodeId,
+							newObjectRelationshipId,
+							newPosition
+						);
+					}}
 					reload={false}
 				/>
 			)}

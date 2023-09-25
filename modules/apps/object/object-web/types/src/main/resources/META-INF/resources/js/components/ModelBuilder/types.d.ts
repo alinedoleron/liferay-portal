@@ -5,7 +5,7 @@
 
 /// <reference types="react" />
 
-import {Edge, Elements, Node} from 'react-flow-renderer';
+import {Edge, Elements, Node, XYPosition} from 'react-flow-renderer';
 import {TYPES} from './ModelBuilderContext/typesEnum';
 declare type TDropDownType =
 	| 'checkbox'
@@ -70,6 +70,8 @@ export declare type TAction =
 	  }
 	| {
 			payload: {
+				newPosition?: XYPosition;
+				repositionedObjectDefinitionErc?: string;
 				objectFolders: ObjectFolder[];
 				rightSidebarType?: RightSidebarType;
 				selectedObjectFolder: ObjectFolder;

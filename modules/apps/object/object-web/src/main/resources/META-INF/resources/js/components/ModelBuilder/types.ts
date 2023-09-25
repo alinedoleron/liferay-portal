@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
-import {Edge, Elements, Node} from 'react-flow-renderer';
+import {Edge, Elements, Node, XYPosition} from 'react-flow-renderer';
 
 import {TYPES} from './ModelBuilderContext/typesEnum';
 
@@ -72,6 +72,8 @@ export type TAction =
 	  }
 	| {
 			payload: {
+				newPosition?: XYPosition;
+				repositionedObjectDefinitionErc?: string;
 				objectFolders: ObjectFolder[];
 				rightSidebarType?: RightSidebarType;
 				selectedObjectFolder: ObjectFolder;
