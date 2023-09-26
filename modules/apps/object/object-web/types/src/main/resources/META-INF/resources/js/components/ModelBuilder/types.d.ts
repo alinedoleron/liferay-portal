@@ -132,6 +132,15 @@ export declare type TAction =
 				selectedObjectFolder: ObjectFolder;
 			};
 			type: TYPES.ADD_NEW_OBJECT_RELATIONSHIP;
+	  }
+	| {
+			payload: {
+				edges: Edge<ObjectRelationshipEdgeData>[];
+				nodes: Node<ObjectDefinitionNodeData>[];
+				rightSidebarType: RightSidebarType;
+				selectedObjectRelationship: ObjectRelationship;
+			};
+			type: TYPES.ADD_NEW_OBJECT_SELF_RELATIONSHIP;
 	  };
 export declare type TState = {
 	baseResourceURL: string;

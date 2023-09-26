@@ -13,6 +13,7 @@ import ReactFlow, {
 	MiniMap,
 	Node,
 	isNode,
+	useStoreState,
 } from 'react-flow-renderer';
 
 import {EmptyNode} from '../ObjectDefinitionNode/EmptyNode';
@@ -29,6 +30,7 @@ import DefaultObjectRelationshipEdge from '../Edges/DefaultObjectRelationshipEdg
 import SelfObjectRelationshipEdge from '../Edges/SelfObjectRelationshipEdge';
 import {useObjectFolderContext} from '../ModelBuilderContext/objectFolderContext';
 import {TYPES} from '../ModelBuilderContext/typesEnum';
+import { ObjectRelationshipEdgeData } from '../types';
 
 const NODE_TYPES = {
 	emptyNode: EmptyNode,
@@ -167,20 +169,40 @@ function DiagramBuilder({
 	};
 
 	const updateModelBuilderStructure = async (
-		newObjectRelationshipId: number
+		edges: Edge<ObjectRelationshipEdgeData>[],
+		newObjectRelationship: ObjectRelationship,
+		nodes: Node<ObjectDefinitionNodeData>[],
 	) => {
 		const payload = await getUpdatedModelBuilderStructurePayload(
 			selectedObjectFolder.name
 		);
 
-		dispatch({
-			payload: {
-				...payload,
-				rightSidebarType: 'objectRelationshipDetails',
-				selectedObjectRelationshipEdgeId: newObjectRelationshipId,
-			},
-			type: TYPES.UPDATE_MODEL_BUILDER_STRUCTURE,
-		});
+		
+
+		if (
+			newObjectRelationship.objectDefinitionId1 ===
+			newObjectRelationship.objectDefinitionId2
+		) {
+			dispatch({
+				payload: {
+					edges,
+					nodes,
+					rightSidebarType: 'objectRelationshipDetails',
+					selectedObjectRelationship: newObjectRelationship,
+				},
+				type: TYPES.ADD_NEW_OBJECT_SELF_RELATIONSHIP,
+			});
+		}
+		else {
+			dispatch({
+				payload: {
+					...payload,
+					rightSidebarType: 'objectRelationshipDetails',
+					selectedObjectRelationshipEdgeId: newObjectRelationship.id,
+				},
+				type: TYPES.UPDATE_MODEL_BUILDER_STRUCTURE,
+			});
+		}
 	};
 
 	return (
@@ -201,9 +223,11 @@ function DiagramBuilder({
 					objectRelationshipParameterRequired={
 						newObjectRelationshipSourceNodeProps?.parameterRequired!
 					}
-					onAfterSubmit={(newObjectRelationshipId: number) =>
-						updateModelBuilderStructure(newObjectRelationshipId)
-					}
+					onAfterSubmit={(
+						newObjectRelationship: ObjectRelationship
+					) => {
+						const {edges, nodes} = useStoreState((state) => state);
+						updateModelBuilderStructure(edges, newObjectRelationship, nodes)}}
 					reload={false}
 				/>
 			)}

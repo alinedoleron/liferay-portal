@@ -228,6 +228,52 @@ export function ObjectFolderReducer(state: TState, action: TAction): TState {
 			};
 		}
 
+		case TYPES.ADD_NEW_OBJECT_SELF_RELATIONSHIP: {
+			const {
+				edges,
+				nodes,
+				rightSidebarType,
+				selectedObjectRelationship,
+			} = action.payload;
+
+			const newObjectDefinitionNodes = nodes.map((node) => {
+				if (
+					node.id ===
+					selectedObjectRelationship.objectDefinitionId1.toString()
+				) {
+					return {
+						...node,
+						data: {
+							...node.data,
+							hasSelfObjectRelationships: true,
+						},
+					};
+				}
+			}) as Node<ObjectDefinitionNodeData>[];
+
+			const newObjectRelationshipEdges = edges.map(
+				(objectRelationshipEdge) => ({
+					...objectRelationshipEdge,
+					data: {
+						...objectRelationshipEdge.data,
+						selected:
+							objectRelationshipEdge.data?.objectRelationshipId.toString() ===
+							selectedObjectRelationship.id.toString(),
+					},
+				})
+			) as Edge<ObjectRelationshipEdgeData>[];
+
+			return {
+				...state,
+				elements: [
+					...newObjectDefinitionNodes,
+					...newObjectRelationshipEdges,
+				],
+				rightSidebarType,
+				selectedObjectRelationship,
+			};
+		}
+
 		case TYPES.BULK_CHANGE_NODE_VIEW: {
 			const {
 				edges,
