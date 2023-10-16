@@ -12,7 +12,7 @@ import Radio from '../Radio/Radio.es';
 
 // @ts-ignore
 
-import Select from '../Select/Select.es';
+import Select from '../Select/Select';
 
 // @ts-ignore
 
@@ -162,55 +162,9 @@ const NumericInputMask: React.FC<IProps> = ({
 	return (
 		<>
 			<div className="align-items-end d-flex position-relative">
-				<div className="pr-2 w-50">
-					<Select
-						label={Liferay.Language.get('thousands-separator')}
-						name="thousandsSeparator"
-						onBlur={onBlur}
-						onChange={(event: any, value: any) => {
-							handleChange('symbols', {
-								decimalSymbol: decimalSymbol?.[0],
-								thousandsSeparator: value[0],
-							});
+				<div className="pr-2 w-50"></div>
 
-							setThousandsSeparator(value[0]);
-						}}
-						onFocus={onFocus}
-						options={thousandsSeparators}
-						placeholder={Liferay.Language.get('choose-an-option')}
-						readOnly={readOnly}
-						showEmptyOption={false}
-						value={thousandsSeparator}
-						visible={visible}
-					/>
-				</div>
-
-				<div className="pl-2 w-50">
-					<Select
-						label={Liferay.Language.get('decimal-separator')}
-						name="decimalSymbol"
-						onBlur={onBlur}
-						onChange={(event: any, value: any) => {
-							handleChange('symbols', {
-								decimalSymbol: value[0],
-								thousandsSeparator: thousandsSeparator?.includes(
-									'none'
-								)
-									? 'none'
-									: thousandsSeparator?.[0],
-							});
-
-							setDecimalSymbol(value[0]);
-						}}
-						onFocus={onFocus}
-						options={decimalSymbols}
-						placeholder={Liferay.Language.get('choose-an-option')}
-						readOnly={readOnly}
-						showEmptyOption={false}
-						value={decimalSymbol}
-						visible={visible}
-					/>
-				</div>
+				<div className="pl-2 w-50"></div>
 			</div>
 			{visible && (
 				<div>
