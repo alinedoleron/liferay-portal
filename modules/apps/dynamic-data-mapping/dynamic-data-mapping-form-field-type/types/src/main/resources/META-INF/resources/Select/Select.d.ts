@@ -20,7 +20,7 @@ interface MainProps {
 	predefinedValue: string[] | string;
 	readOnly: boolean;
 	showEmptyOption: boolean;
-	value: string[];
+	value?: any[];
 }
 interface Option<T> {
 	label: LocalizedValue<string>;

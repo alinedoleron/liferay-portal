@@ -43,7 +43,7 @@ interface MainProps {
 	predefinedValue: string[] | string;
 	readOnly: boolean;
 	showEmptyOption: boolean;
-	value: string[];
+	value?: any[];
 }
 
 interface SelectProps extends Omit<MainProps, 'editingLanguageId'> {}
@@ -137,7 +137,7 @@ function Select({
 				onChange({}, [field.value]);
 			}}
 			placeholder="Select a fruit"
-			selectedKey={value[0]}
+			selectedKey={value?.[0]}
 			value={value || predefinedValue}
 		>
 			{(item) => <Option key={item.value}>{item.label}</Option>}
@@ -160,7 +160,7 @@ const MultipleSelection = ({
 	const {activeTabTitle, viewMode} = useFormState();
 	useEffect(() => {
 		const newItems = options.filter((option) =>
-			value.includes(option.value)
+			value?.includes(option.value)
 		);
 
 		setItems(newItems);
@@ -212,13 +212,13 @@ const MultipleSelection = ({
 							<div className="auto autofit-row-center fit-row">
 								<ClayCheckbox
 									aria-label={item.label}
-									checked={value.includes(item.value)}
+									checked={value?.includes(item.value)!}
 									data-itemValue={item.value}
 									data-testid={`labelItem-${item.value}`}
 									label={item.label}
 									onChange={(event) => {
 										let newValue = [];
-										if (value.includes(item.value)) {
+										if (value?.includes(item.value)) {
 											newValue = removeValue({
 												value,
 												valueToBeRemoved: item.value,
