@@ -30,23 +30,27 @@ import {getTooltipTitle} from '../util/tooltip';
 import type {Locale, LocalizedValue} from '../types';
 
 interface MainProps {
-	editingLanguageId: Locale;
-	fixedOptions: Option<string>[];
+	editingLanguageId?: Locale;
+	fixedOptions?: Option<string>[];
 	label: string;
-	localizedValue: any;
-	localizedValueEdited: any;
-	multiple: boolean;
+	localizedValue?: any;
+	localizedValueEdited?: any;
+	multiple?: boolean;
 	name: string;
 	onChange: any;
-	onFocus: React.FocusEventHandler<HTMLInputElement>;
 	options: any[];
-	predefinedValue: string[] | string;
+	predefinedValue?: string[] | string;
 	readOnly: boolean;
+	selectedKey: string;
 	showEmptyOption: boolean;
-	value?: any[];
+	value: string[] | string;
+	visible?:boolean;
 }
 
-interface SelectProps extends Omit<MainProps, 'editingLanguageId'> {}
+interface SelectProps extends Omit<MainProps, 'editingLanguageId' | 'value' > {
+	selectedKey: string;
+}
+interface MultiSelectProps extends Omit<MainProps, 'editingLanguageId' | 'selectedKey'> {}
 
 interface IOption {
 	editingLanguageId: Locale;
@@ -60,6 +64,16 @@ interface IOption {
 interface Option<T> {
 	label: LocalizedValue<string>;
 	value: T;
+}
+
+interface Item {
+	active: boolean;
+checked: boolean;
+label: string;
+reference: string;
+type: string;
+value: string;
+_key?: string;
 }
 
 /**
@@ -122,9 +136,9 @@ function Select({
 	predefinedValue,
 	readOnly,
 	showEmptyOption,
-	value,
-	...otherProps
+	selectedKey
 }: SelectProps) {
+	console.log('selectedKey:',selectedKey);
 	return (
 		<Picker
 			aria-labelledby="picker-label"
@@ -132,15 +146,19 @@ function Select({
 			id="picker"
 			items={options}
 			onSelectionChange={(itemKey: any) => {
-				const field = options.find(({value}) => value === itemKey);
+				let newItemKey = itemKey;
+				if(itemKey.includes('$.')){
+					newItemKey = '.';
+				}
+
+				const field = options.find(({value}) => value === newItemKey);
 
 				onChange({}, [field.value]);
 			}}
-			placeholder="Select a fruit"
-			selectedKey={value?.[0]}
-			value={value || predefinedValue}
+			placeholder={Liferay.Language.get('choose-an-option')}
+			selectedKey={selectedKey || predefinedValue?.[0]}
 		>
-			{(item) => <Option key={item.value}>{item.label}</Option>}
+			{(item) => <Option disabled={item.disabled} key={item.value}>{item.label}</Option>}
 		</Picker>
 	);
 }
@@ -154,10 +172,12 @@ const MultipleSelection = ({
 	readOnly,
 	showEmptyOption,
 	value,
-}: SelectProps) => {
-	const [items, setItems] = useState<any[]>([]);
+}: MultiSelectProps) => {
+	const [items, setItems] = useState<Item[]>([]);
 	const [loading, setLoading] = useState<boolean>();
 	const {activeTabTitle, viewMode} = useFormState();
+
+
 	useEffect(() => {
 		const newItems = options.filter((option) =>
 			value?.includes(option.value)
@@ -184,7 +204,7 @@ const MultipleSelection = ({
 					disabled={readOnly}
 					inputName="myInput"
 					items={items}
-					onItemsChange={(itemsChanged: any) => {
+					onItemsChange={(itemsChanged: Item[]) => {
 						const lastItemAdded =
 							itemsChanged[itemsChanged.length - 1];
 
@@ -251,21 +271,22 @@ const MultipleSelection = ({
 };
 
 const Main = ({
-	editingLanguageId,
 	fixedOptions = [],
 	label,
 	localizedValue = {},
 	localizedValueEdited,
-	multiple,
+	multiple = false,
 	name,
 	onChange,
 	options = [],
 	predefinedValue = [],
 	readOnly = false,
 	showEmptyOption = true,
-	value = [],
+	value = "",
+	selectedKey,
 	...otherProps
 }: MainProps) => {
+	const {editingLanguageId}: {editingLanguageId: Locale} = useFormState();
 	const predefinedValueArray = toArray(predefinedValue);
 	const valueArray = toArray(value);
 
@@ -283,7 +304,8 @@ const Main = ({
 		[fixedOptions, multiple, options, showEmptyOption, valueArray]
 	);
 
-	value = useMemo(
+
+	const multipleSelectValues = useMemo(
 		() =>
 			normalizeValue({
 				localizedValueEdited,
@@ -322,7 +344,7 @@ const Main = ({
 					predefinedValue={predefinedValueArray}
 					readOnly={readOnly}
 					showEmptyOption={false}
-					value={value}
+					value={multipleSelectValues.length ? multipleSelectValues : predefinedValue}
 					{...otherProps}
 				/>
 			) : (
@@ -338,8 +360,7 @@ const Main = ({
 					predefinedValue={predefinedValueArray}
 					readOnly={readOnly}
 					showEmptyOption={false}
-					value={value}
-					{...otherProps}
+					selectedKey={selectedKey || value[0]}
 				/>
 			)}
 

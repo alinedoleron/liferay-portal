@@ -3,31 +3,32 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
+/// <reference types="react" />
+
 import {Option} from '@clayui/core';
-import React from 'react';
 import type {Locale, LocalizedValue} from '../types';
 interface MainProps {
-	editingLanguageId: Locale;
-	fixedOptions: Option<string>[];
+	editingLanguageId?: Locale;
+	fixedOptions?: Option<string>[];
 	label: string;
-	localizedValue: any;
-	localizedValueEdited: any;
-	multiple: boolean;
+	localizedValue?: any;
+	localizedValueEdited?: any;
+	multiple?: boolean;
 	name: string;
 	onChange: any;
-	onFocus: React.FocusEventHandler<HTMLInputElement>;
 	options: any[];
-	predefinedValue: string[] | string;
+	predefinedValue?: string[] | string;
 	readOnly: boolean;
+	selectedKey: string;
 	showEmptyOption: boolean;
-	value?: any[];
+	value: string[] | string;
+	visible?: boolean;
 }
 interface Option<T> {
 	label: LocalizedValue<string>;
 	value: T;
 }
 declare const Main: ({
-	editingLanguageId,
 	fixedOptions,
 	label,
 	localizedValue,
@@ -40,6 +41,7 @@ declare const Main: ({
 	readOnly,
 	showEmptyOption,
 	value,
+	selectedKey,
 	...otherProps
 }: MainProps) => JSX.Element;
 export default Main;
