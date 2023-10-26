@@ -4,151 +4,51 @@
  */
 
 import {Option, Picker} from '@clayui/core';
-import ClayDropDown from '@clayui/drop-down';
-import Form from '@clayui/form';
-import {ClayCheckbox} from '@clayui/form';
-import ClayMultiSelect from '@clayui/multi-select';
-import {ClayTooltipProvider} from '@clayui/tooltip';
-import {useForm, useFormState} from 'data-engine-js-components-web';
-import React, {
-	ReactElement,
-	forwardRef,
-	useEffect,
-	useMemo,
-	useRef,
-	useState,
-} from 'react';
+import DropDown from '@clayui/drop-down';
+import {useFormState} from 'data-engine-js-components-web';
+import React, {useMemo} from 'react';
 
 import {FieldBase} from '../FieldBase/ReactFieldBase.es';
 
 // @ts-ignore
 
-import {useSyncValue} from '../hooks/useSyncValue.es';
 import {normalizeOptions, normalizeValue} from '../util/options';
-import {getTooltipTitle} from '../util/tooltip';
+import MultipleSelection from './MultipleSelect';
+import {MainProps, SelectProps} from './select';
+import {toArray} from './selectOperations';
 
-import type {Locale, LocalizedValue} from '../types';
-
-interface MainProps {
-	editingLanguageId?: Locale;
-	fixedOptions?: Option<string>[];
-	label: string;
-	localizedValue?: any;
-	localizedValueEdited?: any;
-	multiple?: boolean;
-	name: string;
-	onChange: any;
-	options: any[];
-	predefinedValue?: string[] | string;
-	readOnly: boolean;
-	selectedKey: string;
-	showEmptyOption: boolean;
-	value: string[] | string;
-	visible?:boolean;
-}
-
-interface SelectProps extends Omit<MainProps, 'editingLanguageId' | 'value' > {
-	selectedKey: string;
-}
-interface MultiSelectProps extends Omit<MainProps, 'editingLanguageId' | 'selectedKey'> {}
-
-interface IOption {
-	editingLanguageId: Locale;
-	fixedOptions: Option<string>[];
-	multiple: boolean;
-	options: any[];
-	showEmptyOption: boolean;
-	valueArray: string[];
-}
-
-interface Option<T> {
-	label: LocalizedValue<string>;
-	value: T;
-}
-
-interface Item {
-	active: boolean;
-checked: boolean;
-label: string;
-reference: string;
-type: string;
-value: string;
-_key?: string;
-}
-
-/**
- * Appends a new value on the current value state
- * @param options {Object}
- * @param options.value {Array|String}
- * @param options.valueToBeAppended {Array|String}
- * @returns {Array}
- */
-function appendValue({value, valueToBeAppended}: any) {
-	const currentValue = toArray(value);
-	const newValue = [...currentValue];
-
-	if (value) {
-		newValue.push(valueToBeAppended);
-	}
-
-	return newValue;
-}
-
-/**
- * Removes a value from the value array.
- * @param options {Object}
- * @param options.value {Array|String}
- * @param options.valueToBeRemoved {Array|String}
- * @returns {Array}
- */
-function removeValue({value, valueToBeRemoved}: any) {
-	const currentValue = toArray(value);
-
-	return currentValue.filter((v) => v !== valueToBeRemoved);
-}
-
-/**
- * Wraps the given argument into an array.
- * @param value {Array|String}
- */
-function toArray(value: string[] | string) {
-	let newValue: string[] | string = value;
-
-	if (newValue && typeof newValue === 'string') {
-		try {
-			newValue = JSON.parse(newValue);
-		}
-		catch (error) {}
-	}
-
-	if (!Array.isArray(newValue)) {
-		newValue = [newValue];
-	}
-
-	return newValue;
-}
+import type {Locale} from '../types';
 
 function Select({
 	label,
-	multiple,
+	name,
 	onChange,
 	options,
 	predefinedValue,
 	readOnly,
-	showEmptyOption,
-	selectedKey
+	required,
+	selectedKey,
 }: SelectProps) {
-	console.log('selectedKey:',selectedKey);
+	let newSelectedKey = selectedKey;
+	if (selectedKey === null) {
+		newSelectedKey = 'null';
+	}
+
 	return (
 		<Picker
-			aria-labelledby="picker-label"
+			aria-labelledby={name}
+			aria-required={required}
 			disabled={readOnly}
 			id="picker"
-			items={options}
+			items={[{items: options, label}]}
 			onSelectionChange={(itemKey: any) => {
 				let newItemKey = itemKey;
-				if(itemKey.includes('$.')){
+
+				if (itemKey?.includes('$.')) {
 					newItemKey = '.';
+				}
+				else if (itemKey === 'null') {
+					newItemKey = null;
 				}
 
 				const field = options.find(({value}) => value === newItemKey);
@@ -156,119 +56,20 @@ function Select({
 				onChange({}, [field.value]);
 			}}
 			placeholder={Liferay.Language.get('choose-an-option')}
-			selectedKey={selectedKey || predefinedValue?.[0]}
+			selectedKey={newSelectedKey || predefinedValue?.[0]}
 		>
-			{(item) => <Option disabled={item.disabled} key={item.value}>{item.label}</Option>}
+			{(group) => (
+				<DropDown.Group header={group.label} items={group.items}>
+					{(item) => (
+						<Option disabled={item.disabled} key={item.value}>
+							{item.label}
+						</Option>
+					)}
+				</DropDown.Group>
+			)}
 		</Picker>
 	);
 }
-
-const MultipleSelection = ({
-	label,
-	multiple,
-	onChange,
-	options,
-	predefinedValue,
-	readOnly,
-	showEmptyOption,
-	value,
-}: MultiSelectProps) => {
-	const [items, setItems] = useState<Item[]>([]);
-	const [loading, setLoading] = useState<boolean>();
-	const {activeTabTitle, viewMode} = useFormState();
-
-
-	useEffect(() => {
-		const newItems = options.filter((option) =>
-			value?.includes(option.value)
-		);
-
-		setItems(newItems);
-	}, [value]);
-
-	useEffect(() => {
-		if (
-			!readOnly &&
-			activeTabTitle !== Liferay.Language.get('advanced') &&
-			!viewMode
-		) {
-			setLoading(true);
-			setTimeout(() => setLoading(false), 200);
-		}
-	}, [options]);
-
-	return (
-		<>
-			{!loading && (
-				<ClayMultiSelect
-					disabled={readOnly}
-					inputName="myInput"
-					items={items}
-					onItemsChange={(itemsChanged: Item[]) => {
-						const lastItemAdded =
-							itemsChanged[itemsChanged.length - 1];
-
-						if (
-							itemsChanged.filter(
-								(i: any) => lastItemAdded._key === i.value
-							).length > 1
-						) {
-							itemsChanged = itemsChanged.filter(
-								(i: any) => lastItemAdded.value !== i.value
-							);
-						}
-
-						setItems(itemsChanged);
-						const newValue = itemsChanged.map((i: any) => i.value);
-						onChange({}, newValue);
-					}}
-					sourceItems={options}
-				>
-					{(item) => (
-						<ClayMultiSelect.Item
-							key={item.value}
-							textValue={item.label}
-						>
-							<div className="auto autofit-row-center fit-row">
-								<ClayCheckbox
-									aria-label={item.label}
-									checked={value?.includes(item.value)!}
-									data-itemValue={item.value}
-									data-testid={`labelItem-${item.value}`}
-									label={item.label}
-									onChange={(event) => {
-										let newValue = [];
-										if (value?.includes(item.value)) {
-											newValue = removeValue({
-												value,
-												valueToBeRemoved: item.value,
-											});
-
-											setItems(
-												items.filter((i) =>
-													i._key
-														? item.value !== i._key
-														: item.value !== i.value
-												)
-											);
-										}
-										else {
-											newValue = appendValue({
-												value,
-												valueToBeAppended: item.value,
-											});
-										}
-										onChange({}, newValue);
-									}}
-								/>
-							</div>
-						</ClayMultiSelect.Item>
-					)}
-				</ClayMultiSelect>
-			)}
-		</>
-	);
-};
 
 const Main = ({
 	fixedOptions = [],
@@ -282,7 +83,7 @@ const Main = ({
 	predefinedValue = [],
 	readOnly = false,
 	showEmptyOption = true,
-	value = "",
+	value = '',
 	selectedKey,
 	...otherProps
 }: MainProps) => {
@@ -303,7 +104,6 @@ const Main = ({
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[fixedOptions, multiple, options, showEmptyOption, valueArray]
 	);
-
 
 	const multipleSelectValues = useMemo(
 		() =>
@@ -334,23 +134,27 @@ const Main = ({
 			{multiple ? (
 				<MultipleSelection
 					fixedOptions={[]}
-					label=""
+					label={label}
 					localizedValue={undefined}
 					localizedValueEdited={undefined}
-					multiple={multiple}
 					name={`${name}_field`}
 					onChange={onChange}
 					options={normalizedOptions}
 					predefinedValue={predefinedValueArray}
 					readOnly={readOnly}
+					required={otherProps.required}
 					showEmptyOption={false}
-					value={multipleSelectValues.length ? multipleSelectValues : predefinedValue}
+					value={
+						multipleSelectValues.length
+							? multipleSelectValues
+							: predefinedValue
+					}
 					{...otherProps}
 				/>
 			) : (
 				<Select
-					fixedOptions={[]}
-					label=""
+					fixedOptions={fixedOptions}
+					label={label}
 					localizedValue={undefined}
 					localizedValueEdited={undefined}
 					multiple={multiple}
@@ -359,8 +163,9 @@ const Main = ({
 					options={normalizedOptions}
 					predefinedValue={predefinedValueArray}
 					readOnly={readOnly}
-					showEmptyOption={false}
+					required={otherProps.required}
 					selectedKey={selectedKey || value[0]}
+					showEmptyOption={false}
 				/>
 			)}
 

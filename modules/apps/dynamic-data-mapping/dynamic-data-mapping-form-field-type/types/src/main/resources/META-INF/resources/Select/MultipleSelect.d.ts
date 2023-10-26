@@ -5,21 +5,13 @@
 
 /// <reference types="react" />
 
-import {MainProps} from './select';
-declare const Main: ({
-	fixedOptions,
-	label,
-	localizedValue,
-	localizedValueEdited,
-	multiple,
+import {MultiSelectProps} from './select';
+declare const MultipleSelection: ({
 	name,
 	onChange,
 	options,
-	predefinedValue,
 	readOnly,
-	showEmptyOption,
+	required,
 	value,
-	selectedKey,
-	...otherProps
-}: MainProps) => JSX.Element;
-export default Main;
+}: MultiSelectProps) => JSX.Element;
+export default MultipleSelection;

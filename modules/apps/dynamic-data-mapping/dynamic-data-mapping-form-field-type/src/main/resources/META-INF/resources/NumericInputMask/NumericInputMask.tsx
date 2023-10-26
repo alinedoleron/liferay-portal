@@ -159,14 +159,11 @@ const NumericInputMask: React.FC<IProps> = ({
 		});
 	};
 
-	console.log('thousandsSeparator', thousandsSeparator);
-	console.log('decimalSymbol', decimalSymbol)
-
 	return (
 		<>
 			<div className="align-items-end d-flex position-relative">
 				<div className="pr-2 w-50">
-				<Select
+					<Select
 						label={Liferay.Language.get('thousands-separator')}
 						name="thousandsSeparator"
 						onChange={(event: any, value: any) => {
@@ -176,18 +173,22 @@ const NumericInputMask: React.FC<IProps> = ({
 							});
 
 							setThousandsSeparator(value[0]);
-						} }
+						}}
 						options={thousandsSeparators}
 						readOnly={readOnly}
+						selectedKey={
+							thousandsSeparator === '.'
+								? '$.2'
+								: (thousandsSeparator as string)
+						}
 						showEmptyOption={false}
-						selectedKey={thousandsSeparator === '.' ? '$.2' : (thousandsSeparator as string)}
 						value={thousandsSeparator}
 						visible={visible}
 					/>
 				</div>
 
 				<div className="pl-2 w-50">
-				<Select
+					<Select
 						label={Liferay.Language.get('decimal-separator')}
 						name="decimalSymbol"
 						onChange={(event: any, value: any) => {
@@ -196,17 +197,21 @@ const NumericInputMask: React.FC<IProps> = ({
 								thousandsSeparator: (thousandsSeparator?.includes(
 									'none'
 								)
-									? 'none' 
-									: thousandsSeparator[0]) as ThousandsSeparator
+									? 'none'
+									: thousandsSeparator[0]) as ThousandsSeparator,
 							});
 
 							setDecimalSymbol(value[0]);
-						} }
+						}}
 						options={decimalSymbols}
 						readOnly={readOnly}
-						selectedKey={decimalSymbol === '.' ? '$.0' : (decimalSymbol as string)}
-						value={[]}
+						selectedKey={
+							decimalSymbol === '.'
+								? '$.0'
+								: (decimalSymbol as string)
+						}
 						showEmptyOption={false}
+						value={[]}
 						visible={visible}
 					/>
 				</div>
