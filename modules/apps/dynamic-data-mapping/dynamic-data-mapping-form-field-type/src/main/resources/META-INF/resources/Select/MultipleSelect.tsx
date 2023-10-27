@@ -62,7 +62,12 @@ const MultipleSelection = ({
 					disabled={readOnly}
 					items={items}
 					onItemsChange={(itemsChanged: any[]) => {
-						onChange({}, itemsChanged.map(({value}) => value));
+						let uniqueItems = [...new Set(itemsChanged.map((item) => item.value))];
+						if(itemsChanged.length > uniqueItems.length) {
+							uniqueItems.pop();
+						}
+						onChange({}, uniqueItems);
+
 					}}
 					sourceItems={options}
 				>
@@ -96,7 +101,8 @@ const MultipleSelection = ({
 											
 										});
 									}
-									
+
+										onChange({}, newValue);
 									}}
 								/>
 							</div>
