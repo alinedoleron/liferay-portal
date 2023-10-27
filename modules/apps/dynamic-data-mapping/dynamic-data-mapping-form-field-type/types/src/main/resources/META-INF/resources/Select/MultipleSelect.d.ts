@@ -12,6 +12,6 @@ declare const MultipleSelection: ({
 	options,
 	readOnly,
 	required,
-	value,
+	value: values,
 }: MultiSelectProps) => JSX.Element;
 export default MultipleSelection;

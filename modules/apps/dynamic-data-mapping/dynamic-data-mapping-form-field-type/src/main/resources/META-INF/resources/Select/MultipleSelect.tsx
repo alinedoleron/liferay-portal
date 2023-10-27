@@ -6,10 +6,15 @@
 import {ClayCheckbox} from '@clayui/form';
 import ClayMultiSelect from '@clayui/multi-select';
 import {useFormState} from 'data-engine-js-components-web';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 
-import {Item, MultiSelectProps} from './select';
+import {MultiSelectProps} from './select';
 import {appendValue, removeValue} from './selectOperations';
+import { Item } from '@clayui/multi-select/lib/types';
+
+type MultiSelectItem = {
+	label: string
+}
 
 const MultipleSelection = ({
 	name,
@@ -17,20 +22,24 @@ const MultipleSelection = ({
 	options,
 	readOnly,
 	required,
-	value,
+	value: values,
 }: MultiSelectProps) => {
-	const [items, setItems] = useState<Item[]>([]);
+	const [items, setItems] = useState<MultiSelectItem[]>([]);
 	const [loading, setLoading] = useState<boolean>();
 	const {activeTabTitle, viewMode} = useFormState();
 
 	useEffect(() => {
-		const newItems = options.filter((option) =>
-			value?.includes(option.value)
+		const newItems = options.filter((option) =>{
+			if(values?.includes(option.value)) {
+				return {label: option.label};
+			}
+				
+		}
 		);
 
 		setItems(newItems);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [value]);
+	}, [values]);
 
 	useEffect(() => {
 		if (
@@ -41,9 +50,9 @@ const MultipleSelection = ({
 			setLoading(true);
 			setTimeout(() => setLoading(false), 200);
 		}
+
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [options]);
-
 	return (
 		<>
 			{!loading && (
@@ -51,25 +60,9 @@ const MultipleSelection = ({
 					aria-labelledby={name}
 					aria-required={required}
 					disabled={readOnly}
-					inputName="myInput"
 					items={items}
-					onItemsChange={(itemsChanged: Item[]) => {
-						const lastItemAdded =
-							itemsChanged[itemsChanged.length - 1];
-
-						if (
-							itemsChanged.filter(
-								(i: any) => lastItemAdded._key === i.value
-							).length > 1
-						) {
-							itemsChanged = itemsChanged.filter(
-								(i: any) => lastItemAdded.value !== i.value
-							);
-						}
-
-						setItems(itemsChanged);
-						const newValue = itemsChanged.map((i: any) => i.value);
-						onChange({}, newValue);
+					onItemsChange={(itemsChanged: any[]) => {
+						onChange({}, itemsChanged.map(({value}) => value));
 					}}
 					sourceItems={options}
 				>
@@ -81,33 +74,29 @@ const MultipleSelection = ({
 							<div className="auto autofit-row-center fit-row">
 								<ClayCheckbox
 									aria-label={item.label}
-									checked={value?.includes(item.value)!}
+									checked={values?.includes(item.value)!}
 									data-itemValue={item.value}
 									data-testid={`labelItem-${item.value}`}
 									label={item.label}
-									onChange={() => {
-										let newValue = [];
-										if (value?.includes(item.value)) {
-											newValue = removeValue({
-												value,
-												valueToBeRemoved: item.value,
-											});
-
-											setItems(
-												items.filter((i) =>
-													i._key
-														? item.value !== i._key
-														: item.value !== i.value
-												)
-											);
-										}
-										else {
-											newValue = appendValue({
-												value,
-												valueToBeAppended: item.value,
-											});
-										}
-										onChange({}, newValue);
+									onChange={(event) => {
+										const {target: {checked}} = event;
+										let newValue : string[] = values as string[];
+										if(checked) {
+											options.forEach(option => {
+											if(option.value === item.value) {
+												newValue.push(option.value);
+											}
+											
+										});
+									} else {
+										options.forEach(option => {
+											if(option.value === item.value) {
+												newValue = (values as string[]).filter((value) => value !== item.value);
+											}
+											
+										});
+									}
+									
 									}}
 								/>
 							</div>

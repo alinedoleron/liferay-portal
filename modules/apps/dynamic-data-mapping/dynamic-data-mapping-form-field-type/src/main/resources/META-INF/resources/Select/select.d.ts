@@ -24,7 +24,9 @@ interface MainProps {
 	localizedValueEdited?: any;
 	multiple?: boolean;
 	name: string;
+	onBlur?:any;
 	onChange: any;
+	onFocus?:any;
 	options: any[];
 	predefinedValue?: string[] | string;
 	readOnly: boolean;

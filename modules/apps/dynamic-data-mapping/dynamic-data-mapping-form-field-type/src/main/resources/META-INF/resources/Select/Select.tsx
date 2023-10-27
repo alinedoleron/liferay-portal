@@ -1,4 +1,4 @@
-/**
+	/**
  * SPDX-FileCopyrightText: (c) 2000 Liferay, Inc. https://liferay.com
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
@@ -90,6 +90,7 @@ const Main = ({
 	const {editingLanguageId}: {editingLanguageId: Locale} = useFormState();
 	const predefinedValueArray = toArray(predefinedValue);
 	const valueArray = toArray(value);
+	const {viewMode} = useFormState();
 
 	const normalizedOptions = useMemo(
 		() =>
@@ -145,7 +146,7 @@ const Main = ({
 					required={otherProps.required}
 					showEmptyOption={false}
 					value={
-						multipleSelectValues.length
+						viewMode || multipleSelectValues.length
 							? multipleSelectValues
 							: predefinedValue
 					}
