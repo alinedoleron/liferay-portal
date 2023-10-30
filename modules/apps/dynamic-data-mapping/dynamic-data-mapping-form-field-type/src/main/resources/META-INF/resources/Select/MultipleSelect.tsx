@@ -9,8 +9,6 @@ import {useFormState} from 'data-engine-js-components-web';
 import React, {useEffect, useRef, useState} from 'react';
 
 import {MultiSelectProps} from './select';
-import {appendValue, removeValue} from './selectOperations';
-import { Item } from '@clayui/multi-select/lib/types';
 
 type MultiSelectItem = {
 	label: string
@@ -68,6 +66,11 @@ const MultipleSelection = ({
 						}
 						onChange({}, uniqueItems);
 
+					}}
+					onKeyDown={(event)=>{
+						if(event.key === 'Enter') {
+							event.preventDefault();
+						}
 					}}
 					sourceItems={options}
 				>
