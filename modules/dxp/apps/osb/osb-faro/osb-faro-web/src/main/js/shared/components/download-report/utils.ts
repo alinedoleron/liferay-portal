@@ -1,8 +1,13 @@
 import html2canvas from 'html2canvas';
 import JsPDF from 'jspdf';
 import moment from 'moment';
+import {buildOrderByFields} from 'shared/util/pagination';
 import {DEFAULT_DATE_FORMAT} from 'shared/util/date';
+import {INDIVIDUALS} from 'shared/util/router';
 import {TransformedContainer} from './DownloadPDFReport';
+import {useParams} from 'react-router-dom';
+
+const PRIMARY_COLOR = '#0B5FFF';
 
 export function formatDate(date) {
 	return moment(date).format(DEFAULT_DATE_FORMAT);
@@ -65,7 +70,7 @@ export function generateReport({
 		doc.rect(0, 0, docWidth, headerHeight, 'F');
 
 		doc.setFont('Helvetica', 'normal');
-		doc.setTextColor('#6B6C7E');
+		doc.setTextColor(PRIMARY_COLOR);
 		doc.setFontSize(8);
 		doc.text('Analytics Cloud', paddingX, paddingY - 7);
 
@@ -88,7 +93,7 @@ export function generateReport({
 		}
 
 		doc.setFontSize(8);
-		doc.setTextColor('#0B5FFF');
+		doc.setTextColor(PRIMARY_COLOR);
 		doc.textWithLink(
 			Liferay.Language.get('access-workspace'),
 			docWidth - paddingX - 25,
@@ -158,4 +163,63 @@ export function generateReport({
 
 		doc.save(docName);
 	});
+}
+
+export function useDownloadCSV({
+	assetId,
+	assetType,
+	type
+}: {
+	assetId?: string;
+	assetType?: string;
+	type: string;
+}) {
+	const {channelId, groupId} = useParams();
+
+	return {
+		onClick: dateRange => {
+			const searchParams = new URLSearchParams(location.search);
+
+			const field = searchParams.get('field');
+			const query = searchParams.get('query');
+			const rangeKey = searchParams.get('rangeKey');
+			const sortOrder = searchParams.get('sortOrder');
+
+			const a = document.createElement('a');
+
+			let url = `/o/faro/main/${groupId}/reports/export/csv/${type}?channelId=${channelId}&fromDate=${formatDate(
+				dateRange?.start
+			)}&toDate=${formatDate(dateRange?.end)}`;
+
+			if (assetId) {
+				url += `&assetId=${encodeURIComponent(assetId)}`;
+			}
+
+			if (assetType) {
+				url += `&assetType=${assetType}`;
+			}
+
+			if (field && sortOrder) {
+				const orderByFields = JSON.stringify(
+					buildOrderByFields({field, sortOrder}, INDIVIDUALS)
+				);
+
+				url += `&orderByFields=${encodeURIComponent(orderByFields)}`;
+			}
+
+			if (query) {
+				url += `&query=${query}`;
+			}
+
+			if (dateRange?.end && dateRange?.start) {
+				url += '&rangeKey=CUSTOM';
+			} else if (rangeKey) {
+				url += `&rangeKey=${rangeKey}`;
+			}
+
+			a.href = url;
+
+			a.click();
+		}
+	};
 }

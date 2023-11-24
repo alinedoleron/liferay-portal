@@ -397,6 +397,7 @@ public class ObjectDefinitionLocalServiceImpl
 			}
 
 			_objectRelationshipLocalService.updateObjectRelationship(
+				objectRelationship.getExternalReferenceCode(),
 				objectRelationship.getObjectRelationshipId(),
 				objectRelationship.getParameterObjectFieldId(),
 				ObjectRelationshipConstants.DELETION_TYPE_CASCADE, true,
@@ -407,21 +408,27 @@ public class ObjectDefinitionLocalServiceImpl
 					objectRelationship.getObjectDefinitionId1());
 
 			if (objectDefinition1.getRootObjectDefinitionId() == 0) {
-				objectDefinitionLocalService.updateRootObjectDefinitionId(
-					objectDefinition1.getObjectDefinitionId(),
-					rootObjectDefinitionId);
+				objectDefinition1 =
+					objectDefinitionLocalService.updateRootObjectDefinitionId(
+						objectDefinition1.getObjectDefinitionId(),
+						rootObjectDefinitionId);
 			}
+
+			_updateObjectDefinitionPortlet(objectDefinition1);
 
 			ObjectDefinition objectDefinition2 =
 				objectDefinitionLocalService.getObjectDefinition(
 					objectRelationship.getObjectDefinitionId2());
 
-			objectDefinitionLocalService.updateRootObjectDefinitionId(
-				objectDefinition2.getObjectDefinitionId(),
-				rootObjectDefinitionId);
+			objectDefinition2 =
+				objectDefinitionLocalService.updateRootObjectDefinitionId(
+					objectDefinition2.getObjectDefinitionId(),
+					rootObjectDefinitionId);
 
 			_objectFieldLocalService.updateRequired(
 				objectRelationship.getObjectFieldId2(), true);
+
+			_updateObjectDefinitionPortlet(objectDefinition2);
 		}
 	}
 
@@ -1014,6 +1021,7 @@ public class ObjectDefinitionLocalServiceImpl
 					edge.getObjectRelationshipId());
 
 			_objectRelationshipLocalService.updateObjectRelationship(
+				objectRelationship.getExternalReferenceCode(),
 				objectRelationship.getObjectRelationshipId(),
 				objectRelationship.getParameterObjectFieldId(),
 				objectRelationship.getDeletionType(), false,
@@ -1980,6 +1988,19 @@ public class ObjectDefinitionLocalServiceImpl
 			objectDefinition.getObjectFolderId(), oldObjectFolderId);
 
 		return objectDefinition;
+	}
+
+	private void _updateObjectDefinitionPortlet(
+			ObjectDefinition objectDefinition)
+		throws PortalException {
+
+		if (objectDefinition.isPortlet() &&
+			objectDefinition.isRootDescendantNode()) {
+
+			objectDefinition.setPortlet(false);
+
+			objectDefinitionPersistence.update(objectDefinition);
+		}
 	}
 
 	private ObjectDefinition _updateTitleObjectFieldId(

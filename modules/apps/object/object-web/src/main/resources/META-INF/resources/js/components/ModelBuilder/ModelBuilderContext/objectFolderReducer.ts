@@ -455,6 +455,7 @@ export function ObjectFolderReducer(state: TState, action: TAction): TState {
 
 			let newObjectDefinitionNodes: Node<ObjectDefinitionNodeData>[] = [];
 			const allEdges: Edge<ObjectRelationshipEdgeData>[] = [];
+			const updatedObjectFolderItems: ObjectFolderItem[] = [];
 
 			if (currentObjectFolder) {
 				const positionColumn = {positionX: 0, positionY: 0};
@@ -543,16 +544,23 @@ export function ObjectFolderReducer(state: TState, action: TAction): TState {
 						} = objectFolderItem as ObjectFolderItem;
 
 						if (positionX === 0 && positionY === 0) {
-							positionX = positionColumn.positionX * 300 + 200;
-							positionY = positionColumn.positionY * 400 + 100;
+							positionX = positionColumn.positionX * 380 + 50;
+							positionY = positionColumn.positionY * 450 + 100;
 
 							positionColumn.positionX++;
 						}
 
-						if (index % 4 === 0 && index !== 0) {
+						if ((index + 1) % 4 === 0 && index !== 0) {
 							positionColumn.positionY++;
 							positionColumn.positionX = 0;
 						}
+
+						updatedObjectFolderItems.push({
+							linkedObjectDefinition: objectFolderItem?.linkedObjectDefinition!,
+							objectDefinitionExternalReferenceCode: objectFolderItem?.objectDefinitionExternalReferenceCode!,
+							positionX,
+							positionY,
+						});
 
 						return {
 							data: {
@@ -581,7 +589,10 @@ export function ObjectFolderReducer(state: TState, action: TAction): TState {
 					...newObjectRelationshipEdges,
 				],
 				leftSidebarItems: newLeftSidebarItems,
-				selectedObjectFolder,
+				selectedObjectFolder: {
+					...selectedObjectFolder,
+					objectFolderItems: updatedObjectFolderItems,
+				},
 			};
 
 			if (rightSidebarType) {
@@ -839,6 +850,7 @@ export function ObjectFolderReducer(state: TState, action: TAction): TState {
 				objectDefinitionNodes,
 				objectRelationshipEdges,
 				updatedObjectDefinitionNodeId,
+				updatedObjectFolder,
 			} = action.payload;
 
 			const newObjectDefinitionNodes = objectDefinitionNodes.map(
@@ -863,6 +875,7 @@ export function ObjectFolderReducer(state: TState, action: TAction): TState {
 					...newObjectDefinitionNodes,
 					...objectRelationshipEdges,
 				],
+				selectedObjectFolder: updatedObjectFolder,
 			};
 		}
 
@@ -968,7 +981,7 @@ export function ObjectFolderReducer(state: TState, action: TAction): TState {
 				(objectDefinitionNode) => {
 					if (
 						objectDefinitionNode.data?.id ===
-						updatedObjectDefinition.id?.toString()
+						updatedObjectDefinition.id
 					) {
 						return {
 							...objectDefinitionNode,
@@ -998,8 +1011,8 @@ export function ObjectFolderReducer(state: TState, action: TAction): TState {
 						updatedObjectDefinitions = leftSidebarItem.leftSidebarObjectDefinitionItems?.map(
 							(leftSidebarObjectDefinitionItem) => {
 								if (
-									leftSidebarObjectDefinitionItem.id.toString() ===
-									updatedObjectDefinition.id?.toString()
+									leftSidebarObjectDefinitionItem.id ===
+									updatedObjectDefinition.id
 								) {
 									return {
 										...leftSidebarObjectDefinitionItem,

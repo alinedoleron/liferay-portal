@@ -168,6 +168,7 @@ import com.liferay.portal.kernel.util.ReleaseInfo;
 import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.TextFormatter;
+import com.liferay.portal.kernel.util.URLUtil;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.kernel.util.UnicodePropertiesBuilder;
 import com.liferay.portal.kernel.util.Validator;
@@ -201,6 +202,7 @@ import com.liferay.style.book.zip.processor.StyleBookEntryZipProcessor;
 import com.liferay.template.model.TemplateEntry;
 import com.liferay.template.service.TemplateEntryLocalService;
 
+import java.io.InputStream;
 import java.io.Serializable;
 
 import java.net.URL;
@@ -524,7 +526,9 @@ public class BundleSiteInitializer implements SiteInitializer {
 			_invoke(() -> _addSiteConfiguration(serviceContext));
 			_invoke(() -> _addSiteSettings(serviceContext));
 			_invoke(() -> _addStyleBookEntries(serviceContext));
-			_invoke(() -> _addOrUpdateSXPBlueprint(serviceContext));
+			_invoke(
+				() -> _addOrUpdateSXPBlueprint(
+					serviceContext, stringUtilReplaceValues));
 			_invoke(() -> _addOrUpdateUserGroups(serviceContext));
 
 			_invoke(
@@ -909,7 +913,7 @@ public class BundleSiteInitializer implements SiteInitializer {
 			if (StringUtil.endsWith(
 					fileName, "fragment-composition-definition.json")) {
 
-				String json = StringUtil.read(url.openStream());
+				String json = URLUtil.toString(url);
 
 				json = _replace(
 					_replace(json, serviceContext), stringUtilReplaceValues);
@@ -918,9 +922,11 @@ public class BundleSiteInitializer implements SiteInitializer {
 					_removeFirst(fileName, parentResourcePath), json);
 			}
 			else {
-				zipWriter.addEntry(
-					_removeFirst(fileName, parentResourcePath),
-					url.openStream());
+				try (InputStream inputStream = url.openStream()) {
+					zipWriter.addEntry(
+						_removeFirst(fileName, parentResourcePath),
+						inputStream);
+				}
 			}
 		}
 
@@ -975,7 +981,7 @@ public class BundleSiteInitializer implements SiteInitializer {
 			if (StringUtil.endsWith(urlPath, "display-page-template.json") ||
 				StringUtil.endsWith(urlPath, "page-definition.json")) {
 
-				String json = StringUtil.read(url.openStream());
+				String json = URLUtil.toString(url);
 
 				json = _replace(
 					_replace(json, serviceContext), stringUtilReplaceValues);
@@ -1005,10 +1011,12 @@ public class BundleSiteInitializer implements SiteInitializer {
 					json);
 			}
 			else {
-				zipWriter.addEntry(
-					_removeFirst(
-						urlPath, "/site-initializer/layout-page-templates"),
-					url.openStream());
+				try (InputStream inputStream = url.openStream()) {
+					zipWriter.addEntry(
+						_removeFirst(
+							urlPath, "/site-initializer/layout-page-templates"),
+						inputStream);
+				}
 			}
 		}
 
@@ -1044,7 +1052,7 @@ public class BundleSiteInitializer implements SiteInitializer {
 			String urlPath = url.getPath();
 
 			if (StringUtil.endsWith(urlPath, "page-definition.json")) {
-				String json = StringUtil.read(url.openStream());
+				String json = URLUtil.toString(url);
 
 				json = _replace(
 					_replace(json, serviceContext), stringUtilReplaceValues);
@@ -1075,11 +1083,13 @@ public class BundleSiteInitializer implements SiteInitializer {
 					json);
 			}
 			else {
-				zipWriter.addEntry(
-					_removeFirst(
-						urlPath,
-						"/site-initializer/layout-utility-page-entries"),
-					url.openStream());
+				try (InputStream inputStream = url.openStream()) {
+					zipWriter.addEntry(
+						_removeFirst(
+							urlPath,
+							"/site-initializer/layout-utility-page-entries"),
+						inputStream);
+				}
 			}
 		}
 
@@ -1594,9 +1604,7 @@ public class BundleSiteInitializer implements SiteInitializer {
 			URL url = enumeration.nextElement();
 
 			JSONObject jsonObject = _jsonFactory.createJSONObject(
-				_replace(
-					StringUtil.read(url.openStream()),
-					stringUtilReplaceValues));
+				_replace(URLUtil.toString(url), stringUtilReplaceValues));
 
 			long resourceClassNameId = _portal.getClassNameId(
 				jsonObject.getString(
@@ -2762,7 +2770,7 @@ public class BundleSiteInitializer implements SiteInitializer {
 				FileUtil.getShortFileName(
 					FileUtil.stripExtension(url.getPath())),
 				_replace(
-					_replace(StringUtil.read(url.openStream()), serviceContext),
+					_replace(URLUtil.toString(url), serviceContext),
 					stringUtilReplaceValues));
 		}
 
@@ -3643,7 +3651,9 @@ public class BundleSiteInitializer implements SiteInitializer {
 		return structuredContentFolder.getId();
 	}
 
-	private void _addOrUpdateSXPBlueprint(ServiceContext serviceContext)
+	private void _addOrUpdateSXPBlueprint(
+			ServiceContext serviceContext,
+			Map<String, String> stringUtilReplaceValues)
 		throws Exception {
 
 		OSBSiteInitializer osbSiteInitializer =
@@ -3654,7 +3664,7 @@ public class BundleSiteInitializer implements SiteInitializer {
 		}
 
 		osbSiteInitializer.addOrUpdateSXPBlueprint(
-			serviceContext, _servletContext);
+			serviceContext, _servletContext, stringUtilReplaceValues);
 	}
 
 	private TaxonomyCategory _addOrUpdateTaxonomyCategoryTaxonomyCategory(
@@ -4136,9 +4146,11 @@ public class BundleSiteInitializer implements SiteInitializer {
 				continue;
 			}
 
-			zipWriter.addEntry(
-				_removeFirst(fileName, "/site-initializer/style-books/"),
-				url.openStream());
+			try (InputStream inputStream = url.openStream()) {
+				zipWriter.addEntry(
+					_removeFirst(fileName, "/site-initializer/style-books/"),
+					inputStream);
+			}
 		}
 
 		_styleBookEntryZipProcessor.importStyleBookEntries(
@@ -4971,7 +4983,7 @@ public class BundleSiteInitializer implements SiteInitializer {
 		if (url != null) {
 			_layoutSetLocalService.updateLogo(
 				serviceContext.getScopeGroupId(), privateLayout, true,
-				FileUtil.getBytes(url.openStream()));
+				URLUtil.toByteArray(url));
 		}
 
 		JSONObject settingsJSONObject = metadataJSONObject.getJSONObject(

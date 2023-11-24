@@ -1,12 +1,16 @@
 import Card from 'shared/components/Card';
+import EmptySankey from './EmptySankey';
 import ErrorDisplay from 'shared/components/ErrorDisplay';
+import NoResultsDisplay from 'shared/components/NoResultsDisplay';
 import PagePathQuery from 'shared/queries/PagePathQuery';
 import React from 'react';
 import Sankey from './Sankey';
 import StatesRenderer from 'shared/components/states-renderer/StatesRenderer';
+import URLConstants from 'shared/util/url-constants';
 import {getSafeRangeSelectors} from 'shared/util/util';
-import {MAIN_NODE_HEIGHT, SECONDARY_NODE_COLOR} from './utils';
-import {Type} from './types';
+import {RangeSelectors} from 'shared/types';
+import {SECONDARY_NODE_COLOR} from './utils';
+import {TitleKey, Type} from './types';
 import {useParams} from 'react-router-dom';
 import {useQuery} from '@apollo/react-hooks';
 import {v4 as uuidv4} from 'uuid';
@@ -18,12 +22,6 @@ type pagePathNode = {
 	followingPagePathNodes: pagePathNode[];
 	previousPagePathNodes: pagePathNode[];
 };
-
-enum TitleKey {
-	Direct = 'direct',
-	DropOffs = 'drop-offs',
-	Others = 'others'
-}
 
 function getTitle(key: TitleKey, type: Type) {
 	const langs = {
@@ -39,11 +37,7 @@ function getTitle(key: TitleKey, type: Type) {
 }
 
 function getColor(key: TitleKey) {
-	if (
-		key === TitleKey.Direct ||
-		key === TitleKey.DropOffs ||
-		key === TitleKey.Others
-	) {
+	if (key === TitleKey.DropOffs || key === TitleKey.Others) {
 		return SECONDARY_NODE_COLOR;
 	}
 
@@ -51,49 +45,34 @@ function getColor(key: TitleKey) {
 }
 
 function formatData({pagePath}: {pagePath: pagePathNode}) {
-	const calculateTotalViews = (nodes: pagePathNode[]) =>
-		nodes?.reduce((acc, {views}) => acc + views, 0) || 0;
-
-	const formatNodes = (
-		nodes: pagePathNode[],
-		type: Type,
-		totalViews: number
-	) =>
-		nodes?.map(({canonicalUrl, title, views}) => ({
-			color: getColor(title),
-			height: (views / totalViews) * MAIN_NODE_HEIGHT,
-			id: uuidv4(),
-			name: getTitle(title, type),
-			type,
-			url: canonicalUrl,
-			views
-		})) || [];
-
-	const totalViewsPreviousPage = calculateTotalViews(
-		pagePath.previousPagePathNodes
-	);
-	const totalViewsNextPage = calculateTotalViews(
-		pagePath.followingPagePathNodes
-	);
+	const formatNodes = (nodes: pagePathNode[], type: Type) =>
+		nodes
+			?.filter(({views}) => !!views)
+			?.map(({canonicalUrl, title, views}) => ({
+				color: getColor(title),
+				id: uuidv4(),
+				name: getTitle(title, type),
+				type,
+				url: canonicalUrl,
+				views
+			}));
 
 	const mainNode = {
-		height: MAIN_NODE_HEIGHT,
 		id: uuidv4(),
 		main: true,
 		name: pagePath.title,
-		url: pagePath.canonicalUrl
+		url: pagePath.canonicalUrl,
+		views: pagePath.views
 	};
 
 	const previousNodes = formatNodes(
 		pagePath.previousPagePathNodes,
-		Type.Previous,
-		totalViewsPreviousPage
+		Type.Previous
 	);
 
 	const followingNodes = formatNodes(
 		pagePath.followingPagePathNodes,
-		Type.Following,
-		totalViewsNextPage
+		Type.Following
 	);
 
 	const links = [...previousNodes, ...followingNodes].map((link, index) => ({
@@ -110,16 +89,31 @@ function formatData({pagePath}: {pagePath: pagePathNode}) {
 	};
 }
 
-const PagePathCard = ({rangeSelectors}) => {
+interface IPagePathCardProps {
+	rangeSelectors: RangeSelectors;
+	selectedSegment?: {id: string};
+}
+
+const PagePathCard: React.FC<IPagePathCardProps> = ({
+	rangeSelectors,
+	selectedSegment
+}) => {
 	const {channelId, title, touchpoint} = useParams();
 	const {data, error, loading} = useQuery(PagePathQuery, {
 		variables: {
 			canonicalUrl: decodeURIComponent(touchpoint),
 			channelId,
-			title,
+			title: decodeURIComponent(title),
+			...(selectedSegment?.id && {
+				segmentId: selectedSegment.id
+			}),
 			...getSafeRangeSelectors(rangeSelectors)
 		}
 	});
+
+	const formattedData = data ? formatData(data) : {links: [], nodes: []};
+	const emptyState =
+		!formattedData?.links.length && formattedData?.nodes.length === 1;
 
 	return (
 		<Card minHeight={600}>
@@ -127,18 +121,57 @@ const PagePathCard = ({rangeSelectors}) => {
 				<Card.Title>{Liferay.Language.get('path-analysis')}</Card.Title>
 			</Card.Header>
 			<Card.Body className='d-flex align-items-center justify-content-center'>
-				<StatesRenderer empty={!data} error={!!error} loading={loading}>
+				<StatesRenderer
+					empty={emptyState}
+					error={!!error}
+					loading={loading}
+				>
 					<StatesRenderer.Loading />
 
 					<StatesRenderer.Error apolloError={error}>
 						<ErrorDisplay />
 					</StatesRenderer.Error>
 
-					{!!data && (
-						<StatesRenderer.Success>
-							<Sankey data={formatData(data)} />
-						</StatesRenderer.Success>
-					)}
+					<StatesRenderer.Success>
+						<Sankey data={formattedData} />
+					</StatesRenderer.Success>
+
+					<StatesRenderer.Empty>
+						<>
+							<EmptySankey
+								data={formattedData}
+								emptyState={emptyState}
+							/>
+
+							<NoResultsDisplay
+								className='mt-4'
+								description={
+									<>
+										{Liferay.Language.get(
+											'check-back-later-to-verify-if-data-has-been-received-from-your-data-sources'
+										)}
+
+										<a
+											className='d-block mb-3'
+											href={
+												URLConstants.SitesDashboardPagesPath
+											}
+											key='DOCUMENTATION'
+											target='_blank'
+										>
+											{Liferay.Language.get(
+												'learn-more-about-path'
+											)}
+										</a>
+									</>
+								}
+								flexGrow={false}
+								title={Liferay.Language.get(
+									'there-are-no-data-found'
+								)}
+							/>
+						</>
+					</StatesRenderer.Empty>
 				</StatesRenderer>
 			</Card.Body>
 		</Card>

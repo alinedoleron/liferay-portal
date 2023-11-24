@@ -8,7 +8,6 @@ package com.liferay.osb.faro.web.internal.controller.main;
 import com.liferay.oauth2.provider.scope.RequiresNoScope;
 import com.liferay.osb.faro.engine.client.constants.FilterConstants;
 import com.liferay.osb.faro.engine.client.util.OrderByField;
-import com.liferay.osb.faro.model.FaroProject;
 import com.liferay.osb.faro.util.FaroThreadLocal;
 import com.liferay.osb.faro.web.internal.controller.BaseFaroController;
 import com.liferay.osb.faro.web.internal.controller.api.ReportControllerResponseFactory;
@@ -66,6 +65,7 @@ public class ReportController extends BaseFaroController {
 			@DefaultValue(StringPool.BLANK) @QueryParam("orderByFields")
 				FaroParam<List<OrderByField>> orderByFieldsFaroParam,
 			@QueryParam("query") String query,
+			@QueryParam("rangeKey") String rangeKey,
 			@QueryParam("toDate") String toDateString,
 			@PathParam("type") String type)
 		throws Exception {
@@ -78,59 +78,19 @@ public class ReportController extends BaseFaroController {
 				Response.Status.BAD_REQUEST);
 		}
 
-		if (Validator.isBlank(fromDateString) ||
-			Validator.isBlank(toDateString)) {
-
-			return _reportControllerResponseFactory.create(
-				"The \"fromDate\" and \"toDate\" query parameters are " +
-					"mandatory and must comply with ISO 8601 format: " +
-						_ISO_8601_DATE_FORMAT,
-				Response.Status.BAD_REQUEST);
-		}
-
-		LocalDateTime fromLocalDateTime;
-		LocalDateTime toLocalDateTime;
-
-		try {
-			fromLocalDateTime = _toUTCLocalDateTime(
-				fromDateString, LocalTime.MIN);
-			toLocalDateTime = _toUTCLocalDateTime(toDateString, LocalTime.MAX);
-		}
-		catch (Exception exception) {
-			_log.error(exception);
-
-			return _reportControllerResponseFactory.create(
-				"Both dates must comply with ISO 8601 format: " +
-					_ISO_8601_DATE_FORMAT,
-				Response.Status.BAD_REQUEST);
-		}
-
-		if (fromLocalDateTime.isAfter(toLocalDateTime)) {
-			return _reportControllerResponseFactory.create(
-				"The \"fromDate\" cannot be after \"toDate\"",
-				Response.Status.BAD_REQUEST);
-		}
-
-		FaroProject faroProject =
-			faroProjectLocalService.getFaroProjectByGroupId(groupId);
-
 		List<OrderByField> orderByFields = null;
 
 		if (orderByFieldsFaroParam != null) {
 			orderByFields = orderByFieldsFaroParam.getValue();
 		}
 
-		Map<String, List<String>> queryParameters =
+		HashMapBuilder.HashMapWrapper<String, List<String>> hashMapWrapper =
 			HashMapBuilder.<String, List<String>>put(
 				"assetId", Collections.singletonList(assetId)
 			).put(
 				"assetType", Collections.singletonList(assetType)
 			).put(
 				"channelId", Collections.singletonList(channelId)
-			).put(
-				"fromDate",
-				Collections.singletonList(
-					fromLocalDateTime.format(_dateTimeDateTimeFormatter))
 			).put(
 				"query", Collections.singletonList(query)
 			).put(
@@ -151,18 +111,70 @@ public class ReportController extends BaseFaroController {
 						return fieldName + StringPool.COMMA +
 							orderByField.getOrderBy();
 					})
-			).put(
-				"toDate",
-				Collections.singletonList(
-					toLocalDateTime.format(_dateTimeDateTimeFormatter))
-			).build();
+			);
+
+		if (!StringUtil.equals(type, "individual") ||
+			Validator.isNotNull(assetType)) {
+
+			if (StringUtil.equalsIgnoreCase(rangeKey, "CUSTOM")) {
+				if (Validator.isBlank(fromDateString) ||
+					Validator.isBlank(toDateString)) {
+
+					return _reportControllerResponseFactory.create(
+						"The \"fromDate\" and \"toDate\" query parameters " +
+							"are mandatory and must be ISO 8601 compliant " +
+								_ISO_8601_DATE_FORMAT,
+						Response.Status.BAD_REQUEST);
+				}
+
+				LocalDateTime fromLocalDateTime;
+				LocalDateTime toLocalDateTime;
+
+				try {
+					fromLocalDateTime = _toUTCLocalDateTime(
+						fromDateString, LocalTime.MIN);
+					toLocalDateTime = _toUTCLocalDateTime(
+						toDateString, LocalTime.MAX);
+				}
+				catch (Exception exception) {
+					_log.error(exception);
+
+					return _reportControllerResponseFactory.create(
+						"Both dates in range must be ISO 8601 compliant " +
+							_ISO_8601_DATE_FORMAT,
+						Response.Status.BAD_REQUEST);
+				}
+
+				if (fromLocalDateTime.isAfter(toLocalDateTime)) {
+					return _reportControllerResponseFactory.create(
+						"The \"fromDate\" cannot be after \"toDate\"",
+						Response.Status.BAD_REQUEST);
+				}
+
+				hashMapWrapper = hashMapWrapper.put(
+					"fromDate",
+					Collections.singletonList(
+						fromLocalDateTime.format(_dateTimeDateTimeFormatter))
+				).put(
+					"toDate",
+					Collections.singletonList(
+						toLocalDateTime.format(_dateTimeDateTimeFormatter))
+				);
+			}
+			else {
+				hashMapWrapper = hashMapWrapper.put(
+					"rangeKey", Collections.singletonList(rangeKey));
+			}
+		}
+
+		Map<String, List<String>> queryParameters = hashMapWrapper.build();
 
 		StreamingOutput streamingOutput = outputStream -> {
 			try {
 				FaroThreadLocal.setCacheEnabled(false);
 
 				contactsEngineClient.getToOutputStream(
-					faroProject,
+					faroProjectLocalService.getFaroProjectByGroupId(groupId),
 					HashMapBuilder.put(
 						"Accept", "application/octet-stream, */*"
 					).build(),
@@ -176,13 +188,25 @@ public class ReportController extends BaseFaroController {
 			outputStream.flush();
 		};
 
+		String fileName = null;
+
+		if (StringUtil.equals(type, "individual") &&
+			Validator.isNotNull(assetType)) {
+
+			fileName = String.format(
+				"analytics-cloud-%s-known-individuals-%s", assetType,
+				LocalDate.now());
+		}
+		else {
+			fileName = String.format(
+				"analytics-cloud-%ss-list-%s", type, LocalDate.now());
+		}
+
 		return Response.ok(
 			streamingOutput, "application/csv"
 		).header(
 			HttpHeaders.CONTENT_DISPOSITION,
-			String.format(
-				"filename=\"analytics-cloud-%ss-overview-%s.csv\"", type,
-				LocalDate.now())
+			String.format("filename=\"%s.csv\"", fileName, LocalDate.now())
 		).build();
 	}
 

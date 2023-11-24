@@ -126,6 +126,7 @@ export declare type TAction =
 				objectDefinitionNodes: Node<ObjectDefinitionNodeData>[];
 				objectRelationshipEdges: Edge<ObjectRelationshipEdgeData>[];
 				updatedObjectDefinitionNodeId: number;
+				updatedObjectFolder: ObjectFolder;
 			};
 			type: TYPES.SET_SELECTED_OBJECT_DEFINITION_NODE_POSITION;
 	  }
@@ -202,7 +203,7 @@ export declare type TState = {
 	selectedObjectRelationship?: Edge<ObjectRelationshipEdgeData>;
 	showChangesSaved: boolean;
 	showSidebars: boolean;
-	workflowStatusJSONArray: LabelValueObject[];
+	workflowStatuses: LabelValueObject[];
 };
 export interface LeftSidebarItem {
 	hiddenObjectFolderObjectDefinitionNodes: boolean;

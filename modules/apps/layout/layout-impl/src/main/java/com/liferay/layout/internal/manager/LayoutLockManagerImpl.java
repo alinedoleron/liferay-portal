@@ -18,12 +18,14 @@ import com.liferay.petra.sql.dsl.Column;
 import com.liferay.petra.sql.dsl.DSLFunctionFactoryUtil;
 import com.liferay.petra.sql.dsl.DSLQueryFactoryUtil;
 import com.liferay.petra.sql.dsl.base.BaseTable;
-import com.liferay.petra.sql.dsl.expression.Predicate;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.configuration.module.configuration.ConfigurationProvider;
+import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
+import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.exception.LockedLayoutException;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.lock.Lock;
 import com.liferay.portal.kernel.lock.LockManager;
@@ -39,7 +41,6 @@ import com.liferay.portal.kernel.service.LayoutLocalService;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.DateUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
-import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.Time;
@@ -47,6 +48,7 @@ import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.lock.model.LockTable;
+import com.liferay.portal.lock.service.LockLocalService;
 import com.liferay.portal.model.impl.LayoutModelImpl;
 
 import java.sql.Types;
@@ -86,7 +88,9 @@ public class LayoutLockManagerImpl implements LayoutLockManager {
 
 	@Override
 	public void getLock(Layout layout, long userId) throws PortalException {
-		if ((layout == null) || !layout.isDraftLayout()) {
+		if (!FeatureFlagManagerUtil.isEnabled("LPS-180328") ||
+			(layout == null) || !layout.isDraftLayout()) {
+
 			return;
 		}
 
@@ -245,6 +249,10 @@ public class LayoutLockManagerImpl implements LayoutLockManager {
 				redirectUnsafeSupplier)
 		throws Exception {
 
+		if (!FeatureFlagManagerUtil.isEnabled("LPS-180328")) {
+			return String.valueOf(redirectUnsafeSupplier.get());
+		}
+
 		return PortletURLBuilder.createActionURL(
 			liferayPortletResponse
 		).setActionName(
@@ -256,7 +264,9 @@ public class LayoutLockManagerImpl implements LayoutLockManager {
 
 	@Override
 	public void unlock(Layout layout, long userId) {
-		if ((layout == null) || !layout.isDraftLayout()) {
+		if (!FeatureFlagManagerUtil.isEnabled("LPS-180328") ||
+			(layout == null) || !layout.isDraftLayout()) {
+
 			return;
 		}
 
@@ -267,146 +277,112 @@ public class LayoutLockManagerImpl implements LayoutLockManager {
 
 	@Override
 	public void unlockLayouts(long companyId, long autosaveMinutes)
-		throws LockedLayoutException {
+		throws PortalException {
 
+		Date companyLastAutosaveDate = new Date(
+			System.currentTimeMillis() - (autosaveMinutes * Time.MINUTE));
+		Map<Long, Date> lastAutosaveDateMap = new HashMap<>();
 		Map<Long, LockedLayoutsGroupConfiguration>
 			lockedLayoutsGroupConfigurations =
 				_getLockedLayoutsGroupConfigurations(companyId);
 
-		_unlockLockedLayouts(
-			lockedLayoutsGroupConfigurations,
-			_layoutLocalService.dslQuery(
-				DSLQueryFactoryUtil.select(
-				).from(
-					DSLQueryFactoryUtil.selectDistinct(
-						LockTable.INSTANCE.createDate,
-						LayoutTable.INSTANCE.groupId, LayoutTable.INSTANCE.plid
-					).from(
-						LayoutTable.INSTANCE
-					).innerJoinON(
-						LockTable.INSTANCE,
-						LockTable.INSTANCE.companyId.eq(
-							companyId
-						).and(
-							LockTable.INSTANCE.className.eq(
-								Layout.class.getName())
-						).and(
-							LockTable.INSTANCE.key.eq(
-								DSLFunctionFactoryUtil.castText(
-									LayoutTable.INSTANCE.plid))
-						).and(
-							_getCreateDatePredicate(
-								lockedLayoutsGroupConfigurations,
-								autosaveMinutes)
-						)
-					).where(
-						LayoutTable.INSTANCE.classPK.gt(
-							0L
-						).and(
-							LayoutTable.INSTANCE.hidden.eq(true)
-						).and(
-							LayoutTable.INSTANCE.system.eq(true)
-						).and(
-							LayoutTable.INSTANCE.status.eq(
-								WorkflowConstants.STATUS_DRAFT)
-						).and(
-							LayoutTable.INSTANCE.type.in(
-								new String[] {
-									LayoutConstants.TYPE_ASSET_DISPLAY,
-									LayoutConstants.TYPE_COLLECTION,
-									LayoutConstants.TYPE_CONTENT
-								})
-						)
-					).as(
-						"LockedLayoutsTable", LockedLayoutsTable.INSTANCE
-					)
-				)),
-			autosaveMinutes);
+		ActionableDynamicQuery actionableDynamicQuery =
+			_lockLocalService.getActionableDynamicQuery();
+
+		actionableDynamicQuery.setAddCriteriaMethod(
+			dynamicQuery -> {
+				dynamicQuery.add(
+					RestrictionsFactoryUtil.eq("companyId", companyId));
+				dynamicQuery.add(
+					RestrictionsFactoryUtil.eq(
+						"className", Layout.class.getName()));
+
+				if (lockedLayoutsGroupConfigurations.isEmpty()) {
+					dynamicQuery.add(
+						RestrictionsFactoryUtil.lt(
+							"createDate",
+							new Date(
+								System.currentTimeMillis() -
+									(autosaveMinutes * Time.MINUTE))));
+				}
+			});
+		actionableDynamicQuery.setPerformActionMethod(
+			(com.liferay.portal.lock.model.Lock lock) -> {
+				if (lockedLayoutsGroupConfigurations.isEmpty()) {
+					_lockManager.unlock(lock.getClassName(), lock.getKey());
+
+					return;
+				}
+
+				Layout layout = _layoutLocalService.fetchLayout(
+					GetterUtil.getLong(lock.getKey()));
+
+				if (layout == null) {
+					_lockManager.unlock(lock.getClassName(), lock.getKey());
+				}
+
+				LockedLayoutsGroupConfiguration
+					lockedLayoutsGroupConfiguration =
+						lockedLayoutsGroupConfigurations.get(
+							layout.getGroupId());
+
+				if ((lockedLayoutsGroupConfiguration != null) &&
+					!lockedLayoutsGroupConfiguration.
+						allowAutomaticUnlockingProcess()) {
+
+					return;
+				}
+
+				int value = DateUtil.compareTo(
+					lock.getCreateDate(),
+					_getLastAutosaveDate(
+						layout.getGroupId(), companyLastAutosaveDate,
+						lastAutosaveDateMap, lockedLayoutsGroupConfiguration));
+
+				if (value <= 0) {
+					_lockManager.unlock(lock.getClassName(), lock.getKey());
+				}
+			});
+
+		actionableDynamicQuery.performActions();
 	}
 
 	@Override
-	public void unlockLayoutsByUserId(long companyId, long userId) {
-		List<Long> plids = _layoutLocalService.dslQuery(
-			DSLQueryFactoryUtil.selectDistinct(
-				LayoutTable.INSTANCE.plid
-			).from(
-				LayoutTable.INSTANCE
-			).innerJoinON(
-				LockTable.INSTANCE,
-				LockTable.INSTANCE.companyId.eq(
-					companyId
-				).and(
-					LockTable.INSTANCE.className.eq(Layout.class.getName())
-				).and(
-					LockTable.INSTANCE.key.eq(
-						DSLFunctionFactoryUtil.castText(
-							LayoutTable.INSTANCE.plid))
-				).and(
-					LockTable.INSTANCE.userId.eq(userId)
-				).and(
-					LockTable.INSTANCE.owner.eq(String.valueOf(userId))
-				)
-			).where(
-				LayoutTable.INSTANCE.companyId.eq(
-					companyId
-				).and(
-					LayoutTable.INSTANCE.classPK.gt(0L)
-				).and(
-					LayoutTable.INSTANCE.hidden.eq(true)
-				).and(
-					LayoutTable.INSTANCE.system.eq(true)
-				).and(
-					LayoutTable.INSTANCE.status.eq(
-						WorkflowConstants.STATUS_DRAFT)
-				).and(
-					LayoutTable.INSTANCE.type.in(
-						new String[] {
-							LayoutConstants.TYPE_ASSET_DISPLAY,
-							LayoutConstants.TYPE_COLLECTION,
-							LayoutConstants.TYPE_CONTENT
-						})
-				)
-			));
+	public void unlockLayoutsByUserId(long companyId, long userId)
+		throws PortalException {
 
-		for (Long plid : plids) {
-			_lockManager.unlock(Layout.class.getName(), String.valueOf(plid));
-		}
-	}
+		ActionableDynamicQuery actionableDynamicQuery =
+			_lockLocalService.getActionableDynamicQuery();
 
-	private Predicate _getCreateDatePredicate(
-		Map<Long, LockedLayoutsGroupConfiguration>
-			lockedLayoutsGroupConfigurations,
-		long autosaveMinutes) {
+		actionableDynamicQuery.setAddCriteriaMethod(
+			dynamicQuery -> {
+				dynamicQuery.add(
+					RestrictionsFactoryUtil.eq("companyId", companyId));
+				dynamicQuery.add(
+					RestrictionsFactoryUtil.eq(
+						"className", Layout.class.getName()));
+				dynamicQuery.add(RestrictionsFactoryUtil.eq("userId", userId));
+			});
+		actionableDynamicQuery.setPerformActionMethod(
+			(com.liferay.portal.lock.model.Lock lock) -> _lockManager.unlock(
+				lock.getClassName(), lock.getKey()));
 
-		if (!lockedLayoutsGroupConfigurations.isEmpty()) {
-			return null;
-		}
-
-		return LockTable.INSTANCE.createDate.lt(
-			new Date(
-				System.currentTimeMillis() - (autosaveMinutes * Time.MINUTE)));
+		actionableDynamicQuery.performActions();
 	}
 
 	private Date _getLastAutosaveDate(
-		long groupId,
-		LockedLayoutsGroupConfiguration lockedLayoutsGroupConfiguration,
-		long autosaveMinutes) {
+		long groupId, Date companyLastAutosaveDate,
+		Map<Long, Date> lastAutosaveDateMap,
+		LockedLayoutsGroupConfiguration lockedLayoutsGroupConfiguration) {
 
-		Date lastAutosaveDate = _lastAutosaveDateMap.get(groupId);
+		Date lastAutosaveDate = lastAutosaveDateMap.get(groupId);
 
 		if (lastAutosaveDate != null) {
 			return lastAutosaveDate;
 		}
 
 		if (lockedLayoutsGroupConfiguration == null) {
-			if (_lastAutoSaveDate != null) {
-				return _lastAutoSaveDate;
-			}
-
-			_lastAutoSaveDate = new Date(
-				System.currentTimeMillis() - (autosaveMinutes * Time.MINUTE));
-
-			return _lastAutoSaveDate;
+			return companyLastAutosaveDate;
 		}
 
 		long autosaveTime =
@@ -414,7 +390,7 @@ public class LayoutLockManagerImpl implements LayoutLockManager {
 
 		lastAutosaveDate = new Date(System.currentTimeMillis() - autosaveTime);
 
-		_lastAutosaveDateMap.put(groupId, lastAutosaveDate);
+		lastAutosaveDateMap.put(groupId, lastAutosaveDate);
 
 		return lastAutosaveDate;
 	}
@@ -499,7 +475,7 @@ public class LayoutLockManagerImpl implements LayoutLockManager {
 
 	private Map<Long, LockedLayoutsGroupConfiguration>
 			_getLockedLayoutsGroupConfigurations(long companyId)
-		throws LockedLayoutException {
+		throws PortalException {
 
 		Map<Long, LockedLayoutsGroupConfiguration>
 			lockedLayoutsGroupConfigurations = new HashMap<>();
@@ -528,55 +504,11 @@ public class LayoutLockManagerImpl implements LayoutLockManager {
 			}
 		}
 		catch (Exception exception) {
-			throw new LockedLayoutException(
-				"Unable to get LockedLayoutsGroupConfigurations", exception);
+			throw new PortalException(
+				"Unable to get locked layouts group configurations", exception);
 		}
 
 		return lockedLayoutsGroupConfigurations;
-	}
-
-	private void _unlockLockedLayouts(
-		Map<Long, LockedLayoutsGroupConfiguration>
-			lockedLayoutsGroupConfigurations,
-		List<Object[]> results, long autosaveMinutes) {
-
-		if (ListUtil.isEmpty(results)) {
-			return;
-		}
-
-		if (lockedLayoutsGroupConfigurations.isEmpty()) {
-			for (Object[] columns : results) {
-				_lockManager.unlock(
-					Layout.class.getName(), String.valueOf(columns[2]));
-			}
-
-			return;
-		}
-
-		_lastAutoSaveDate = null;
-		_lastAutosaveDateMap = new HashMap<>();
-
-		for (Object[] columns : results) {
-			long groupId = GetterUtil.getLong(columns[1]);
-
-			LockedLayoutsGroupConfiguration lockedLayoutsGroupConfiguration =
-				lockedLayoutsGroupConfigurations.get(groupId);
-
-			if ((lockedLayoutsGroupConfiguration != null) &&
-				!lockedLayoutsGroupConfiguration.
-					allowAutomaticUnlockingProcess()) {
-
-				continue;
-			}
-
-			Date lastAutoSave = _getLastAutosaveDate(
-				groupId, lockedLayoutsGroupConfiguration, autosaveMinutes);
-
-			if (DateUtil.compareTo((Date)columns[0], lastAutoSave) <= 0) {
-				_lockManager.unlock(
-					Layout.class.getName(), String.valueOf(columns[2]));
-			}
-		}
 	}
 
 	@Reference
@@ -591,9 +523,6 @@ public class LayoutLockManagerImpl implements LayoutLockManager {
 	@Reference
 	private Language _language;
 
-	private Date _lastAutoSaveDate;
-	private Map<Long, Date> _lastAutosaveDateMap;
-
 	@Reference
 	private LayoutLocalService _layoutLocalService;
 
@@ -604,6 +533,9 @@ public class LayoutLockManagerImpl implements LayoutLockManager {
 	@Reference
 	private LayoutUtilityPageEntryLocalService
 		_layoutUtilityPageEntryLocalService;
+
+	@Reference
+	private LockLocalService _lockLocalService;
 
 	@Reference
 	private LockManager _lockManager;

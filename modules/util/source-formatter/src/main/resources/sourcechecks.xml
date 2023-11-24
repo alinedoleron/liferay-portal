@@ -1635,10 +1635,6 @@
 			<category name="Upgrade" />
 			<description name="CookieKeys class was replaced by CookiesManagerUtil and CookieConstants" />
 		</check>
-		<check name="UpgradeJavaCookieUtilCheck">
-			<category name="Upgrade" />
-			<description name="Replace CookieUtilCheck.get by CookiesManagerUtil.getCookieValue and reorder parameters" />
-		</check>
 		<check name="UpgradeJavaFacetedSearcherCheck">
 			<category name="Upgrade" />
 			<description name="Replaces the references of the `Indexer indexer = FacetedSearcher.getInstance();` declaration and `indexer.search` method call." />
@@ -1652,10 +1648,6 @@
 			<category name="Upgrade" />
 			<description name="Reorder parameters in the getItems and getItemsCount methods of the FDSDataProvider interface" />
 			<weight>1</weight>
-		</check>
-		<check name="UpgradeJavaFetchAssetCategoryByExternalReferenceCodeCheck">
-			<category name="Upgrade" />
-			<description name="Adds a message about the breaking change made on method `fetchAssetCategoryByExternalReferenceCode` of `AssetCategoryLocalService` and `AssetCategoryLocalServiceUtil` classes." />
 		</check>
 		<check name="UpgradeJavaGetFDSTableSchemaParameterCheck">
 			<category name="Upgrade" />
@@ -1730,7 +1722,7 @@
 		</check>
 		<check name="UpgradeSetResultsSetTotalMethodCheck">
 			<category name="Upgrade" />
-			<description name="Run code migration of method searchContainer.setResults to the searchContainer.setResultsAndTotal and delete searchContainer.setTotal" />
+			<description name="Replaces methods setResults and setTotal from SearchContainer with the method setResultsAndTotal only" />
 		</check>
 		<check name="UpgradeVelocityCommentMigrationCheck">
 			<category name="Upgrade" />

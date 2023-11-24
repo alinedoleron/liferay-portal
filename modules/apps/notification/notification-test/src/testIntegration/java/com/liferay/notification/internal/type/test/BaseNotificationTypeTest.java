@@ -131,6 +131,8 @@ public class BaseNotificationTypeTest {
 		).build();
 
 		parentObjectEntryValues = LinkedHashMapBuilder.<String, Object>put(
+			"systemObjectField", RandomTestUtil.randomString()
+		).put(
 			"textObjectField", RandomTestUtil.randomString()
 		).build();
 
@@ -233,6 +235,17 @@ public class BaseNotificationTypeTest {
 						LocalizedMapUtil.getLocalizedMap(
 							RandomTestUtil.randomString())
 					).name(
+						"systemObjectField"
+					).objectFieldSettings(
+						Collections.emptyList()
+					).system(
+						true
+					).build(),
+					new TextObjectFieldBuilder(
+					).labelMap(
+						LocalizedMapUtil.getLocalizedMap(
+							RandomTestUtil.randomString())
+					).name(
 						"textObjectField"
 					).objectFieldSettings(
 						Collections.emptyList()
@@ -245,7 +258,7 @@ public class BaseNotificationTypeTest {
 
 		objectRelationship =
 			_objectRelationshipLocalService.addObjectRelationship(
-				TestPropsValues.getUserId(),
+				null, TestPropsValues.getUserId(),
 				parentObjectDefinition.getObjectDefinitionId(),
 				childObjectDefinition.getObjectDefinitionId(), 0,
 				ObjectRelationshipConstants.DELETION_TYPE_PREVENT,
@@ -403,6 +416,7 @@ public class BaseNotificationTypeTest {
 				getTermName("integerObjectField"),
 				getTermName("picklistObjectField"),
 				getTermName("textObjectField"),
+				getTermName(true, "systemObjectField"),
 				getTermName(true, "textObjectField")));
 	}
 
